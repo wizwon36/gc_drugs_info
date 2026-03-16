@@ -1310,6 +1310,7 @@
       min-height:24px;
     }
 
+    
     @keyframes spin{
       to{transform:rotate(360deg)}
     }
@@ -1743,6 +1744,7 @@
                       <option value="매우높음">매우높음</option>
                     </select>
                   </div>
+                </div>
               </div>
               
               <div class="grid-2" style="margin-top:18px;">
@@ -1783,11 +1785,12 @@
                 <button class="btn primary" onclick="saveDrugItem()">저장</button>
                 <button class="btn secondary" onclick="toggleCurrentDrugActive()">활성/비활성 전환</button>
               </div>
-
-            <div class="admin-content-box">
-              <h3 class="admin-section-title">최근 등록 약물</h3>
-              <div class="admin-list" id="recentDrugList"></div>
-            </div>
+              </div>
+              
+              <div class="admin-content-box">
+                <h3 class="admin-section-title">최근 등록 약물</h3>
+                <div class="admin-list" id="recentDrugList"></div>
+              </div>
           </div>
         </div>
 
