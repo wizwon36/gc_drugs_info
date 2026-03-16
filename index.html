@@ -389,10 +389,19 @@
     .admin-switch,
     .toolbar{
       display:flex;
-      gap:8px;
+      gap:10px;
       flex-wrap:wrap;
+    }
+    
+    .mode-switch,
+    .admin-switch{
       margin-top:10px;
-      margin-bottom:10px;
+      margin-bottom:14px;
+    }
+    
+    .toolbar{
+      margin-top:14px;
+      margin-bottom:18px;
     }
 
     .mode-switch{
@@ -479,15 +488,16 @@
     .field{
       position:relative;
       min-width:0;
+      margin-bottom:2px;
     }
 
     .field label{
       display:block;
-      margin-bottom:8px;
+      margin-bottom:10px;
       color:#56717d;
       font-size:13px;
       font-weight:700;
-      line-height:1.45;
+      line-height:1.5;
       letter-spacing:-0.01em;
     }
 
@@ -505,7 +515,7 @@
     } 
 
     .admin-content-box .field + .toolbar{
-      margin-top:10px;
+      margin-top:16px;
     }
 
     .input,.select,.textarea{
@@ -530,9 +540,9 @@
     }
     
     .required-note{
-      margin:2px 0 14px;
+      margin:6px 0 18px;
       font-size:12px;
-      line-height:1.5;
+      line-height:1.6;
       color:#b24747;
       font-weight:700;
     }
@@ -690,7 +700,7 @@
     .grid-admin{
       display:grid;
       grid-template-columns:1fr;
-      gap:12px;
+      gap:18px;
     }
 
     .helper,.status,.small{
@@ -803,6 +813,20 @@
       display:flex;
       align-items:center;
       gap:10px;
+    }
+
+    .admin-content-box .grid-2{
+      margin-bottom:2px;
+    }
+
+    .admin-content-box .field[style*="margin-top:12px"]{
+      margin-top:18px !important;
+    }
+    
+    .admin-content-box .field .input,
+    .admin-content-box .field .select,
+    .admin-content-box .field .textarea{
+      margin-bottom:0;
     }
 
     .mini-spinner{
@@ -1144,7 +1168,7 @@
       background:#fbfdff;
       border:1px solid var(--line);
       border-radius:16px;
-      padding:15px;
+      padding:18px;
       min-width:0;
     }
 
@@ -1165,6 +1189,7 @@
       max-height:320px;
       overflow:auto;
       min-width:0;
+      margin-top:0;
     }
 
     .admin-item{
@@ -1180,11 +1205,26 @@
     }
 
     .admin-list.compact-empty{
-      display:none;
+      display:none !important;
+      padding:0 !important;
+      border:none !important;
+      margin:0 !important;
+      min-height:0 !important;
+      max-height:0 !important;
+      overflow:hidden !important;
     }
     
     .admin-item:last-child{border-bottom:none}
 
+    .admin-search-field{
+      margin-bottom:8px;
+    }
+    
+    .admin-search-toolbar{
+      margin-top:18px;
+      margin-bottom:16px;
+    }
+    
     .hidden{display:none !important}
 
     .loading-overlay{
@@ -1336,7 +1376,7 @@
 
       .grid-2{
         grid-template-columns:1fr 1fr;
-        gap:14px 16px;
+        gap:20px 16px;
       }
 
       .search-actions{
@@ -1603,25 +1643,25 @@
             <div class="admin-content-box">
               <h3 class="admin-section-title">약물 추가 / 수정</h3>
               <div class="required-note">* 표시 항목은 필수 입력입니다.</div>
-              
-              <div class="field">
+                            
+              <div class="field admin-search-field">
                 <label class="label-optional">약물 검색</label>
-                <input id="adminDrugSearch" class="input" placeholder="상품명, 성분명, drug_id 검색">
+                <input id="adminDrugSearch" class="input" placeholder="약품명, 성분명, drug_id 검색">
               </div>
               
-              <div class="toolbar">
+              <div class="toolbar admin-search-toolbar">
                 <button class="btn secondary" onclick="searchAdminDrugList()">검색</button>
                 <button class="btn secondary" onclick="loadRecentAdminData(true)">최근목록</button>
                 <button class="btn secondary" onclick="prepareNewDrug()">신규입력</button>
               </div>
               
-              <div class="admin-list compact-empty" id="adminDrugSearchList" style="margin-top:8px;"></div>
+              <div class="admin-list compact-empty" id="adminDrugSearchList"></div>
               
               <input type="hidden" id="adminDrugId">
               
               <div class="grid-2" style="margin-top:14px;">
                 <div class="field">
-                  <label class="label-required">상품명 <span class="required-mark">*</span></label>
+                  <label class="label-required">약품명 <span class="required-mark">*</span></label>
                   <input id="adminBrandName" class="input">
                 </div>
               
@@ -1698,18 +1738,18 @@
               <h3 class="admin-section-title">규칙 추가 / 수정</h3>
               <div class="required-note">* 표시 항목은 필수 입력입니다.</div>
               
-              <div class="field">
+              <div class="field admin-search-field">
                 <label class="label-optional">규칙 검색</label>
                 <input id="adminRuleSearch" class="input" placeholder="rule_id, 검사종류, target_value 검색">
               </div>
               
-              <div class="toolbar">
+              <div class="toolbar admin-search-toolbar">
                 <button class="btn secondary" onclick="searchAdminRuleList()">검색</button>
                 <button class="btn secondary" onclick="loadRecentAdminData(true)">최근목록</button>
                 <button class="btn secondary" onclick="prepareNewRule()">신규입력</button>
               </div>
               
-              <div class="admin-list compact-empty" id="adminRuleSearchList" style="margin-top:8px;"></div>
+              <div class="admin-list compact-empty" id="adminRuleSearchList"></div>
               
               <input type="hidden" id="adminRuleId">
               
@@ -2758,15 +2798,21 @@
         }
     
         const keyword = document.getElementById('adminDrugSearch').value.trim();
+        const listEl = document.getElementById('adminDrugSearchList');
+    
         const res = await apiGet('searchAdminDrugs', { keyword });
     
         if (showLoading) hideAdminLoading();
     
-        const listEl = document.getElementById('adminDrugSearchList');
         const items = res.items || [];
     
-        listEl.classList.toggle('compact-empty', items.length === 0);
+        if (!keyword || items.length === 0) {
+          listEl.innerHTML = '';
+          listEl.classList.add('compact-empty');
+          return;
+        }
     
+        listEl.classList.remove('compact-empty');
         listEl.innerHTML = items.map(item => `
           <div class="admin-item">
             <strong>${escapeHtml(item.drug_id)}</strong> · ${escapeHtml(item.brand_name)}
@@ -2790,15 +2836,21 @@
         }
     
         const keyword = document.getElementById('adminRuleSearch').value.trim();
+        const listEl = document.getElementById('adminRuleSearchList');
+    
         const res = await apiGet('searchAdminRules', { keyword });
     
         if (showLoading) hideAdminLoading();
     
-        const listEl = document.getElementById('adminRuleSearchList');
         const items = res.items || [];
     
-        listEl.classList.toggle('compact-empty', items.length === 0);
+        if (!keyword || items.length === 0) {
+          listEl.innerHTML = '';
+          listEl.classList.add('compact-empty');
+          return;
+        }
     
+        listEl.classList.remove('compact-empty');
         listEl.innerHTML = items.map(item => `
           <div class="admin-item">
             <strong>${escapeHtml(item.rule_id)}</strong> · ${escapeHtml(item.exam_type)}
@@ -2817,11 +2869,25 @@
 
     function prepareNewDrug() {
       clearDrugForm();
+    
+      const listEl = document.getElementById('adminDrugSearchList');
+      if (listEl) {
+        listEl.innerHTML = '';
+        listEl.classList.add('compact-empty');
+      }
+    
       document.getElementById('adminDrugStatus').textContent = '신규 약물 입력 모드입니다.';
     }
-
+    
     function prepareNewRule() {
       clearRuleForm();
+    
+      const listEl = document.getElementById('adminRuleSearchList');
+      if (listEl) {
+        listEl.innerHTML = '';
+        listEl.classList.add('compact-empty');
+      }
+    
       document.getElementById('adminRuleStatus').textContent = '신규 규칙 입력 모드입니다.';
     }
 
@@ -2888,7 +2954,7 @@
       };
     
       if (!payload.brand_name || !payload.ingredient_name || !payload.drug_group) {
-        showErrorPopup('필수 입력값을 확인해주세요. (상품명, 성분명, 약물군)');
+        showErrorPopup('필수 입력값을 확인해주세요. (약품명, 성분명, 약물군)');
         return;
       }
     
