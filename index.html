@@ -1783,7 +1783,7 @@
 
     let autocompleteActiveIndex = -1;
 
-    const API_BASE = 'https://script.google.com/macros/s/AKfycbwGLfgiEnReZ7URHhxjYAYUGe24aH_cK0CRphWW0EPnI2FCBOuji__SZnIirOSDzsmIMw/exec';
+    const API_BASE = 'https://script.google.com/macros/s/AKfycbzySxUKrmvZWVP11rhqC-eMKAU9YYuextBHwvF8IveZl0vsu8Ko6ldn5JbKMwXMyoku7A/exec';
 
     async function apiGet(action, params = {}) {
       const url = new URL(API_BASE);
@@ -1793,36 +1793,32 @@
         url.searchParams.set(key, value == null ? '' : String(value));
       });
     
-      const res = await fetch(url.toString(), { method: 'GET' });
-      return await res.json();
+      const res = await fetch(url.toString(), {
+        method: 'GET',
+        redirect: 'follow'
+      });
+    
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}`);
+      }
+    
+      const data = await res.json();
+    
+      if (!data || typeof data !== 'object') {
+        throw new Error('응답 형식이 올바르지 않습니다.');
+      }
+    
+      return data;
     }
 
     async function apiPost(action, payload = {}) {
-      const res = await fetch(API_BASE, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'text/plain;charset=utf-8'
-        },
-        body: JSON.stringify({
-          action,
-          payload
-        })
-      });
-    
-      return await res.json();
+      return await apiGet(action, payload);
     }
     
     async function apiPostRaw(body = {}) {
-      const res = await fetch(API_BASE, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'text/plain;charset=utf-8'
-        },
-        body: JSON.stringify(body)
-      });
-    
-      return await res.json();
-}
+      const { action, ...params } = body || {};
+      return await apiGet(action, params);
+    }
     
     function getViewportWidth() {
       const values = [
@@ -2750,7 +2746,7 @@
         console.error(err);
       }
     }
-
+    
     async function saveDrugItem() {
       if (!isAdminLoggedIn) return;
     
@@ -2775,27 +2771,29 @@
       const action = payload.drug_id ? 'updateDrug' : 'addDrug';
     
       try {
-        const res = await apiPost(action, payload);
+        const res = await apiGet(action, payload);
     
         document.getElementById('adminDrugStatus').textContent =
-          res.message + (res.drug_id ? ` (${res.drug_id})` : '');
+          (res.message || '') + (res.drug_id ? ` (${res.drug_id})` : '');
     
-        if (res.success && !payload.drug_id) {
+        if (!res.success) {
+          return;
+        }
+    
+        if (!payload.drug_id) {
           clearDrugForm();
         }
     
-        if (res.success) {
-          await loadRecentAdminData();
-          await searchAdminDrugList();
-          autocompleteCache.clear();
-          lastAutocompleteKeyword = '';
-        }
+        await loadRecentAdminData();
+        await searchAdminDrugList();
+        autocompleteCache.clear();
+        lastAutocompleteKeyword = '';
       } catch (err) {
         document.getElementById('adminDrugStatus').textContent =
           '저장 오류: ' + (err?.message || String(err));
       }
     }
-
+    
     async function saveRuleItem() {
       if (!isAdminLoggedIn) return;
     
@@ -2821,19 +2819,21 @@
       const action = payload.rule_id ? 'updateRule' : 'addRule';
     
       try {
-        const res = await apiPost(action, payload);
+        const res = await apiGet(action, payload);
     
         document.getElementById('adminRuleStatus').textContent =
-          res.message + (res.rule_id ? ` (${res.rule_id})` : '');
+          (res.message || '') + (res.rule_id ? ` (${res.rule_id})` : '');
     
-        if (res.success && !payload.rule_id) {
+        if (!res.success) {
+          return;
+        }
+    
+        if (!payload.rule_id) {
           clearRuleForm();
         }
     
-        if (res.success) {
-          await loadRecentAdminData();
-          await searchAdminRuleList();
-        }
+        await loadRecentAdminData();
+        await searchAdminRuleList();
       } catch (err) {
         document.getElementById('adminRuleStatus').textContent =
           '저장 오류: ' + (err?.message || String(err));
@@ -2842,19 +2842,18 @@
 
     async function toggleDrug(drugId) {
       try {
-        const res = await apiPostRaw({
-          action: 'toggleDrug',
-          drugId
-        });
+        const res = await apiGet('toggleDrug', { drugId });
     
         document.getElementById('adminDrugStatus').textContent = res.message || '';
     
-        if (res.success) {
-          await loadRecentAdminData();
-          await searchAdminDrugList();
-          autocompleteCache.clear();
-          lastAutocompleteKeyword = '';
+        if (!res.success) {
+          return;
         }
+    
+        await loadRecentAdminData();
+        await searchAdminDrugList();
+        autocompleteCache.clear();
+        lastAutocompleteKeyword = '';
       } catch (err) {
         document.getElementById('adminDrugStatus').textContent =
           '변경 오류: ' + (err?.message || String(err));
@@ -2863,17 +2862,16 @@
     
     async function toggleRule(ruleId) {
       try {
-        const res = await apiPostRaw({
-          action: 'toggleRule',
-          ruleId
-        });
+        const res = await apiGet('toggleRule', { ruleId });
     
         document.getElementById('adminRuleStatus').textContent = res.message || '';
     
-        if (res.success) {
-          await loadRecentAdminData();
-          await searchAdminRuleList();
+        if (!res.success) {
+          return;
         }
+    
+        await loadRecentAdminData();
+        await searchAdminRuleList();
       } catch (err) {
         document.getElementById('adminRuleStatus').textContent =
           '변경 오류: ' + (err?.message || String(err));
