@@ -583,13 +583,6 @@
       pointer-events:none;
       line-height:1;
     }
-
-    .admin-grid-4{
-      display:grid;
-      grid-template-columns:1fr;
-      gap:18px;
-      margin-top:14px;
-    }
     
     .select-wrap::before{
       content:'선택';
@@ -1430,11 +1423,6 @@
         align-items:flex-start;
       }
 
-      .admin-grid-4{
-        grid-template-columns:repeat(4, minmax(0,1fr));
-        gap:18px 14px;
-      }
-
       .kv{
         grid-template-columns:132px 1fr;
         gap:8px 12px;
@@ -1757,7 +1745,7 @@
                   </div>
               </div>
               
-              <div class="admin-grid-4">
+              <div class="grid-2" style="margin-top:18px;">
                 <div class="field">
                   <label class="label-optional">검색 별칭</label>
                   <input id="adminAliases" class="input">
@@ -1767,7 +1755,9 @@
                   <label class="label-optional">환자용 키워드</label>
                   <input id="adminPatientKeywords" class="input">
                 </div>
+              </div>
               
+              <div class="grid-2" style="margin-top:18px;">
                 <div class="field">
                   <label class="label-optional">일반 용도</label>
                   <input id="adminCommonUse" class="input">
@@ -1784,17 +1774,15 @@
                 </div>
               </div>
               
-              <div class="field" style="margin-top:12px;">
+              <div class="field" style="margin-top:18px;">
                 <label class="label-optional">직원 참고 메모</label>
                 <textarea id="adminStaffNote" class="textarea"></textarea>
               </div>
-
+              
               <div class="admin-action-toolbar">
                 <button class="btn primary" onclick="saveDrugItem()">저장</button>
                 <button class="btn secondary" onclick="toggleCurrentDrugActive()">활성/비활성 전환</button>
               </div>
-              <div class="status" id="adminDrugStatus"></div>
-            </div>
 
             <div class="admin-content-box">
               <h3 class="admin-section-title">최근 등록 약물</h3>
