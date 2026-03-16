@@ -1783,7 +1783,7 @@
 
     let autocompleteActiveIndex = -1;
 
-    const API_BASE = 'https://script.google.com/macros/s/AKfycbyXxAieRxWwtomgcKclamzj_Junci1JDUl8pcdtU73WoqdHqSLzpOja5Q2QPKbC4jp14g/exec';
+    const API_BASE = 'https://script.google.com/macros/s/AKfycbzb9CTnE3qpnxHCVxyciBjrEtG0mc0jlHeLJZQfepdUPVT2g28Tgbw4DeuzLH0BwLIWXg/exec';
 
     async function apiGet(action, params = {}) {
       const url = new URL(API_BASE);
@@ -1794,6 +1794,33 @@
       });
     
       const res = await fetch(url.toString(), { method: 'GET' });
+      return await res.json();
+    }
+
+    async function apiPost(action, payload = {}) {
+      const res = await fetch(API_BASE, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          action,
+          payload
+        })
+      });
+    
+      return await res.json();
+    }
+
+    async function apiPostRaw(body = {}) {
+      const res = await fetch(API_BASE, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+      });
+    
       return await res.json();
     }
     
@@ -2864,10 +2891,9 @@
       }
     }
 
-    /*
-    function saveDrugItem() {
+    async function saveDrugItem() {
       if (!isAdminLoggedIn) return;
-
+    
       const payload = {
         drug_id: getValue('adminDrugId'),
         brand_name: getValue('adminBrandName'),
@@ -2880,37 +2906,39 @@
         staff_note: getValue('adminStaffNote'),
         is_active: getValue('adminDrugActive')
       };
-
+    
       if (!payload.brand_name || !payload.ingredient_name || !payload.drug_group) {
         showErrorPopup('상품명, 성분명, 약물군은 필수입니다.');
         return;
       }
-
-      const fn = payload.drug_id ? 'updateDrugMasterItem' : 'addDrugMasterItem';
-
-      google.script.run
-        .withSuccessHandler(res => {
-          document.getElementById('adminDrugStatus').textContent = res.message + (res.drug_id ? ` (${res.drug_id})` : '');
-          if (!payload.drug_id) clearDrugForm();
-          loadRecentAdminData();
-          searchAdminDrugList();
+    
+      const action = payload.drug_id ? 'updateDrug' : 'addDrug';
+    
+      try {
+        const res = await apiPost(action, payload);
+    
+        document.getElementById('adminDrugStatus').textContent =
+          res.message + (res.drug_id ? ` (${res.drug_id})` : '');
+    
+        if (res.success && !payload.drug_id) {
+          clearDrugForm();
+        }
+    
+        if (res.success) {
+          await loadRecentAdminData();
+          await searchAdminDrugList();
           autocompleteCache.clear();
           lastAutocompleteKeyword = '';
-        })
-        .withFailureHandler(err => {
-          document.getElementById('adminDrugStatus').textContent = '저장 오류: ' + getErrorMessage(err);
-        })[fn](payload);
-    }
-    */
-
-    function saveDrugItem() {
-      showErrorPopup('현재 GitHub 배포 버전에서는 저장 기능을 아직 연결 중입니다.');
+        }
+      } catch (err) {
+        document.getElementById('adminDrugStatus').textContent =
+          '저장 오류: ' + (err?.message || String(err));
+      }
     }
 
-    /*
-    function saveRuleItem() {
+    async function saveRuleItem() {
       if (!isAdminLoggedIn) return;
-
+    
       const payload = {
         rule_id: getValue('adminRuleId'),
         exam_type: getValue('adminExamType'),
@@ -2924,69 +2952,72 @@
         priority: getValue('adminPriority'),
         is_active: getValue('adminRuleActive')
       };
-
+    
       if (!payload.exam_type || !payload.target_type || !payload.target_value) {
         showErrorPopup('검사 종류, 적용 기준, 적용 대상 값은 필수입니다.');
         return;
       }
-
-      const fn = payload.rule_id ? 'updateExamRuleItem' : 'addExamRuleItem';
-
-      google.script.run
-        .withSuccessHandler(res => {
-          document.getElementById('adminRuleStatus').textContent = res.message + (res.rule_id ? ` (${res.rule_id})` : '');
-          if (!payload.rule_id) clearRuleForm();
-          loadRecentAdminData();
-          searchAdminRuleList();
-        })
-        .withFailureHandler(err => {
-          document.getElementById('adminRuleStatus').textContent = '저장 오류: ' + getErrorMessage(err);
-        })[fn](payload);
+    
+      const action = payload.rule_id ? 'updateRule' : 'addRule';
+    
+      try {
+        const res = await apiPost(action, payload);
+    
+        document.getElementById('adminRuleStatus').textContent =
+          res.message + (res.rule_id ? ` (${res.rule_id})` : '');
+    
+        if (res.success && !payload.rule_id) {
+          clearRuleForm();
+        }
+    
+        if (res.success) {
+          await loadRecentAdminData();
+          await searchAdminRuleList();
+        }
+      } catch (err) {
+        document.getElementById('adminRuleStatus').textContent =
+          '저장 오류: ' + (err?.message || String(err));
+      }
     }
-    */
 
-    function saveDrugItem() {
-      showErrorPopup('현재 GitHub 배포 버전에서는 저장 기능을 아직 연결 중입니다.');
-    }
-
-    /*
-    function toggleDrug(drugId) {
-      google.script.run
-        .withSuccessHandler(res => {
-          document.getElementById('adminDrugStatus').textContent = res.message;
-          loadRecentAdminData();
-          searchAdminDrugList();
+    async function toggleDrug(drugId) {
+      try {
+        const res = await apiPostRaw({
+          action: 'toggleDrug',
+          drugId
+        });
+    
+        document.getElementById('adminDrugStatus').textContent = res.message || '';
+    
+        if (res.success) {
+          await loadRecentAdminData();
+          await searchAdminDrugList();
           autocompleteCache.clear();
           lastAutocompleteKeyword = '';
-        })
-        .withFailureHandler(err => {
-          document.getElementById('adminDrugStatus').textContent = '변경 오류: ' + getErrorMessage(err);
-        })
-        .toggleDrugActive(drugId);
-    }
-    */
-
-    function toggleDrug() {
-      showErrorPopup('현재 GitHub 배포 버전에서는 활성/비활성 기능을 아직 연결 중입니다.');
+        }
+      } catch (err) {
+        document.getElementById('adminDrugStatus').textContent =
+          '변경 오류: ' + (err?.message || String(err));
+      }
     }
     
-    /*
-    function toggleRule(ruleId) {
-      google.script.run
-        .withSuccessHandler(res => {
-          document.getElementById('adminRuleStatus').textContent = res.message;
-          loadRecentAdminData();
-          searchAdminRuleList();
-        })
-        .withFailureHandler(err => {
-          document.getElementById('adminRuleStatus').textContent = '변경 오류: ' + getErrorMessage(err);
-        })
-        .toggleRuleActive(ruleId);
-    }
-    */
-
-    function toggleRule() {
-      showErrorPopup('현재 GitHub 배포 버전에서는 활성/비활성 기능을 아직 연결 중입니다.');
+    async function toggleRule(ruleId) {
+      try {
+        const res = await apiPostRaw({
+          action: 'toggleRule',
+          ruleId
+        });
+    
+        document.getElementById('adminRuleStatus').textContent = res.message || '';
+    
+        if (res.success) {
+          await loadRecentAdminData();
+          await searchAdminRuleList();
+        }
+      } catch (err) {
+        document.getElementById('adminRuleStatus').textContent =
+          '변경 오류: ' + (err?.message || String(err));
+      }
     }
 
     function toggleCurrentDrugActive() {
