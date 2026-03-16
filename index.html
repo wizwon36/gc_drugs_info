@@ -584,6 +584,13 @@
       line-height:1;
     }
 
+    .admin-grid-4{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:18px;
+      margin-top:14px;
+    }
+    
     .select-wrap::before{
       content:'선택';
       position:absolute;
@@ -831,23 +838,25 @@
 
     .admin-select-wrap{
       position:relative;
+      width:100%;
     }
     
-    .admin-select-wrap::after{
+   .admin-select-wrap::after{
       content:'▾';
       position:absolute;
       right:14px;
       top:50%;
       transform:translateY(-50%);
-      font-size:16px;
-      font-weight:800;
+      font-size:13px;
+      font-weight:900;
       color:var(--primary);
       pointer-events:none;
       line-height:1;
     }
     
     .admin-select-wrap .select{
-      padding-right:34px;
+      width:100%;
+      padding-right:36px;
     }
     
     .mini-spinner{
@@ -1354,6 +1363,39 @@
         color:#000 !important;
         background:#fff !important;
       }
+      
+      .admin-action-toolbar{
+        display:flex;
+        gap:12px;
+        flex-wrap:nowrap;
+        align-items:stretch;
+        margin-top:18px;
+        margin-bottom:0;
+      }
+      
+      .admin-action-toolbar .btn{
+        flex:0 0 auto;
+        min-width:140px;
+        min-height:54px;
+        white-space:nowrap;
+      }
+      
+      .admin-action-toolbar .btn.primary{
+        min-width:92px;
+      }
+      
+      @media (max-width:480px){
+        .admin-action-toolbar{
+          flex-direction:column;
+          align-items:stretch;
+        }
+      
+        .admin-action-toolbar .btn,
+        .admin-action-toolbar .btn.primary{
+          width:100%;
+          min-width:0;
+        }
+      }      
     }
 
     @media (min-width:768px){
@@ -1386,6 +1428,11 @@
         flex-direction:row;
         justify-content:space-between;
         align-items:flex-start;
+      }
+
+      .admin-grid-4{
+        grid-template-columns:repeat(4, minmax(0,1fr));
+        gap:18px 14px;
       }
 
       .kv{
@@ -1710,7 +1757,7 @@
                   </div>
               </div>
               
-              <div class="grid-2" style="margin-top:12px;">
+              <div class="admin-grid-4">
                 <div class="field">
                   <label class="label-optional">검색 별칭</label>
                   <input id="adminAliases" class="input">
@@ -1720,9 +1767,7 @@
                   <label class="label-optional">환자용 키워드</label>
                   <input id="adminPatientKeywords" class="input">
                 </div>
-              </div>
               
-              <div class="grid-2" style="margin-top:12px;">
                 <div class="field">
                   <label class="label-optional">일반 용도</label>
                   <input id="adminCommonUse" class="input">
@@ -1744,7 +1789,7 @@
                 <textarea id="adminStaffNote" class="textarea"></textarea>
               </div>
 
-              <div class="toolbar">
+              <div class="admin-action-toolbar">
                 <button class="btn primary" onclick="saveDrugItem()">저장</button>
                 <button class="btn secondary" onclick="toggleCurrentDrugActive()">활성/비활성 전환</button>
               </div>
@@ -1868,7 +1913,7 @@
                 </div>
               </div>
 
-              <div class="toolbar">
+              <div class="admin-action-toolbar">
                 <button class="btn primary" onclick="saveRuleItem()">저장</button>
                 <button class="btn secondary" onclick="toggleCurrentRuleActive()">활성/비활성 전환</button>
               </div>
