@@ -1585,7 +1585,8 @@
                 </div>
                 <div class="field">
                   <label>주의수준</label>
-                  <select id="adminCautionLevel" class="select">
+                  <select id="adminRuleCautionLevel" class="select">
+                    <option value="">공통</option>
                     <option value="일반">일반</option>
                     <option value="중간">중간</option>
                     <option value="높음">높음</option>
@@ -1654,6 +1655,7 @@
               <div class="admin-list" id="adminRuleSearchList" style="margin-top:12px;"></div>
 
               <input type="hidden" id="adminRuleId">
+              
               <div class="grid-2" style="margin-top:14px;">
                 <div class="field">
                   <label>검사 종류</label>
@@ -1664,6 +1666,23 @@
                   <select id="adminTargetType" class="select">
                     <option value="group">group</option>
                     <option value="drug">drug</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div class="grid-2" style="margin-top:12px;">
+                <div class="field">
+                  <label>적용 대상 값</label>
+                  <input id="adminTargetValue" class="input">
+                </div>
+                <div class="field">
+                  <label>주의수준</label>
+                  <select id="adminRuleCautionLevel" class="select">
+                    <option value="">공통</option>
+                    <option value="일반">일반</option>
+                    <option value="중간">중간</option>
+                    <option value="높음">높음</option>
+                    <option value="매우높음">매우높음</option>
                   </select>
                 </div>
               </div>
@@ -1783,7 +1802,7 @@
 
     let autocompleteActiveIndex = -1;
 
-    const API_BASE = 'https://script.google.com/macros/s/AKfycbzySxUKrmvZWVP11rhqC-eMKAU9YYuextBHwvF8IveZl0vsu8Ko6ldn5JbKMwXMyoku7A/exec';
+    const API_BASE = 'https://script.google.com/macros/s/AKfycbxxclbJ4-s3Ynl7wO0EH06bfUa4tOcML-1PmYTmBdHz_WFWbIiC1zWXb2Br4xVI6OAPeQ/exec';
 
     async function apiGet(action, params = {}) {
       const url = new URL(API_BASE);
@@ -2642,7 +2661,7 @@
           (res.rules || []).map(item => `
             <div class="admin-item">
               <strong>${escapeHtml(item.rule_id)}</strong> · ${escapeHtml(item.exam_type)}
-              <br><span class="small">${escapeHtml(item.target_type)} / ${escapeHtml(item.target_value)} / ${escapeHtml(item.need_hold)} / ${escapeHtml(item.is_active)}</span>
+              <br><span class="small">${escapeHtml(item.target_type)} / ${escapeHtml(item.target_value)} / ${escapeHtml(item.caution_level || '공통')} / ${escapeHtml(item.need_hold)} / ${escapeHtml(item.is_active)}</span>
             </div>
           `).join('') || '<div class="small">데이터가 없습니다.</div>';
       } catch (err) {
@@ -2680,7 +2699,7 @@
           (res.items || []).map(item => `
             <div class="admin-item">
               <strong>${escapeHtml(item.rule_id)}</strong> · ${escapeHtml(item.exam_type)}
-              <br><span class="small">${escapeHtml(item.target_type)} / ${escapeHtml(item.target_value)} / ${escapeHtml(item.need_hold)} / ${escapeHtml(item.is_active)}</span>
+              <br><span class="small">${escapeHtml(item.target_type)} / ${escapeHtml(item.target_value)} / ${escapeHtml(item.caution_level || '공통')} / ${escapeHtml(item.need_hold)} / ${escapeHtml(item.is_active)}</span>
               <div class="toolbar">
                 <button class="btn secondary" onclick="editRule('${escapeJs(item.rule_id)}')">수정</button>
                 <button class="btn secondary" onclick="toggleRule('${escapeJs(item.rule_id)}')">활성/비활성</button>
@@ -2734,6 +2753,7 @@
         document.getElementById('adminExamType').value = item.exam_type || '';
         document.getElementById('adminTargetType').value = item.target_type || 'group';
         document.getElementById('adminTargetValue').value = item.target_value || '';
+        document.getElementById('adminRuleCautionLevel').value = item.caution_level || '';
         document.getElementById('adminNeedHold').value = item.need_hold || 'Y';
         document.getElementById('adminHoldPeriod').value = item.hold_period || '';
         document.getElementById('adminPatientMessage').value = item.patient_message || '';
@@ -2802,6 +2822,7 @@
         exam_type: getValue('adminExamType'),
         target_type: getValue('adminTargetType'),
         target_value: getValue('adminTargetValue'),
+        caution_level: getValue('adminRuleCautionLevel'),
         need_hold: getValue('adminNeedHold'),
         hold_period: getValue('adminHoldPeriod'),
         patient_message: getValue('adminPatientMessage'),
@@ -2941,6 +2962,7 @@
       });
       document.getElementById('adminExamType').value = '';
       document.getElementById('adminTargetType').value = 'group';
+      document.getElementById('adminRuleCautionLevel').value = '';
       document.getElementById('adminNeedHold').value = 'Y';
       document.getElementById('adminPriority').value = '9';
       document.getElementById('adminRuleActive').value = 'Y';
