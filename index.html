@@ -1783,6 +1783,8 @@
 
     let autocompleteActiveIndex = -1;
 
+    const API_BASE = 'https://script.google.com/macros/s/AKfycbzJQcgJ8q3xqXucdyA0sWaYgRdjVkGb_ZshC7hd1xgB9Wq8-Cp7xZ2mJLFbZ8dAo-Htqw/exec';
+    
     function getViewportWidth() {
       const values = [
         window.innerWidth,
@@ -1893,6 +1895,7 @@
       }
     });
 
+    /* Github 배포로 교체
     function initializeApp() {
       isInitializing = true;
       showLoadingOverlay('초기 데이터 불러오는 중', '약물 및 검사 정보를 준비하고 있습니다.');
@@ -1923,7 +1926,45 @@
         })
         .getAppInitData();
     }
+    */
 
+    async function initializeApp() {
+      isInitializing = true;
+      showLoadingOverlay('초기 데이터 불러오는 중', '약물 및 검사 정보를 준비하고 있습니다.');
+      setStatus('초기 데이터를 불러오는 중입니다...', true);
+    
+      try {
+        const url = new URL(API_BASE);
+        url.searchParams.set('action', 'init');
+    
+        const res = await fetch(url.toString(), {
+          method: 'GET'
+        });
+    
+        const data = await res.json();
+    
+        isInitializing = false;
+        hideLoadingOverlay();
+    
+        if (!data.success) {
+          showErrorPopup(data.message || '초기화에 실패했습니다.');
+          return;
+        }
+    
+        appConfig = data.config || {};
+        examList = data.exams || [];
+        drugGroupList = data.drugGroups || [];
+        renderExamOptions();
+        renderAdminOptions();
+        applyConfig();
+        setStatus('약 이름만 입력해도 검색할 수 있습니다.');
+      } catch (err) {
+        isInitializing = false;
+        hideLoadingOverlay();
+        showErrorPopup('초기화 중 오류가 발생했습니다: ' + (err?.message || String(err)));
+      }
+    }
+    
     function applyConfig() {
       const hospitalName = appConfig.hospital_name || '녹십자아이메드';
       const patientNotice = appConfig.patient_notice || '복용약은 임의로 중단하지 말고, 반드시 검진센터 또는 처방의와 상담 후 결정하세요.';
