@@ -391,7 +391,8 @@
       display:flex;
       gap:8px;
       flex-wrap:wrap;
-      margin-bottom:12px;
+      margin-top:10px;
+      margin-bottom:10px;
     }
 
     .mode-switch{
@@ -482,10 +483,29 @@
 
     .field label{
       display:block;
-      margin-bottom:4px;
-      color:var(--sub);
-      font-size:var(--font-base);
+      margin-bottom:8px;
+      color:#56717d;
+      font-size:13px;
       font-weight:700;
+      line-height:1.45;
+      letter-spacing:-0.01em;
+    }
+
+    .label-required{
+      color:#234150;
+      font-size:14px;
+      font-weight:800;
+    }    
+
+   
+    .label-optional{
+      color:#708892;
+      font-size:12px;
+      font-weight:600;
+    } 
+
+    .admin-content-box .field + .toolbar{
+      margin-top:10px;
     }
 
     .input,.select,.textarea{
@@ -505,13 +525,14 @@
 
     .required-mark{
       color:#cf5b5b;
-      font-weight:800;
+      font-weight:900;
       margin-left:4px;
     }
     
     .required-note{
-      margin-top:4px;
+      margin:2px 0 14px;
       font-size:12px;
+      line-height:1.5;
       color:#b24747;
       font-weight:700;
     }
@@ -1128,11 +1149,12 @@
     }
 
     .admin-section-title{
-      margin:0 0 12px;
+      margin:0 0 4px;
       font-size:calc(var(--font-base) + 3px);
       font-weight:800;
       color:var(--gc-navy);
       word-break:break-word;
+      line-height:1.35;
     }
 
     .admin-list{
@@ -1153,6 +1175,14 @@
       word-break:break-word;
     }
 
+    .admin-list:empty{
+      display:none;
+    }
+
+    .admin-list.compact-empty{
+      display:none;
+    }
+    
     .admin-item:last-child{border-bottom:none}
 
     .hidden{display:none !important}
@@ -1306,6 +1336,7 @@
 
       .grid-2{
         grid-template-columns:1fr 1fr;
+        gap:14px 16px;
       }
 
       .search-actions{
@@ -1572,33 +1603,40 @@
             <div class="admin-content-box">
               <h3 class="admin-section-title">약물 추가 / 수정</h3>
               <div class="required-note">* 표시 항목은 필수 입력입니다.</div>
+              
               <div class="field">
-                <label>약물 검색</label>
+                <label class="label-optional">약물 검색</label>
                 <input id="adminDrugSearch" class="input" placeholder="상품명, 성분명, drug_id 검색">
               </div>
+              
               <div class="toolbar">
                 <button class="btn secondary" onclick="searchAdminDrugList()">검색</button>
                 <button class="btn secondary" onclick="loadRecentAdminData(true)">최근목록</button>
                 <button class="btn secondary" onclick="prepareNewDrug()">신규입력</button>
               </div>
-              <div class="admin-list" id="adminDrugSearchList" style="margin-top:12px;"></div>
-
+              
+              <div class="admin-list compact-empty" id="adminDrugSearchList" style="margin-top:8px;"></div>
+              
               <input type="hidden" id="adminDrugId">
+              
               <div class="grid-2" style="margin-top:14px;">
                 <div class="field">
-                  <label>상품명 <span class="required-mark">*</span></label>
+                  <label class="label-required">상품명 <span class="required-mark">*</span></label>
                   <input id="adminBrandName" class="input">
                 </div>
+              
                 <div class="field">
-                  <label>성분명 <span class="required-mark">*</span></label>
+                  <label class="label-required">성분명 <span class="required-mark">*</span></label>
                   <input id="adminIngredientName" class="input">
                 </div>
+              
                 <div class="field">
-                  <label>약물군 <span class="required-mark">*</span></label>
+                  <label class="label-required">약물군 <span class="required-mark">*</span></label>
                   <select id="adminDrugGroup" class="select"></select>
                 </div>
+              
                 <div class="field">
-                  <label>주의수준</label>
+                  <label class="label-optional">주의수준</label>
                   <select id="adminCautionLevel" class="select">
                     <option value="일반">일반</option>
                     <option value="중간">중간</option>
@@ -1607,34 +1645,36 @@
                   </select>
                 </div>
               </div>
-
+              
               <div class="grid-2" style="margin-top:12px;">
                 <div class="field">
-                  <label>검색 별칭</label>
+                  <label class="label-optional">검색 별칭</label>
                   <input id="adminAliases" class="input">
                 </div>
+              
                 <div class="field">
-                  <label>환자용 키워드</label>
+                  <label class="label-optional">환자용 키워드</label>
                   <input id="adminPatientKeywords" class="input">
                 </div>
               </div>
-
+              
               <div class="grid-2" style="margin-top:12px;">
                 <div class="field">
-                  <label>일반 용도</label>
+                  <label class="label-optional">일반 용도</label>
                   <input id="adminCommonUse" class="input">
                 </div>
+              
                 <div class="field">
-                  <label>사용 여부</label>
+                  <label class="label-optional">사용 여부</label>
                   <select id="adminDrugActive" class="select">
                     <option value="Y">Y</option>
                     <option value="N">N</option>
                   </select>
                 </div>
               </div>
-
+              
               <div class="field" style="margin-top:12px;">
-                <label>직원 참고 메모</label>
+                <label class="label-optional">직원 참고 메모</label>
                 <textarea id="adminStaffNote" class="textarea"></textarea>
               </div>
 
@@ -1657,26 +1697,30 @@
             <div class="admin-content-box">
               <h3 class="admin-section-title">규칙 추가 / 수정</h3>
               <div class="required-note">* 표시 항목은 필수 입력입니다.</div>
+              
               <div class="field">
-                <label>규칙 검색</label>
+                <label class="label-optional">규칙 검색</label>
                 <input id="adminRuleSearch" class="input" placeholder="rule_id, 검사종류, target_value 검색">
               </div>
+              
               <div class="toolbar">
                 <button class="btn secondary" onclick="searchAdminRuleList()">검색</button>
                 <button class="btn secondary" onclick="loadRecentAdminData(true)">최근목록</button>
                 <button class="btn secondary" onclick="prepareNewRule()">신규입력</button>
               </div>
-              <div class="admin-list" id="adminRuleSearchList" style="margin-top:12px;"></div>
-
+              
+              <div class="admin-list compact-empty" id="adminRuleSearchList" style="margin-top:8px;"></div>
+              
               <input type="hidden" id="adminRuleId">
-                            
+              
               <div class="grid-2" style="margin-top:14px;">
                 <div class="field">
-                  <label>검사 종류 <span class="required-mark">*</span></label>
+                  <label class="label-required">검사 종류 <span class="required-mark">*</span></label>
                   <select id="adminExamType" class="select"></select>
                 </div>
+              
                 <div class="field">
-                  <label>적용 기준 <span class="required-mark">*</span></label>
+                  <label class="label-required">적용 기준 <span class="required-mark">*</span></label>
                   <select id="adminTargetType" class="select">
                     <option value="group">group</option>
                     <option value="drug">drug</option>
@@ -1686,11 +1730,12 @@
               
               <div class="grid-2" style="margin-top:12px;">
                 <div class="field">
-                  <label>적용 대상 값 <span class="required-mark">*</span></label>
+                  <label class="label-required">적용 대상 값 <span class="required-mark">*</span></label>
                   <input id="adminTargetValue" class="input">
                 </div>
+              
                 <div class="field">
-                  <label>주의수준</label>
+                  <label class="label-optional">주의수준</label>
                   <select id="adminRuleCautionLevel" class="select">
                     <option value="">공통</option>
                     <option value="일반">일반</option>
@@ -1703,35 +1748,38 @@
               
               <div class="grid-2" style="margin-top:12px;">
                 <div class="field">
-                  <label>중단 필요 여부</label>
+                  <label class="label-optional">중단 필요 여부</label>
                   <select id="adminNeedHold" class="select">
                     <option value="Y">Y</option>
                     <option value="N">N</option>
                     <option value="CONSULT">CONSULT</option>
                   </select>
                 </div>
+              
                 <div class="field">
-                  <label>중단 기간</label>
+                  <label class="label-optional">중단 기간</label>
                   <input id="adminHoldPeriod" class="input">
                 </div>
               </div>
-
+              
               <div class="field" style="margin-top:12px;">
-                <label>환자 안내 문구</label>
+                <label class="label-optional">환자 안내 문구</label>
                 <textarea id="adminPatientMessage" class="textarea"></textarea>
               </div>
+              
               <div class="field" style="margin-top:12px;">
-                <label>직원 안내 문구</label>
+                <label class="label-optional">직원 안내 문구</label>
                 <textarea id="adminStaffMessage" class="textarea"></textarea>
               </div>
+              
               <div class="field" style="margin-top:12px;">
-                <label>예외 사항</label>
+                <label class="label-optional">예외 사항</label>
                 <textarea id="adminExceptionNote" class="textarea"></textarea>
               </div>
-
+              
               <div class="grid-2" style="margin-top:12px;">
                 <div class="field">
-                  <label>사용 여부</label>
+                  <label class="label-optional">사용 여부</label>
                   <select id="adminRuleActive" class="select">
                     <option value="Y">Y</option>
                     <option value="N">N</option>
@@ -1739,7 +1787,7 @@
                 </div>
               
                 <div class="field">
-                  <label>우선순위(priority)</label>
+                  <label class="label-optional">우선순위(priority)</label>
                   <input id="adminPriority" class="input" value="9">
                 </div>
               </div>
@@ -2714,17 +2762,21 @@
     
         if (showLoading) hideAdminLoading();
     
-        document.getElementById('adminDrugSearchList').innerHTML =
-          (res.items || []).map(item => `
-            <div class="admin-item">
-              <strong>${escapeHtml(item.drug_id)}</strong> · ${escapeHtml(item.brand_name)}
-              <br><span class="small">${escapeHtml(item.ingredient_name)} / ${escapeHtml(item.drug_group)} / ${escapeHtml(item.is_active)}</span>
-              <div class="toolbar">
-                <button class="btn secondary" onclick="editDrug('${escapeJs(item.drug_id)}')">수정</button>
-                <button class="btn secondary" onclick="toggleDrug('${escapeJs(item.drug_id)}')">활성/비활성</button>
-              </div>
+        const listEl = document.getElementById('adminDrugSearchList');
+        const items = res.items || [];
+    
+        listEl.classList.toggle('compact-empty', items.length === 0);
+    
+        listEl.innerHTML = items.map(item => `
+          <div class="admin-item">
+            <strong>${escapeHtml(item.drug_id)}</strong> · ${escapeHtml(item.brand_name)}
+            <br><span class="small">${escapeHtml(item.ingredient_name)} / ${escapeHtml(item.drug_group)} / ${escapeHtml(item.is_active)}</span>
+            <div class="toolbar">
+              <button class="btn secondary" onclick="editDrug('${escapeJs(item.drug_id)}')">수정</button>
+              <button class="btn secondary" onclick="toggleDrug('${escapeJs(item.drug_id)}')">활성/비활성</button>
             </div>
-          `).join('') || '<div class="small">검색 결과가 없습니다.</div>';
+          </div>
+        `).join('');
       } catch (err) {
         if (showLoading) hideAdminLoading();
         console.error(err);
@@ -2742,17 +2794,21 @@
     
         if (showLoading) hideAdminLoading();
     
-        document.getElementById('adminRuleSearchList').innerHTML =
-          (res.items || []).map(item => `
-            <div class="admin-item">
-              <strong>${escapeHtml(item.rule_id)}</strong> · ${escapeHtml(item.exam_type)}
-              <br><span class="small">${escapeHtml(item.target_type)} / ${escapeHtml(item.target_value)} / ${escapeHtml(item.caution_level || '공통')} / ${escapeHtml(item.need_hold)} / ${escapeHtml(item.is_active)}</span>
-              <div class="toolbar">
-                <button class="btn secondary" onclick="editRule('${escapeJs(item.rule_id)}')">수정</button>
-                <button class="btn secondary" onclick="toggleRule('${escapeJs(item.rule_id)}')">활성/비활성</button>
-              </div>
+        const listEl = document.getElementById('adminRuleSearchList');
+        const items = res.items || [];
+    
+        listEl.classList.toggle('compact-empty', items.length === 0);
+    
+        listEl.innerHTML = items.map(item => `
+          <div class="admin-item">
+            <strong>${escapeHtml(item.rule_id)}</strong> · ${escapeHtml(item.exam_type)}
+            <br><span class="small">${escapeHtml(item.target_type)} / ${escapeHtml(item.target_value)} / ${escapeHtml(item.caution_level || '공통')} / ${escapeHtml(item.need_hold)} / ${escapeHtml(item.is_active)}</span>
+            <div class="toolbar">
+              <button class="btn secondary" onclick="editRule('${escapeJs(item.rule_id)}')">수정</button>
+              <button class="btn secondary" onclick="toggleRule('${escapeJs(item.rule_id)}')">활성/비활성</button>
             </div>
-          `).join('') || '<div class="small">검색 결과가 없습니다.</div>';
+          </div>
+        `).join('');
       } catch (err) {
         if (showLoading) hideAdminLoading();
         console.error(err);
