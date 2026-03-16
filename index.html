@@ -829,6 +829,27 @@
       margin-bottom:0;
     }
 
+    .admin-select-wrap{
+      position:relative;
+    }
+    
+    .admin-select-wrap::after{
+      content:'▾';
+      position:absolute;
+      right:14px;
+      top:50%;
+      transform:translateY(-50%);
+      font-size:16px;
+      font-weight:800;
+      color:var(--primary);
+      pointer-events:none;
+      line-height:1;
+    }
+    
+    .admin-select-wrap .select{
+      padding-right:34px;
+    }
+    
     .mini-spinner{
       width:14px;
       height:14px;
@@ -1672,14 +1693,14 @@
               
                 <div class="field">
                   <label class="label-required">약물군 <span class="required-mark">*</span></label>
-                  <div class="select-wrap">
+                  <div class="admin-select-wrap">
                     <select id="adminDrugGroup" class="select"></select>
                   </div>
                 </div>
               
                 <div class="field">
                   <label class="label-optional">주의수준</label>
-                  <div class="select-wrap">
+                  <div class="admin-select-wrap">
                     <select id="adminCautionLevel" class="select">
                       <option value="일반">일반</option>
                       <option value="중간">중간</option>
@@ -1709,7 +1730,7 @@
               
                 <div class="field">
                   <label class="label-optional">사용 여부</label>
-                  <div class="select-wrap">
+                  <div class="admin-select-wrap">
                     <select id="adminDrugActive" class="select">
                       <option value="Y">Y</option>
                       <option value="N">N</option>
@@ -1761,14 +1782,14 @@
               <div class="grid-2" style="margin-top:14px;">
                 <div class="field">
                   <label class="label-required">검사 종류 <span class="required-mark">*</span></label>
-                  <div class="select-wrap">
+                  <div class="admin-select-wrap">
                     <select id="adminExamType" class="select"></select>
                   </div>
                 </div>
               
                 <div class="field">
                   <label class="label-required">적용 기준 <span class="required-mark">*</span></label>
-                  <div class="select-wrap">
+                  <div class="admin-select-wrap">
                     <select id="adminTargetType" class="select">
                       <option value="group">group</option>
                       <option value="drug">drug</option>
@@ -1800,7 +1821,7 @@
               <div class="grid-2" style="margin-top:12px;">
                 <div class="field">
                   <label class="label-optional">중단 필요 여부</label>
-                  <div class="select-wrap">
+                  <div class="admin-select-wrap">
                     <select id="adminNeedHold" class="select">
                       <option value="Y">Y</option>
                       <option value="N">N</option>
@@ -1833,7 +1854,7 @@
               <div class="grid-2" style="margin-top:12px;">
                 <div class="field">
                   <label class="label-optional">사용 여부</label>
-                  <div class="select-wrap">
+                  <div class="admin-select-wrap">
                     <select id="adminRuleActive" class="select">
                       <option value="Y">Y</option>
                       <option value="N">N</option>
