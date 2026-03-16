@@ -1564,7 +1564,7 @@
               </div>
               <div class="toolbar">
                 <button class="btn secondary" onclick="searchAdminDrugList()">검색</button>
-                <button class="btn secondary" onclick="loadRecentAdminData()">최근목록</button>
+                <button class="btn secondary" onclick="loadRecentAdminData(true)">최근목록</button>
                 <button class="btn secondary" onclick="prepareNewDrug()">신규입력</button>
               </div>
               <div class="admin-list" id="adminDrugSearchList" style="margin-top:12px;"></div>
@@ -1648,7 +1648,7 @@
               </div>
               <div class="toolbar">
                 <button class="btn secondary" onclick="searchAdminRuleList()">검색</button>
-                <button class="btn secondary" onclick="loadRecentAdminData()">최근목록</button>
+                <button class="btn secondary" onclick="loadRecentAdminData(true)">최근목록</button>
                 <button class="btn secondary" onclick="prepareNewRule()">신규입력</button>
               </div>
               <div class="admin-list" id="adminRuleSearchList" style="margin-top:12px;"></div>
@@ -1721,7 +1721,8 @@
                     <option value="Y">Y</option>
                     <option value="N">N</option>
                   </select>
-                </div>                
+                </div>
+              
                 <div class="field">
                   <label>우선순위(priority)</label>
                   <input id="adminPriority" class="input" value="9">
@@ -1794,7 +1795,7 @@
 
     let autocompleteActiveIndex = -1;
 
-    const API_BASE = 'https://script.google.com/macros/s/AKfycbwj1hFKQX2gcshwyiUYnJXdThFCal8-flFPgM4btW0ZNiGd5Cp4EwvIcTOEdBVZkpoGYA/exec';
+    const API_BASE = 'https://script.google.com/macros/s/AKfycbxK1iIJXjYejq2u-phgretBnvzdwz84Oi0aX_p0tpQbT7uuDpq0PJDY9Sl_hjLmje3hTQ/exec';
 
     async function apiGet(action, params = {}) {
       const url = new URL(API_BASE);
@@ -1938,6 +1939,16 @@
       const secretAdminTrigger = document.getElementById('secretAdminTrigger');
       if (secretAdminTrigger) {
         secretAdminTrigger.addEventListener('click', handleSecretAdminTrigger);
+      }
+
+      const adminPasswordInput = document.getElementById('adminPassword');
+      if (adminPasswordInput) {
+        adminPasswordInput.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            loginAdmin();
+          }
+        });
       }
     });
 
@@ -2292,12 +2303,12 @@
       document.getElementById('adminTabDrug').classList.toggle('active', tab === 'drug');
       document.getElementById('adminTabRule').classList.toggle('active', tab === 'rule');
       document.getElementById('adminTabStats').classList.toggle('active', tab === 'stats');
-
+    
       document.getElementById('adminDrugPane').classList.toggle('hidden', tab !== 'drug');
       document.getElementById('adminRulePane').classList.toggle('hidden', tab !== 'rule');
       document.getElementById('adminStatsPane').classList.toggle('hidden', tab !== 'stats');
-
-      if (tab === 'stats' && isAdminLoggedIn) loadStats();
+    
+      if (tab === 'stats' && isAdminLoggedIn) loadStats(true);
     }
     
     async function loginAdmin() {
@@ -2308,21 +2319,31 @@
         return;
       }
     
+      showAdminLoading('관리자 로그인 중', '비밀번호를 확인하고 있습니다.');
+      document.getElementById('adminLoginStatus').textContent = '로그인 확인 중입니다...';
+    
       try {
         const res = await apiGet('verifyAdmin', { password: pw });
     
-        if (res.success) {
-          isAdminLoggedIn = true;
-          document.getElementById('adminLoginStatus').textContent = '로그인되었습니다.';
-          document.getElementById('adminLoginArea').classList.add('hidden');
-          document.getElementById('adminContentArea').classList.remove('hidden');
-    
-          await loadRecentAdminData();
-          await loadStats();
-        } else {
+        if (!res.success) {
+          hideAdminLoading();
           document.getElementById('adminLoginStatus').textContent = '비밀번호가 올바르지 않습니다.';
+          return;
         }
+    
+        isAdminLoggedIn = true;
+        document.getElementById('adminLoginStatus').textContent = '로그인되었습니다.';
+        document.getElementById('adminLoginArea').classList.add('hidden');
+        document.getElementById('adminContentArea').classList.remove('hidden');
+    
+        showAdminLoading('관리자 데이터 불러오는 중', '최근 등록 정보와 통계를 불러오고 있습니다.');
+    
+        await loadRecentAdminData(false);
+        await loadStats(false);
+    
+        hideAdminLoading();
       } catch (err) {
+        hideAdminLoading();
         document.getElementById('adminLoginStatus').textContent =
           '로그인 오류: ' + (err?.message || String(err));
       }
@@ -2635,10 +2656,15 @@
       }
     }
 
-    async function loadRecentAdminData() {
+    async function loadRecentAdminData(showLoading = false) {
       try {
+        if (showLoading) {
+          showAdminLoading('최근 데이터 불러오는 중', '최근 등록된 약물과 규칙을 조회하고 있습니다.');
+        }
+    
         const res = await apiGet('recentAdmin');
     
+        if (showLoading) hideAdminLoading();
         if (!res.success) return;
     
         document.getElementById('recentDrugList').innerHTML =
@@ -2657,14 +2683,21 @@
             </div>
           `).join('') || '<div class="small">데이터가 없습니다.</div>';
       } catch (err) {
+        if (showLoading) hideAdminLoading();
         console.error(err);
       }
     }
 
-    async function searchAdminDrugList() {
+    async function searchAdminDrugList(showLoading = true) {
       try {
+        if (showLoading) {
+          showAdminLoading('약물 검색 중', '관리자 약물 목록을 조회하고 있습니다.');
+        }
+    
         const keyword = document.getElementById('adminDrugSearch').value.trim();
         const res = await apiGet('searchAdminDrugs', { keyword });
+    
+        if (showLoading) hideAdminLoading();
     
         document.getElementById('adminDrugSearchList').innerHTML =
           (res.items || []).map(item => `
@@ -2678,14 +2711,21 @@
             </div>
           `).join('') || '<div class="small">검색 결과가 없습니다.</div>';
       } catch (err) {
+        if (showLoading) hideAdminLoading();
         console.error(err);
       }
     }
 
-    async function searchAdminRuleList() {
+    async function searchAdminRuleList(showLoading = true) {
       try {
+        if (showLoading) {
+          showAdminLoading('규칙 검색 중', '관리자 규칙 목록을 조회하고 있습니다.');
+        }
+    
         const keyword = document.getElementById('adminRuleSearch').value.trim();
         const res = await apiGet('searchAdminRules', { keyword });
+    
+        if (showLoading) hideAdminLoading();
     
         document.getElementById('adminRuleSearchList').innerHTML =
           (res.items || []).map(item => `
@@ -2699,6 +2739,7 @@
             </div>
           `).join('') || '<div class="small">검색 결과가 없습니다.</div>';
       } catch (err) {
+        if (showLoading) hideAdminLoading();
         console.error(err);
       }
     }
@@ -2782,6 +2823,11 @@
     
       const action = payload.drug_id ? 'updateDrug' : 'addDrug';
     
+      showAdminLoading(
+        payload.drug_id ? '약물 정보 수정 중' : '약물 정보 저장 중',
+        '관리자 약물 데이터를 저장하고 있습니다.'
+      );
+    
       try {
         const res = await apiGet(action, payload);
     
@@ -2789,6 +2835,7 @@
           (res.message || '') + (res.drug_id ? ` (${res.drug_id})` : '');
     
         if (!res.success) {
+          hideAdminLoading();
           return;
         }
     
@@ -2796,11 +2843,14 @@
           clearDrugForm();
         }
     
-        await loadRecentAdminData();
-        await searchAdminDrugList();
+        await loadRecentAdminData(false);
+        await searchAdminDrugList(false);
         autocompleteCache.clear();
         lastAutocompleteKeyword = '';
+    
+        hideAdminLoading();
       } catch (err) {
+        hideAdminLoading();
         document.getElementById('adminDrugStatus').textContent =
           '저장 오류: ' + (err?.message || String(err));
       }
@@ -2831,6 +2881,11 @@
     
       const action = payload.rule_id ? 'updateRule' : 'addRule';
     
+      showAdminLoading(
+        payload.rule_id ? '규칙 정보 수정 중' : '규칙 정보 저장 중',
+        '관리자 규칙 데이터를 저장하고 있습니다.'
+      );
+    
       try {
         const res = await apiGet(action, payload);
     
@@ -2838,6 +2893,7 @@
           (res.message || '') + (res.rule_id ? ` (${res.rule_id})` : '');
     
         if (!res.success) {
+          hideAdminLoading();
           return;
         }
     
@@ -2845,47 +2901,62 @@
           clearRuleForm();
         }
     
-        await loadRecentAdminData();
-        await searchAdminRuleList();
+        await loadRecentAdminData(false);
+        await searchAdminRuleList(false);
+    
+        hideAdminLoading();
       } catch (err) {
+        hideAdminLoading();
         document.getElementById('adminRuleStatus').textContent =
           '저장 오류: ' + (err?.message || String(err));
       }
     }
 
     async function toggleDrug(drugId) {
+      showAdminLoading('약물 상태 변경 중', '활성/비활성 상태를 변경하고 있습니다.');
+    
       try {
         const res = await apiGet('toggleDrug', { drugId });
     
         document.getElementById('adminDrugStatus').textContent = res.message || '';
     
         if (!res.success) {
+          hideAdminLoading();
           return;
         }
     
-        await loadRecentAdminData();
-        await searchAdminDrugList();
+        await loadRecentAdminData(false);
+        await searchAdminDrugList(false);
         autocompleteCache.clear();
         lastAutocompleteKeyword = '';
+    
+        hideAdminLoading();
       } catch (err) {
+        hideAdminLoading();
         document.getElementById('adminDrugStatus').textContent =
           '변경 오류: ' + (err?.message || String(err));
       }
     }
     
     async function toggleRule(ruleId) {
+      showAdminLoading('규칙 상태 변경 중', '활성/비활성 상태를 변경하고 있습니다.');
+    
       try {
         const res = await apiGet('toggleRule', { ruleId });
     
         document.getElementById('adminRuleStatus').textContent = res.message || '';
     
         if (!res.success) {
+          hideAdminLoading();
           return;
         }
     
-        await loadRecentAdminData();
-        await searchAdminRuleList();
+        await loadRecentAdminData(false);
+        await searchAdminRuleList(false);
+    
+        hideAdminLoading();
       } catch (err) {
+        hideAdminLoading();
         document.getElementById('adminRuleStatus').textContent =
           '변경 오류: ' + (err?.message || String(err));
       }
@@ -2909,10 +2980,17 @@
       toggleRule(id);
     }
 
-    async function loadStats() {
+    async function loadStats(showLoading = false) {
       try {
+        if (showLoading) {
+          showAdminLoading('통계 불러오는 중', '검색 통계를 집계하고 있습니다.');
+        }
+    
         const res = await apiGet('stats');
-        if (!res.success) return;
+        if (!res.success) {
+          if (showLoading) hideAdminLoading();
+          return;
+        }
     
         document.getElementById('statsSummaryWrap').innerHTML = `
           <div class="summary-card full">
@@ -2924,7 +3002,10 @@
         renderStatsList('statsKeywordList', res.topKeywords || []);
         renderStatsList('statsExamList', res.topExams || []);
         renderStatsList('statsResultList', res.topResults || []);
+    
+        if (showLoading) hideAdminLoading();
       } catch (err) {
+        if (showLoading) hideAdminLoading();
         console.error(err);
       }
     }
@@ -3215,7 +3296,7 @@
       document.getElementById('summaryArea').innerHTML = '';
       document.getElementById('groupArea').innerHTML = '';
     }
-
+    
     function getValue(id) {
       const el = document.getElementById(id);
       return el ? String(el.value || '').trim() : '';
@@ -3295,6 +3376,15 @@
     function escapeJs(text) {
       return String(text ?? '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
     }
+
+    function showAdminLoading(title, message) {
+      showLoadingOverlay(title || '처리 중', message || '관리자 작업을 진행하고 있습니다.');
+    }
+    
+    function hideAdminLoading() {
+      hideLoadingOverlay();
+    }
+    
   </script>
 </body>
 </html>
