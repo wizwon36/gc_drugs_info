@@ -1721,6 +1721,10 @@
                     <option value="Y">Y</option>
                     <option value="N">N</option>
                   </select>
+                </div>                
+                <div class="field">
+                  <label>우선순위(priority)</label>
+                  <input id="adminPriority" class="input" value="9">
                 </div>
               </div>
 
@@ -1790,7 +1794,7 @@
 
     let autocompleteActiveIndex = -1;
 
-    const API_BASE = 'https://script.google.com/macros/s/AKfycbxRRATE7KXhAd2jtkiUfsOfSFf3aoNjxbgIO4PAgBSnsa9vb2_nkPZO5IC9O9U8lmLFYQ/exec';
+    const API_BASE = 'https://script.google.com/macros/s/AKfycbwj1hFKQX2gcshwyiUYnJXdThFCal8-flFPgM4btW0ZNiGd5Cp4EwvIcTOEdBVZkpoGYA/exec';
 
     async function apiGet(action, params = {}) {
       const url = new URL(API_BASE);
@@ -2816,7 +2820,7 @@
         patient_message: getValue('adminPatientMessage'),
         staff_message: getValue('adminStaffMessage'),
         exception_note: getValue('adminExceptionNote'),
-        priority: getValue('adminPriority'),
+        priority: getValue('adminPriority') || '9',
         is_active: getValue('adminRuleActive')
       };
     
@@ -3213,7 +3217,8 @@
     }
 
     function getValue(id) {
-      return document.getElementById(id).value.trim();
+      const el = document.getElementById(id);
+      return el ? String(el.value || '').trim() : '';
     }
 
     function formatNeedHold(value) {
