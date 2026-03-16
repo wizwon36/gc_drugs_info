@@ -1842,13 +1842,12 @@
               
                 <div class="field">
                   <label class="label-optional">주의수준</label>
-                  <div class="select-wrap">
+                  <div class="admin-select-wrap">
                     <select id="adminRuleCautionLevel" class="select">
-                      <option value="">공통</option>
-                      <option value="일반">일반</option>
-                      <option value="중간">중간</option>
-                      <option value="높음">높음</option>
-                      <option value="매우높음">매우높음</option>
+                    <option value="일반">일반</option>
+                    <option value="중간">중간</option>
+                    <option value="높음">높음</option>
+                    <option value="매우높음">매우높음</option>
                     </select>
                   </div>
                 </div>
@@ -2995,7 +2994,7 @@
         document.getElementById('adminExamType').value = item.exam_type || '';
         document.getElementById('adminTargetType').value = item.target_type || 'group';
         document.getElementById('adminTargetValue').value = item.target_value || '';
-        document.getElementById('adminRuleCautionLevel').value = item.caution_level || '';
+        document.getElementById('adminRuleCautionLevel').value = item.caution_level || '일반';
         document.getElementById('adminNeedHold').value = item.need_hold || 'Y';
         document.getElementById('adminHoldPeriod').value = item.hold_period || '';
         document.getElementById('adminPatientMessage').value = item.patient_message || '';
@@ -3073,7 +3072,7 @@
         exam_type: getValue('adminExamType'),
         target_type: getValue('adminTargetType'),
         target_value: getValue('adminTargetValue'),
-        caution_level: getValue('adminRuleCautionLevel'),
+        caution_level: getValue('adminRuleCautionLevel') || '일반',
         need_hold: getValue('adminNeedHold'),
         hold_period: getValue('adminHoldPeriod'),
         patient_message: getValue('adminPatientMessage'),
@@ -3244,7 +3243,7 @@
       });
       document.getElementById('adminExamType').value = '';
       document.getElementById('adminTargetType').value = 'group';
-      document.getElementById('adminRuleCautionLevel').value = '';
+      document.getElementById('adminRuleCautionLevel').value = '일반';
       document.getElementById('adminNeedHold').value = 'Y';
       document.getElementById('adminPriority').value = '9';
       document.getElementById('adminRuleActive').value = 'Y';
