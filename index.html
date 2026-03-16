@@ -2228,6 +2228,7 @@
       clearResults();
     }
 
+    /* Github 배포를 위해 잠시 막아둠
     function openAdminPanel() {
       if (isSearching || isInitializing) return;
 
@@ -2287,7 +2288,12 @@
         })
         .verifyAdminLogin(trimmedPw);
     }
+    */
 
+    function openAdminPanel() {
+      showErrorPopup('GitHub 배포 버전에서는 관리자 기능을 아직 연결 중입니다.');
+    }
+    
     function closeAdminPanel() {
       document.getElementById('adminPanel').classList.add('hidden');
       document.getElementById('adminModeBtn').classList.remove('active');
@@ -2327,7 +2333,8 @@
 
       if (tab === 'stats' && isAdminLoggedIn) loadStats();
     }
-
+    
+    /** Github 배포를 위해 잠시 막아둠
     function loginAdmin() {
       const pw = document.getElementById('adminPassword').value;
       google.script.run
@@ -2348,7 +2355,12 @@
         })
         .verifyAdminLogin(pw);
     }
+    */
 
+    function loginAdmin() {
+      showErrorPopup('GitHub 배포 버전에서는 관리자 기능을 아직 사용할 수 없습니다.');
+    }
+    
     function splitMultiInputTokens(text) {
       return String(text || '')
         .replace(/\r/g, '\n')
@@ -2472,6 +2484,7 @@
       }, isComposing ? 120 : 60);
     }
 
+    /* Github 배포를 위해 막아둠
     function runAutocompleteRequest(keyword) {
       const currentKeyword = normalizeKeyword(getLastToken(document.getElementById('keyword').value || ''));
 
@@ -2531,7 +2544,70 @@
         })
         .getDrugSuggestions(keyword);
     }
+    */
 
+    async function runAutocompleteRequest(keyword) {
+      const currentKeyword = normalizeKeyword(getLastToken(document.getElementById('keyword').value || ''));
+    
+      if (!keyword || keyword.length < 2 || !currentKeyword || currentKeyword.length < 2) {
+        hideAutocomplete(true);
+        return;
+      }
+    
+      if (keyword !== currentKeyword) {
+        keyword = currentKeyword;
+      }
+    
+      if (autocompleteCache.has(keyword)) {
+        renderAutocomplete(autocompleteCache.get(keyword), keyword);
+        return;
+      }
+    
+      const requestId = ++autocompleteRequestSeq;
+      showAutocompleteLoading();
+    
+      try {
+        const url = new URL(API_BASE);
+        url.searchParams.set('action', 'suggest');
+        url.searchParams.set('keyword', keyword);
+    
+        const res = await fetch(url.toString(), { method: 'GET' });
+        const data = await res.json();
+    
+        const latestKeyword = normalizeKeyword(getLastToken(document.getElementById('keyword').value || ''));
+    
+        if (requestId !== autocompleteRequestSeq) return;
+        if (isSearching || isInitializing) return;
+    
+        if (!latestKeyword || latestKeyword.length < 2) {
+          hideAutocomplete(true);
+          return;
+        }
+    
+        if (latestKeyword !== keyword) {
+          hideAutocomplete(true);
+          return;
+        }
+    
+        const list = (data && data.suggestions) ? data.suggestions : [];
+        autocompleteCache.set(keyword, list);
+        renderAutocomplete(list, keyword);
+      } catch (e) {
+        const latestKeyword = normalizeKeyword(getLastToken(document.getElementById('keyword').value || ''));
+    
+        if (requestId !== autocompleteRequestSeq) return;
+        if (isSearching || isInitializing) return;
+    
+        if (!latestKeyword || latestKeyword.length < 2 || latestKeyword !== keyword) {
+          hideAutocomplete(true);
+          return;
+        }
+    
+        showAutocompleteEmpty('자동완성 조회 중 오류가 발생했습니다.');
+      }
+    }    
+
+    /*Github 배포를 위해 막아둠
     function fetchAutocompleteSuggestions(keyword) {
       if (!keyword || keyword.length < 2) {
         hideAutocomplete(true);
@@ -2573,6 +2649,11 @@
           showAutocompleteEmpty('자동완성 조회 중 오류가 발생했습니다.');
         })
         .getDrugSuggestions(keyword);
+    }
+    */
+
+    function fetchAutocompleteSuggestions(keyword) {
+      runAutocompleteRequest(keyword);
     }
 
     function showAutocompleteLoading() {
@@ -3016,6 +3097,7 @@
       );
       clearResults();
 
+      /*
       google.script.run
         .withSuccessHandler(res => {
           isSearching = false;
@@ -3048,6 +3130,43 @@
           mode: currentMode,
           userAgent: navigator.userAgent
         });
+        */
+        (async () => {
+          try {
+            const url = new URL(API_BASE);
+            url.searchParams.set('action', 'search');
+            url.searchParams.set('keyword', dedupedKeyword);
+            url.searchParams.set('examType', examType || '');
+            url.searchParams.set('mode', currentMode);
+            url.searchParams.set('userAgent', navigator.userAgent);
+        
+            const res = await fetch(url.toString(), { method: 'GET' });
+            const data = await res.json();
+        
+            isSearching = false;
+            setSearchButtonLoading(false);
+            hideLoadingOverlay();
+        
+            if (!data.success) {
+              showErrorPopup(data.message || '검색에 실패했습니다.');
+              return;
+            }
+        
+            renderResults(data);
+        
+            const groupArea = document.getElementById('groupArea');
+            if (groupArea.innerHTML.trim()) {
+              setTimeout(() => {
+                groupArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }, 80);
+            }
+          } catch (err) {
+            isSearching = false;
+            setSearchButtonLoading(false);
+            hideLoadingOverlay();
+            showErrorPopup('검색 중 오류가 발생했습니다: ' + (err?.message || String(err)));
+          }
+        })()
     }
 
     function renderResults(res) {
