@@ -1585,8 +1585,7 @@
                 </div>
                 <div class="field">
                   <label>주의수준</label>
-                  <select id="adminRuleCautionLevel" class="select">
-                    <option value="">공통</option>
+                  <select id="adminCautionLevel" class="select">
                     <option value="일반">일반</option>
                     <option value="중간">중간</option>
                     <option value="높음">높음</option>
@@ -1655,7 +1654,7 @@
               <div class="admin-list" id="adminRuleSearchList" style="margin-top:12px;"></div>
 
               <input type="hidden" id="adminRuleId">
-              
+                            
               <div class="grid-2" style="margin-top:14px;">
                 <div class="field">
                   <label>검사 종류</label>
@@ -1686,12 +1685,8 @@
                   </select>
                 </div>
               </div>
-
+              
               <div class="grid-2" style="margin-top:12px;">
-                <div class="field">
-                  <label>적용 대상 값</label>
-                  <input id="adminTargetValue" class="input">
-                </div>
                 <div class="field">
                   <label>중단 필요 여부</label>
                   <select id="adminNeedHold" class="select">
@@ -1700,16 +1695,9 @@
                     <option value="CONSULT">CONSULT</option>
                   </select>
                 </div>
-              </div>
-
-              <div class="grid-2" style="margin-top:12px;">
                 <div class="field">
                   <label>중단 기간</label>
                   <input id="adminHoldPeriod" class="input">
-                </div>
-                <div class="field">
-                  <label>우선순위</label>
-                  <input id="adminPriority" class="input" value="9">
                 </div>
               </div>
 
@@ -1802,7 +1790,7 @@
 
     let autocompleteActiveIndex = -1;
 
-    const API_BASE = 'https://script.google.com/macros/s/AKfycbxxclbJ4-s3Ynl7wO0EH06bfUa4tOcML-1PmYTmBdHz_WFWbIiC1zWXb2Br4xVI6OAPeQ/exec';
+    const API_BASE = 'https://script.google.com/macros/s/AKfycbxRRATE7KXhAd2jtkiUfsOfSFf3aoNjxbgIO4PAgBSnsa9vb2_nkPZO5IC9O9U8lmLFYQ/exec';
 
     async function apiGet(action, params = {}) {
       const url = new URL(API_BASE);
