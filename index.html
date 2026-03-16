@@ -1783,7 +1783,19 @@
 
     let autocompleteActiveIndex = -1;
 
-    const API_BASE = 'https://script.google.com/macros/s/AKfycbw3XTnaL_X0gRH_uEc5QlTIXQncer6sXYVYmpIi7PiO92hE6cLzdwQtW4LY40QzL6NsYA/exec';
+    const API_BASE = 'https://script.google.com/macros/s/AKfycbyXxAieRxWwtomgcKclamzj_Junci1JDUl8pcdtU73WoqdHqSLzpOja5Q2QPKbC4jp14g/exec';
+
+    async function apiGet(action, params = {}) {
+      const url = new URL(API_BASE);
+      url.searchParams.set('action', action);
+    
+      Object.entries(params).forEach(([key, value]) => {
+        url.searchParams.set(key, value == null ? '' : String(value));
+      });
+    
+      const res = await fetch(url.toString(), { method: 'GET' });
+      return await res.json();
+    }
     
     function getViewportWidth() {
       const values = [
@@ -2228,70 +2240,23 @@
       clearResults();
     }
 
-    /* Github 배포를 위해 잠시 막아둠
     function openAdminPanel() {
       if (isSearching || isInitializing) return;
-
+    
       hideAutocomplete(true);
-
-      const pw = window.prompt('관리자 비밀번호를 입력하세요.');
-      if (pw === null) {
-        setStatus('관리자 로그인 요청이 취소되었습니다.');
-        return;
-      }
-
-      const trimmedPw = String(pw).trim();
-      if (!trimmedPw) {
-        showErrorPopup('비밀번호가 입력되지 않았습니다.');
-        return;
-      }
-
-      showLoadingOverlay('관리자 확인 중', '비밀번호를 확인하고 있습니다.');
-      setStatus('관리자 권한을 확인하고 있습니다...', true);
-
-      google.script.run
-        .withSuccessHandler(res => {
-          hideLoadingOverlay();
-
-          if (!res.success) {
-            isAdminLoggedIn = false;
-            showErrorPopup('관리자 비밀번호가 올바르지 않습니다.');
-            return;
-          }
-
-          isAdminLoggedIn = true;
-          document.getElementById('adminPassword').value = trimmedPw;
-          document.getElementById('adminLoginStatus').textContent = '로그인되었습니다.';
-          document.getElementById('adminLoginArea').classList.add('hidden');
-          document.getElementById('adminContentArea').classList.remove('hidden');
-
-          document.getElementById('adminModeBtn').classList.add('active');
-          document.getElementById('patientModeBtn').classList.remove('active');
-          document.getElementById('staffModeBtn').classList.remove('active');
-
-          document.getElementById('adminPanel').classList.remove('hidden');
-          document.getElementById('topNotice').textContent = '관리자 전용 화면입니다. 등록 전 입력값을 다시 확인하세요.';
-          setStatus('관리자 화면을 열었습니다.');
-
-          loadRecentAdminData();
-          loadStats();
-
-          window.scrollTo({
-            top: document.getElementById('adminPanel').offsetTop - 10,
-            behavior: 'smooth'
-          });
-        })
-        .withFailureHandler(err => {
-          hideLoadingOverlay();
-          isAdminLoggedIn = false;
-          showErrorPopup('관리자 확인 중 오류가 발생했습니다: ' + getErrorMessage(err));
-        })
-        .verifyAdminLogin(trimmedPw);
-    }
-    */
-
-    function openAdminPanel() {
-      showErrorPopup('GitHub 배포 버전에서는 관리자 기능을 아직 연결 중입니다.');
+    
+      document.getElementById('adminPanel').classList.remove('hidden');
+      document.getElementById('adminLoginArea').classList.remove('hidden');
+      document.getElementById('adminContentArea').classList.add('hidden');
+    
+      document.getElementById('adminModeBtn').classList.add('active');
+      document.getElementById('patientModeBtn').classList.remove('active');
+      document.getElementById('staffModeBtn').classList.remove('active');
+    
+      window.scrollTo({
+        top: document.getElementById('adminPanel').offsetTop - 10,
+        behavior: 'smooth'
+      });
     }
     
     function closeAdminPanel() {
@@ -2334,31 +2299,32 @@
       if (tab === 'stats' && isAdminLoggedIn) loadStats();
     }
     
-    /** Github 배포를 위해 잠시 막아둠
-    function loginAdmin() {
-      const pw = document.getElementById('adminPassword').value;
-      google.script.run
-        .withSuccessHandler(res => {
-          if (res.success) {
-            isAdminLoggedIn = true;
-            document.getElementById('adminLoginStatus').textContent = '로그인되었습니다.';
-            document.getElementById('adminLoginArea').classList.add('hidden');
-            document.getElementById('adminContentArea').classList.remove('hidden');
-            loadRecentAdminData();
-            loadStats();
-          } else {
-            document.getElementById('adminLoginStatus').textContent = '비밀번호가 올바르지 않습니다.';
-          }
-        })
-        .withFailureHandler(err => {
-          document.getElementById('adminLoginStatus').textContent = '로그인 오류: ' + getErrorMessage(err);
-        })
-        .verifyAdminLogin(pw);
-    }
-    */
-
-    function loginAdmin() {
-      showErrorPopup('GitHub 배포 버전에서는 관리자 기능을 아직 사용할 수 없습니다.');
+    async function loginAdmin() {
+      const pw = document.getElementById('adminPassword').value.trim();
+    
+      if (!pw) {
+        document.getElementById('adminLoginStatus').textContent = '비밀번호를 입력해주세요.';
+        return;
+      }
+    
+      try {
+        const res = await apiGet('verifyAdmin', { password: pw });
+    
+        if (res.success) {
+          isAdminLoggedIn = true;
+          document.getElementById('adminLoginStatus').textContent = '로그인되었습니다.';
+          document.getElementById('adminLoginArea').classList.add('hidden');
+          document.getElementById('adminContentArea').classList.remove('hidden');
+    
+          await loadRecentAdminData();
+          await loadStats();
+        } else {
+          document.getElementById('adminLoginStatus').textContent = '비밀번호가 올바르지 않습니다.';
+        }
+      } catch (err) {
+        document.getElementById('adminLoginStatus').textContent =
+          '로그인 오류: ' + (err?.message || String(err));
+      }
     }
     
     function splitMultiInputTokens(text) {
@@ -2775,64 +2741,72 @@
       }
     }
 
-    function loadRecentAdminData() {
-      google.script.run
-        .withSuccessHandler(res => {
-          if (!res.success) return;
-
-          document.getElementById('recentDrugList').innerHTML =
-            (res.drugs || []).map(item => `
-              <div class="admin-item">
-                <strong>${escapeHtml(item.drug_id)}</strong> · ${escapeHtml(item.brand_name)}
-                <br><span class="small">${escapeHtml(item.ingredient_name)} / ${escapeHtml(item.drug_group)} / ${escapeHtml(item.caution_level)} / ${escapeHtml(item.is_active)}</span>
-              </div>
-            `).join('') || '<div class="small">데이터가 없습니다.</div>';
-
-          document.getElementById('recentRuleList').innerHTML =
-            (res.rules || []).map(item => `
-              <div class="admin-item">
-                <strong>${escapeHtml(item.rule_id)}</strong> · ${escapeHtml(item.exam_type)}
-                <br><span class="small">${escapeHtml(item.target_type)} / ${escapeHtml(item.target_value)} / ${escapeHtml(item.need_hold)} / ${escapeHtml(item.is_active)}</span>
-              </div>
-            `).join('') || '<div class="small">데이터가 없습니다.</div>';
-        })
-        .getRecentAdminData();
+    async function loadRecentAdminData() {
+      try {
+        const res = await apiGet('recentAdmin');
+    
+        if (!res.success) return;
+    
+        document.getElementById('recentDrugList').innerHTML =
+          (res.drugs || []).map(item => `
+            <div class="admin-item">
+              <strong>${escapeHtml(item.drug_id)}</strong> · ${escapeHtml(item.brand_name)}
+              <br><span class="small">${escapeHtml(item.ingredient_name)} / ${escapeHtml(item.drug_group)} / ${escapeHtml(item.caution_level)} / ${escapeHtml(item.is_active)}</span>
+            </div>
+          `).join('') || '<div class="small">데이터가 없습니다.</div>';
+    
+        document.getElementById('recentRuleList').innerHTML =
+          (res.rules || []).map(item => `
+            <div class="admin-item">
+              <strong>${escapeHtml(item.rule_id)}</strong> · ${escapeHtml(item.exam_type)}
+              <br><span class="small">${escapeHtml(item.target_type)} / ${escapeHtml(item.target_value)} / ${escapeHtml(item.need_hold)} / ${escapeHtml(item.is_active)}</span>
+            </div>
+          `).join('') || '<div class="small">데이터가 없습니다.</div>';
+      } catch (err) {
+        console.error(err);
+      }
     }
 
-    function searchAdminDrugList() {
-      google.script.run
-        .withSuccessHandler(res => {
-          document.getElementById('adminDrugSearchList').innerHTML =
-            (res.items || []).map(item => `
-              <div class="admin-item">
-                <strong>${escapeHtml(item.drug_id)}</strong> · ${escapeHtml(item.brand_name)}
-                <br><span class="small">${escapeHtml(item.ingredient_name)} / ${escapeHtml(item.drug_group)} / ${escapeHtml(item.is_active)}</span>
-                <div class="toolbar">
-                  <button class="btn secondary" onclick="editDrug('${escapeJs(item.drug_id)}')">수정</button>
-                  <button class="btn secondary" onclick="toggleDrug('${escapeJs(item.drug_id)}')">활성/비활성</button>
-                </div>
+    async function searchAdminDrugList() {
+      try {
+        const keyword = document.getElementById('adminDrugSearch').value.trim();
+        const res = await apiGet('searchAdminDrugs', { keyword });
+    
+        document.getElementById('adminDrugSearchList').innerHTML =
+          (res.items || []).map(item => `
+            <div class="admin-item">
+              <strong>${escapeHtml(item.drug_id)}</strong> · ${escapeHtml(item.brand_name)}
+              <br><span class="small">${escapeHtml(item.ingredient_name)} / ${escapeHtml(item.drug_group)} / ${escapeHtml(item.is_active)}</span>
+              <div class="toolbar">
+                <button class="btn secondary" onclick="editDrug('${escapeJs(item.drug_id)}')">수정</button>
+                <button class="btn secondary" onclick="toggleDrug('${escapeJs(item.drug_id)}')">활성/비활성</button>
               </div>
-            `).join('') || '<div class="small">검색 결과가 없습니다.</div>';
-        })
-        .searchAdminDrugs(document.getElementById('adminDrugSearch').value.trim());
+            </div>
+          `).join('') || '<div class="small">검색 결과가 없습니다.</div>';
+      } catch (err) {
+        console.error(err);
+      }
     }
 
-    function searchAdminRuleList() {
-      google.script.run
-        .withSuccessHandler(res => {
-          document.getElementById('adminRuleSearchList').innerHTML =
-            (res.items || []).map(item => `
-              <div class="admin-item">
-                <strong>${escapeHtml(item.rule_id)}</strong> · ${escapeHtml(item.exam_type)}
-                <br><span class="small">${escapeHtml(item.target_type)} / ${escapeHtml(item.target_value)} / ${escapeHtml(item.need_hold)} / ${escapeHtml(item.is_active)}</span>
-                <div class="toolbar">
-                  <button class="btn secondary" onclick="editRule('${escapeJs(item.rule_id)}')">수정</button>
-                  <button class="btn secondary" onclick="toggleRule('${escapeJs(item.rule_id)}')">활성/비활성</button>
-                </div>
+    async function searchAdminRuleList() {
+      try {
+        const keyword = document.getElementById('adminRuleSearch').value.trim();
+        const res = await apiGet('searchAdminRules', { keyword });
+    
+        document.getElementById('adminRuleSearchList').innerHTML =
+          (res.items || []).map(item => `
+            <div class="admin-item">
+              <strong>${escapeHtml(item.rule_id)}</strong> · ${escapeHtml(item.exam_type)}
+              <br><span class="small">${escapeHtml(item.target_type)} / ${escapeHtml(item.target_value)} / ${escapeHtml(item.need_hold)} / ${escapeHtml(item.is_active)}</span>
+              <div class="toolbar">
+                <button class="btn secondary" onclick="editRule('${escapeJs(item.rule_id)}')">수정</button>
+                <button class="btn secondary" onclick="toggleRule('${escapeJs(item.rule_id)}')">활성/비활성</button>
               </div>
-            `).join('') || '<div class="small">검색 결과가 없습니다.</div>';
-        })
-        .searchAdminRules(document.getElementById('adminRuleSearch').value.trim());
+            </div>
+          `).join('') || '<div class="small">검색 결과가 없습니다.</div>';
+      } catch (err) {
+        console.error(err);
+      }
     }
 
     function prepareNewDrug() {
@@ -2845,47 +2819,52 @@
       document.getElementById('adminRuleStatus').textContent = '신규 규칙 입력 모드입니다.';
     }
 
-    function editDrug(drugId) {
-      google.script.run
-        .withSuccessHandler(res => {
-          if (!res.success) return;
-          const item = res.item;
-          document.getElementById('adminDrugId').value = item.drug_id || '';
-          document.getElementById('adminBrandName').value = item.brand_name || '';
-          document.getElementById('adminIngredientName').value = item.ingredient_name || '';
-          document.getElementById('adminDrugGroup').value = item.drug_group || '';
-          document.getElementById('adminAliases').value = item.aliases || '';
-          document.getElementById('adminPatientKeywords').value = item.patient_keywords || '';
-          document.getElementById('adminCommonUse').value = item.common_use || '';
-          document.getElementById('adminCautionLevel').value = item.caution_level || '일반';
-          document.getElementById('adminStaffNote').value = item.staff_note || '';
-          document.getElementById('adminDrugActive').value = item.is_active || 'Y';
-          document.getElementById('adminDrugStatus').textContent = `${item.drug_id} 수정 모드입니다.`;
-        })
-        .getDrugDetailById(drugId);
+    async function editDrug(drugId) {
+      try {
+        const res = await apiGet('drugDetail', { drugId });
+        if (!res.success) return;
+    
+        const item = res.item;
+        document.getElementById('adminDrugId').value = item.drug_id || '';
+        document.getElementById('adminBrandName').value = item.brand_name || '';
+        document.getElementById('adminIngredientName').value = item.ingredient_name || '';
+        document.getElementById('adminDrugGroup').value = item.drug_group || '';
+        document.getElementById('adminAliases').value = item.aliases || '';
+        document.getElementById('adminPatientKeywords').value = item.patient_keywords || '';
+        document.getElementById('adminCommonUse').value = item.common_use || '';
+        document.getElementById('adminCautionLevel').value = item.caution_level || '일반';
+        document.getElementById('adminStaffNote').value = item.staff_note || '';
+        document.getElementById('adminDrugActive').value = item.is_active || 'Y';
+        document.getElementById('adminDrugStatus').textContent = `${item.drug_id} 수정 모드입니다.`;
+      } catch (err) {
+        console.error(err);
+      }
     }
 
-    function editRule(ruleId) {
-      google.script.run
-        .withSuccessHandler(res => {
-          if (!res.success) return;
-          const item = res.item;
-          document.getElementById('adminRuleId').value = item.rule_id || '';
-          document.getElementById('adminExamType').value = item.exam_type || '';
-          document.getElementById('adminTargetType').value = item.target_type || 'group';
-          document.getElementById('adminTargetValue').value = item.target_value || '';
-          document.getElementById('adminNeedHold').value = item.need_hold || 'Y';
-          document.getElementById('adminHoldPeriod').value = item.hold_period || '';
-          document.getElementById('adminPatientMessage').value = item.patient_message || '';
-          document.getElementById('adminStaffMessage').value = item.staff_message || '';
-          document.getElementById('adminExceptionNote').value = item.exception_note || '';
-          document.getElementById('adminPriority').value = item.priority || '9';
-          document.getElementById('adminRuleActive').value = item.is_active || 'Y';
-          document.getElementById('adminRuleStatus').textContent = `${item.rule_id} 수정 모드입니다.`;
-        })
-        .getRuleDetailById(ruleId);
+    async function editRule(ruleId) {
+      try {
+        const res = await apiGet('ruleDetail', { ruleId });
+        if (!res.success) return;
+    
+        const item = res.item;
+        document.getElementById('adminRuleId').value = item.rule_id || '';
+        document.getElementById('adminExamType').value = item.exam_type || '';
+        document.getElementById('adminTargetType').value = item.target_type || 'group';
+        document.getElementById('adminTargetValue').value = item.target_value || '';
+        document.getElementById('adminNeedHold').value = item.need_hold || 'Y';
+        document.getElementById('adminHoldPeriod').value = item.hold_period || '';
+        document.getElementById('adminPatientMessage').value = item.patient_message || '';
+        document.getElementById('adminStaffMessage').value = item.staff_message || '';
+        document.getElementById('adminExceptionNote').value = item.exception_note || '';
+        document.getElementById('adminPriority').value = item.priority || '9';
+        document.getElementById('adminRuleActive').value = item.is_active || 'Y';
+        document.getElementById('adminRuleStatus').textContent = `${item.rule_id} 수정 모드입니다.`;
+      } catch (err) {
+        console.error(err);
+      }
     }
 
+    /*
     function saveDrugItem() {
       if (!isAdminLoggedIn) return;
 
@@ -2922,7 +2901,13 @@
           document.getElementById('adminDrugStatus').textContent = '저장 오류: ' + getErrorMessage(err);
         })[fn](payload);
     }
+    */
 
+    function saveDrugItem() {
+      showErrorPopup('현재 GitHub 배포 버전에서는 저장 기능을 아직 연결 중입니다.');
+    }
+
+    /*
     function saveRuleItem() {
       if (!isAdminLoggedIn) return;
 
@@ -2958,7 +2943,13 @@
           document.getElementById('adminRuleStatus').textContent = '저장 오류: ' + getErrorMessage(err);
         })[fn](payload);
     }
+    */
 
+    function saveDrugItem() {
+      showErrorPopup('현재 GitHub 배포 버전에서는 저장 기능을 아직 연결 중입니다.');
+    }
+
+    /*
     function toggleDrug(drugId) {
       google.script.run
         .withSuccessHandler(res => {
@@ -2973,7 +2964,13 @@
         })
         .toggleDrugActive(drugId);
     }
+    */
 
+    function toggleDrug() {
+      showErrorPopup('현재 GitHub 배포 버전에서는 활성/비활성 기능을 아직 연결 중입니다.');
+    }
+    
+    /*
     function toggleRule(ruleId) {
       google.script.run
         .withSuccessHandler(res => {
@@ -2985,6 +2982,11 @@
           document.getElementById('adminRuleStatus').textContent = '변경 오류: ' + getErrorMessage(err);
         })
         .toggleRuleActive(ruleId);
+    }
+    */
+
+    function toggleRule() {
+      showErrorPopup('현재 GitHub 배포 버전에서는 활성/비활성 기능을 아직 연결 중입니다.');
     }
 
     function toggleCurrentDrugActive() {
@@ -3005,20 +3007,24 @@
       toggleRule(id);
     }
 
-    function loadStats() {
-      google.script.run
-        .withSuccessHandler(res => {
-          if (!res.success) return;
-
-          document.getElementById('statsSummaryWrap').innerHTML = `
-            <div class="summary-card full"><div class="summary-label">총 검색수</div><div class="summary-value summary-blue">${res.totalSearches || 0}</div></div>
-          `;
-
-          renderStatsList('statsKeywordList', res.topKeywords || []);
-          renderStatsList('statsExamList', res.topExams || []);
-          renderStatsList('statsResultList', res.topResults || []);
-        })
-        .getSearchStats();
+    async function loadStats() {
+      try {
+        const res = await apiGet('stats');
+        if (!res.success) return;
+    
+        document.getElementById('statsSummaryWrap').innerHTML = `
+          <div class="summary-card full">
+            <div class="summary-label">총 검색수</div>
+            <div class="summary-value summary-blue">${res.totalSearches || 0}</div>
+          </div>
+        `;
+    
+        renderStatsList('statsKeywordList', res.topKeywords || []);
+        renderStatsList('statsExamList', res.topExams || []);
+        renderStatsList('statsResultList', res.topResults || []);
+      } catch (err) {
+        console.error(err);
+      }
     }
 
     function renderStatsList(id, list) {
