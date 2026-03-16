@@ -503,6 +503,19 @@
       transition:border-color .15s ease, box-shadow .15s ease, background .15s ease, transform .15s ease;
     }
 
+    .required-mark{
+      color:#cf5b5b;
+      font-weight:800;
+      margin-left:4px;
+    }
+    
+    .required-note{
+      margin-top:4px;
+      font-size:12px;
+      color:#b24747;
+      font-weight:700;
+    }
+    
     .select{
       min-height:50px;
       padding-right:46px;
@@ -1558,6 +1571,7 @@
           <div class="grid-admin">
             <div class="admin-content-box">
               <h3 class="admin-section-title">약물 추가 / 수정</h3>
+              <div class="required-note">* 표시 항목은 필수 입력입니다.</div>
               <div class="field">
                 <label>약물 검색</label>
                 <input id="adminDrugSearch" class="input" placeholder="상품명, 성분명, drug_id 검색">
@@ -1572,15 +1586,15 @@
               <input type="hidden" id="adminDrugId">
               <div class="grid-2" style="margin-top:14px;">
                 <div class="field">
-                  <label>상품명</label>
+                  <label>상품명 <span class="required-mark">*</span></label>
                   <input id="adminBrandName" class="input">
                 </div>
                 <div class="field">
-                  <label>성분명</label>
+                  <label>성분명 <span class="required-mark">*</span></label>
                   <input id="adminIngredientName" class="input">
                 </div>
                 <div class="field">
-                  <label>약물군</label>
+                  <label>약물군 <span class="required-mark">*</span></label>
                   <select id="adminDrugGroup" class="select"></select>
                 </div>
                 <div class="field">
@@ -1642,6 +1656,7 @@
           <div class="grid-admin">
             <div class="admin-content-box">
               <h3 class="admin-section-title">규칙 추가 / 수정</h3>
+              <div class="required-note">* 표시 항목은 필수 입력입니다.</div>
               <div class="field">
                 <label>규칙 검색</label>
                 <input id="adminRuleSearch" class="input" placeholder="rule_id, 검사종류, target_value 검색">
@@ -1657,11 +1672,11 @@
                             
               <div class="grid-2" style="margin-top:14px;">
                 <div class="field">
-                  <label>검사 종류</label>
+                  <label>검사 종류 <span class="required-mark">*</span></label>
                   <select id="adminExamType" class="select"></select>
                 </div>
                 <div class="field">
-                  <label>적용 기준</label>
+                  <label>적용 기준 <span class="required-mark">*</span></label>
                   <select id="adminTargetType" class="select">
                     <option value="group">group</option>
                     <option value="drug">drug</option>
@@ -1671,7 +1686,7 @@
               
               <div class="grid-2" style="margin-top:12px;">
                 <div class="field">
-                  <label>적용 대상 값</label>
+                  <label>적용 대상 값 <span class="required-mark">*</span></label>
                   <input id="adminTargetValue" class="input">
                 </div>
                 <div class="field">
@@ -2817,7 +2832,7 @@
       };
     
       if (!payload.brand_name || !payload.ingredient_name || !payload.drug_group) {
-        showErrorPopup('상품명, 성분명, 약물군은 필수입니다.');
+        showErrorPopup('필수 입력값을 확인해주세요. (상품명, 성분명, 약물군)');
         return;
       }
     
@@ -2875,7 +2890,7 @@
       };
     
       if (!payload.exam_type || !payload.target_type || !payload.target_value) {
-        showErrorPopup('검사 종류, 적용 기준, 적용 대상 값은 필수입니다.');
+        showErrorPopup('필수 입력값을 확인해주세요. (검사 종류, 적용 기준, 적용 대상 값)');
         return;
       }
     
