@@ -1934,39 +1934,6 @@
       }
     });
 
-    /* Github 배포로 교체
-    function initializeApp() {
-      isInitializing = true;
-      showLoadingOverlay('초기 데이터 불러오는 중', '약물 및 검사 정보를 준비하고 있습니다.');
-      setStatus('초기 데이터를 불러오는 중입니다...', true);
-
-      google.script.run
-        .withSuccessHandler(res => {
-          isInitializing = false;
-          hideLoadingOverlay();
-
-          if (!res.success) {
-            showErrorPopup('초기화에 실패했습니다.');
-            return;
-          }
-
-          appConfig = res.config || {};
-          examList = res.exams || [];
-          drugGroupList = res.drugGroups || [];
-          renderExamOptions();
-          renderAdminOptions();
-          applyConfig();
-          setStatus('약 이름만 입력해도 검색할 수 있습니다.');
-        })
-        .withFailureHandler(err => {
-          isInitializing = false;
-          hideLoadingOverlay();
-          showErrorPopup('초기화 중 오류가 발생했습니다: ' + getErrorMessage(err));
-        })
-        .getAppInitData();
-    }
-    */
-
     async function initializeApp() {
       isInitializing = true;
       showLoadingOverlay('초기 데이터 불러오는 중', '약물 및 검사 정보를 준비하고 있습니다.');
@@ -2477,68 +2444,6 @@
       }, isComposing ? 120 : 60);
     }
 
-    /* Github 배포를 위해 막아둠
-    function runAutocompleteRequest(keyword) {
-      const currentKeyword = normalizeKeyword(getLastToken(document.getElementById('keyword').value || ''));
-
-      if (!keyword || keyword.length < 2 || !currentKeyword || currentKeyword.length < 2) {
-        hideAutocomplete(true);
-        return;
-      }
-
-      // 현재 입력값 기준으로 다시 맞춰서 요청
-      if (keyword !== currentKeyword) {
-        keyword = currentKeyword;
-      }
-
-      if (autocompleteCache.has(keyword)) {
-        renderAutocomplete(autocompleteCache.get(keyword), keyword);
-        return;
-      }
-
-      const requestId = ++autocompleteRequestSeq;
-
-      showAutocompleteLoading();
-
-      google.script.run
-        .withSuccessHandler(res => {
-          const latestKeyword = normalizeKeyword(getLastToken(document.getElementById('keyword').value || ''));
-
-          if (requestId !== autocompleteRequestSeq) return;
-          if (isSearching || isInitializing) return;
-
-          if (!latestKeyword || latestKeyword.length < 2) {
-            hideAutocomplete(true);
-            return;
-          }
-
-          // 응답 시점 기준 현재 입력어와 다르면 버림
-          if (latestKeyword !== keyword) {
-            hideAutocomplete(true);
-            return;
-          }
-
-          const list = (res && res.suggestions) ? res.suggestions : [];
-          autocompleteCache.set(keyword, list);
-          renderAutocomplete(list, keyword);
-        })
-        .withFailureHandler(() => {
-          const latestKeyword = normalizeKeyword(getLastToken(document.getElementById('keyword').value || ''));
-
-          if (requestId !== autocompleteRequestSeq) return;
-          if (isSearching || isInitializing) return;
-
-          if (!latestKeyword || latestKeyword.length < 2 || latestKeyword !== keyword) {
-            hideAutocomplete(true);
-            return;
-          }
-
-          showAutocompleteEmpty('자동완성 조회 중 오류가 발생했습니다.');
-        })
-        .getDrugSuggestions(keyword);
-    }
-    */
-
     async function runAutocompleteRequest(keyword) {
       const currentKeyword = normalizeKeyword(getLastToken(document.getElementById('keyword').value || ''));
     
@@ -2599,51 +2504,6 @@
         showAutocompleteEmpty('자동완성 조회 중 오류가 발생했습니다.');
       }
     }    
-
-    /*Github 배포를 위해 막아둠
-    function fetchAutocompleteSuggestions(keyword) {
-      if (!keyword || keyword.length < 2) {
-        hideAutocomplete(true);
-        return;
-      }
-
-      if (autocompleteCache.has(keyword)) {
-        renderAutocomplete(autocompleteCache.get(keyword), keyword);
-        return;
-      }
-
-      const requestId = ++autocompleteRequestSeq;
-
-      google.script.run
-        .withSuccessHandler(res => {
-          const currentKeyword = normalizeKeyword(getLastToken(document.getElementById('keyword').value));
-
-          if (requestId !== autocompleteRequestSeq || isSearching || isComposing) return;
-
-          if (currentKeyword.length < 2 || currentKeyword !== keyword) {
-            hideAutocomplete(true);
-            return;
-          }
-
-          const list = (res && res.suggestions) ? res.suggestions : [];
-          autocompleteCache.set(keyword, list);
-          renderAutocomplete(list, keyword);
-        })
-        .withFailureHandler(() => {
-          const currentKeyword = normalizeKeyword(getLastToken(document.getElementById('keyword').value));
-
-          if (requestId !== autocompleteRequestSeq || isSearching || isComposing) return;
-
-          if (currentKeyword.length < 2 || currentKeyword !== keyword) {
-            hideAutocomplete(true);
-            return;
-          }
-
-          showAutocompleteEmpty('자동완성 조회 중 오류가 발생했습니다.');
-        })
-        .getDrugSuggestions(keyword);
-    }
-    */
 
     function fetchAutocompleteSuggestions(keyword) {
       runAutocompleteRequest(keyword);
@@ -3133,41 +2993,7 @@
         true
       );
       clearResults();
-
-      /*
-      google.script.run
-        .withSuccessHandler(res => {
-          isSearching = false;
-          setSearchButtonLoading(false);
-          hideLoadingOverlay();
-
-          if (!res.success) {
-            showErrorPopup(res.message || '검색에 실패했습니다.');
-            return;
-          }
-
-          renderResults(res);
-
-          const groupArea = document.getElementById('groupArea');
-          if (groupArea.innerHTML.trim()) {
-            setTimeout(() => {
-              groupArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }, 80);
-          }
-        })
-        .withFailureHandler(err => {
-          isSearching = false;
-          setSearchButtonLoading(false);
-          hideLoadingOverlay();
-          showErrorPopup('검색 중 오류가 발생했습니다: ' + getErrorMessage(err));
-        })
-        .searchDrugAndRule({
-          keyword: dedupedKeyword,
-          examType: examType || '',
-          mode: currentMode,
-          userAgent: navigator.userAgent
-        });
-        */
+      
         (async () => {
           try {
             const url = new URL(API_BASE);
