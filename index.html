@@ -1783,7 +1783,7 @@
 
     let autocompleteActiveIndex = -1;
 
-    const API_BASE = 'https://script.google.com/macros/s/AKfycbzb9CTnE3qpnxHCVxyciBjrEtG0mc0jlHeLJZQfepdUPVT2g28Tgbw4DeuzLH0BwLIWXg/exec';
+    const API_BASE = 'https://script.google.com/macros/s/AKfycbwGLfgiEnReZ7URHhxjYAYUGe24aH_cK0CRphWW0EPnI2FCBOuji__SZnIirOSDzsmIMw/exec';
 
     async function apiGet(action, params = {}) {
       const url = new URL(API_BASE);
@@ -1801,7 +1801,7 @@
       const res = await fetch(API_BASE, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'text/plain;charset=utf-8'
         },
         body: JSON.stringify({
           action,
@@ -1811,18 +1811,18 @@
     
       return await res.json();
     }
-
+    
     async function apiPostRaw(body = {}) {
       const res = await fetch(API_BASE, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'text/plain;charset=utf-8'
         },
         body: JSON.stringify(body)
       });
     
       return await res.json();
-    }
+}
     
     function getViewportWidth() {
       const values = [
