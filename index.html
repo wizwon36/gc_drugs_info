@@ -1131,6 +1131,89 @@
       word-break:break-word;
     }
 
+    .exam-result-list{
+      display:grid;
+      gap:12px;
+      margin-top:14px;
+    }
+    
+    .exam-result-item{
+      border:1px solid #d8e8ef;
+      border-radius:16px;
+      background:linear-gradient(180deg,#ffffff 0%, #f8fcfe 100%);
+      padding:12px 13px;
+      box-shadow:0 4px 12px rgba(24,67,89,.04);
+    }
+    
+    .exam-result-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-bottom:10px;
+    }
+    
+    .exam-result-title{
+      font-size:calc(var(--font-base) + 1px);
+      font-weight:800;
+      color:var(--gc-navy);
+      line-height:1.35;
+      word-break:keep-all;
+    }
+    
+    .exam-result-meta{
+      display:flex;
+      gap:6px;
+      flex-wrap:wrap;
+    }
+    
+    .exam-meta-badge{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:28px;
+      padding:5px 10px;
+      border-radius:999px;
+      background:#eef7fb;
+      color:#1f6f98;
+      font-size:12px;
+      font-weight:800;
+      border:1px solid #cfe3ec;
+      white-space:nowrap;
+    }
+    
+    .exam-result-empty{
+      margin-top:12px;
+      border-radius:15px;
+      padding:12px 13px;
+      background:#f8fcff;
+      border:1px dashed #c6dfe9;
+      color:#59717c;
+      line-height:1.6;
+    }
+    
+    .exam-result-grid{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:5px 0;
+      font-size:var(--font-base);
+      line-height:1.62;
+    }
+    
+    .exam-result-grid .k{
+      color:#1f6f98;
+      font-weight:700;
+      word-break:keep-all;
+      margin-top:5px;
+    }
+    
+    .exam-result-grid .v{
+      color:var(--text);
+      word-break:break-word;
+      min-width:0;
+    }
+    
     .empty{
       margin-top:12px;
       border-radius:16px;
@@ -1438,6 +1521,15 @@
 
       .search-actions{
         display:none;
+      }
+
+      .exam-result-grid{
+        grid-template-columns:132px 1fr;
+        gap:8px 12px;
+      }
+    
+      .exam-result-grid .k{
+        margin-top:0;
       }
     }
 
@@ -1969,7 +2061,7 @@
 
     let autocompleteActiveIndex = -1;
 
-    const API_BASE = 'https://script.google.com/macros/s/AKfycbxK1iIJXjYejq2u-phgretBnvzdwz84Oi0aX_p0tpQbT7uuDpq0PJDY9Sl_hjLmje3hTQ/exec';
+    const API_BASE = 'https://script.google.com/macros/s/AKfycbygMu3ahypvG-o6bDmVwTsaESmNHk-iLS5AMAgsStfSeCXbRjfSA7nQgRDcv4xeen2Q1w/exec';
 
     async function apiGet(action, params = {}) {
       const url = new URL(API_BASE);
@@ -3336,13 +3428,16 @@
     function renderResults(res) {
       renderSummary(res.summary || null);
       renderGroupedResults(res.groupedResults || []);
-
+    
       const totalKeywords = (res.keywords || []).length;
-      const totalRows = (res.results || []).length;
+      const totalDrugRows = (res.results || []).length;
       const unresolved = (res.unresolvedKeywords || []).length;
-
-      if (totalRows === 0) setStatus(res.message || '검색 결과가 없습니다.');
-      else setStatus(`입력 약 ${totalKeywords}건 중 결과 ${totalRows}건을 찾았습니다. 미확인 ${unresolved}건.`);
+    
+      if (totalDrugRows === 0) {
+        setStatus(res.message || '검색 결과가 없습니다.');
+      } else {
+        setStatus(`입력 약 ${totalKeywords}건 중 결과 약물 ${totalDrugRows}건을 찾았습니다. 미확인 ${unresolved}건.`);
+      }
     }
 
     function renderSummary(summary) {
@@ -3377,7 +3472,9 @@
             </div>
           `;
         } else {
-          const sortedRows = [...group.results].sort((a, b) => b.sort_weight - a.sort_weight);
+            const sortedRows = [...group.results].sort((a, b) => {
+              return Number(b.sort_weight || 0) - Number(a.sort_weight || 0);
+            });
 
           section.innerHTML = `
             <div class="group-header">
@@ -3415,89 +3512,108 @@
     }
 
     function createResultCardHtml(item) {
-      const cautionClass = getCautionClass(item.caution_level);
-      const cautionText = item.caution_level || '일반';
-      const rule = item.primary_rule || null;
-      const matchedRules = Array.isArray(item.matched_rules) ? item.matched_rules : [];
-
-      let patientRuleHtml = '';
-      let staffRuleHtml = '';
-
-      if (rule) {
-        patientRuleHtml = `
-          <div class="rule-box">
-            <div class="rule-title">환자 안내</div>
-            <div class="kv">
-              <div class="k">중단 필요 여부</div><div class="v">${formatNeedHold(rule.need_hold)}</div>
-              <div class="k">중단 기간</div><div class="v">${escapeHtml(rule.hold_period || '-')}</div>
-              <div class="k">안내 문구</div><div class="v">${escapeHtml(rule.patient_message || '-')}</div>
-            </div>
-          </div>
-        `;
-
-        staffRuleHtml = `
-          <div class="rule-box">
-            <div class="rule-title">직원 상세 기준</div>
-            <div class="kv">
-              <div class="k">중단 필요 여부</div><div class="v">${formatNeedHold(rule.need_hold)}</div>
-              <div class="k">중단 기간</div><div class="v">${escapeHtml(rule.hold_period || '-')}</div>
-              <div class="k">직원 안내</div><div class="v">${escapeHtml(rule.staff_message || '-')}</div>
-              <div class="k">예외 사항</div><div class="v">${escapeHtml(rule.exception_note || '-')}</div>
-            </div>
-          </div>
-        `;
-      } else {
-        patientRuleHtml = `
-          <div class="rule-box">
-            <div class="rule-title">환자 안내</div>
-            <div class="small">해당 약물에 연결된 상세 규칙이 아직 등록되지 않았습니다. 검진센터에 문의해주세요.</div>
-          </div>
-        `;
-
-        staffRuleHtml = `
-          <div class="rule-box">
-            <div class="rule-title">직원 상세 기준</div>
-            <div class="small">등록된 규칙 없음. exam_rules 시트 보강 필요.</div>
-          </div>
-        `;
-      }
-
+      const examResults = Array.isArray(item.exam_results) ? item.exam_results : [];
+    
       const commonInfo = `
         <div class="group-keyword-chip">검색어: ${escapeHtml(item.search_keyword || '-')}</div>
-
+    
         <div class="result-head">
           <div>
             <div class="drug-name">${escapeHtml(item.brand_name || '-')}</div>
-            <div class="subline">성분명: ${escapeHtml(item.ingredient_name || '-')}<br>약물군: ${escapeHtml(item.drug_group || '-')}</div>
-          </div>
-          <div class="badge ${cautionClass}">${escapeHtml(cautionText)}</div>
-        </div>
-
-        <div class="kv">
-          <div class="k">검사 종류</div><div class="v">${escapeHtml(item.exam_type || '전체 검사 기준')}</div>
-          <div class="k">일반 용도</div><div class="v">${escapeHtml(item.common_use || '-')}</div>
-          <div class="k">검색 별칭</div><div class="v">${escapeHtml((item.aliases || []).join(', ') || '-')}</div>
-          ${currentMode === 'staff' ? `<div class="k">매칭 규칙 수</div><div class="v">${matchedRules.length || 0}</div>` : ''}
-        </div>
-      `;
-
-      const modeHtml = currentMode === 'patient'
-        ? patientRuleHtml
-        : `
-          <div class="rule-box">
-            <div class="rule-title">환자용 요약 문구</div>
-            <div class="kv">
-              <div class="k">안내 문구</div><div class="v">${escapeHtml(rule?.patient_message || '등록된 문구 없음')}</div>
+            <div class="subline">
+              성분명: ${escapeHtml(item.ingredient_name || '-')}<br>
+              약물군: ${escapeHtml(item.drug_group || '-')}
             </div>
           </div>
-          ${staffRuleHtml}
-          <div class="rule-box">
-            <div class="rule-title">직원 참고 메모</div>
-            <div class="small">${escapeHtml(item.staff_note || '-')}</div>
+          <div class="badge ${getCautionClass(item.caution_level)}">
+            ${escapeHtml(item.caution_level || '일반')}
+          </div>
+        </div>
+    
+        <div class="kv">
+          <div class="k">일반 용도</div><div class="v">${escapeHtml(item.common_use || '-')}</div>
+          <div class="k">검색 별칭</div><div class="v">${escapeHtml((item.aliases || []).join(', ') || '-')}</div>
+          ${currentMode === 'staff' ? `<div class="k">직원 참고 메모</div><div class="v">${escapeHtml(item.staff_note || '-')}</div>` : ''}
+        </div>
+      `;
+    
+      let examHtml = '';
+    
+      if (!examResults.length) {
+        examHtml = `
+          <div class="exam-result-empty">
+            해당 약에 연결된 검사 규칙이 없습니다.
           </div>
         `;
+      } else {
+        examHtml = `
+          <div class="exam-result-list">
+            ${examResults.map(result => {
+              const rule = result.applied_rule || {};
+              const ruleCautionLevel = getRuleCautionLevel(item, rule);
+              const cautionClass = getCautionClass(ruleCautionLevel);
+    
+              return `
+                <div class="exam-result-item">
+                  <div class="exam-result-head">
+                    <div class="exam-result-title">${escapeHtml(result.exam_type || '검사 미지정')}</div>
+                    <div class="exam-result-meta">
+                      <div class="badge ${cautionClass}">${escapeHtml(ruleCautionLevel)}</div>
+                      ${currentMode === 'staff'
+                        ? `<div class="exam-meta-badge">매칭 ${escapeHtml(String(result.matched_rule_count || 0))}건</div>`
+                        : ''
+                      }
+                    </div>
+                  </div>
+    
+                  <div class="exam-result-grid">
+                    <div class="k">중단 필요 여부</div>
+                    <div class="v">${formatNeedHold(rule.need_hold)}</div>
+    
+                    <div class="k">중단 기간</div>
+                    <div class="v">${escapeHtml(rule.hold_period || '-')}</div>
+    
+                    <div class="k">${currentMode === 'staff' ? '환자 안내' : '안내 문구'}</div>
+                    <div class="v">${escapeHtml(rule.patient_message || '-')}</div>
+    
+                    ${currentMode === 'staff' ? `
+                      <div class="k">직원 안내</div>
+                      <div class="v">${escapeHtml(rule.staff_message || '-')}</div>
+    
+                      <div class="k">예외 사항</div>
+                      <div class="v">${escapeHtml(rule.exception_note || '-')}</div>
+    
+                      <div class="k">적용 기준</div>
+                      <div class="v">${escapeHtml(getTargetTypeLabel(rule.target_type))}</div>
+    
+                      <div class="k">적용 대상 값</div>
+                      <div class="v">${escapeHtml(rule.target_value || '-')}</div>
+    
+                      <div class="k">규칙 ID</div>
+                      <div class="v">${escapeHtml(rule.rule_id || '-')}</div>
+    
+                      <div class="k">우선순위</div>
+                      <div class="v">${escapeHtml(String(rule.priority || '-'))}</div>
+                    ` : ''}
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `;
+      }
+    
+      return `<div class="result-card">${commonInfo}${examHtml}</div>`;
+    }
 
-      return `<div class="result-card">${commonInfo}${modeHtml}</div>`;
+    function getRuleCautionLevel(item, rule) {
+      return (rule && rule.caution_level) || item.caution_level || '일반';
+    }
+    
+    function getTargetTypeLabel(value) {
+      if (value === 'drug') return '약 개별';
+      if (value === 'group') return '약물군';
+      return value || '-';
     }
 
     function clearResults() {
