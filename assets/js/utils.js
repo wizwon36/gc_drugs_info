@@ -57,11 +57,15 @@ function getErrorMessage(err) {
 
 function escapeHtml(text) {
   return String(text ?? '')
-    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
 }
 
 function escapeJs(text) {
-  return String(text ?? '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+  return String(text ?? '')
+    .replace(/\\/g, '\\\\')
+    .replace(/'/g, "\\'");
 }
