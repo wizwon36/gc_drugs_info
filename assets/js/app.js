@@ -340,57 +340,17 @@ function bindDynamicAdminEvents() {
   });
 }
 
-window.addEventListener('DOMContentLoaded', () => {
-  syncAppWidth();
-  bindStaticEvents();
-  bindDynamicSearchEvents();
-  bindDynamicAdminEvents();
-  
-  setTimeout(() => {
-    syncAppWidth();
-  }, 50);
-
-  initializeApp();
-
-  setTimeout(() => {
-    syncAdminTargetValueUI();
-  }, 0);
-
+function bindKeywordEvents() {
   const keywordInput = document.getElementById('keyword');
   const autoBox = document.getElementById('autocompleteBox');
   const examSelect = document.getElementById('examType');
+
+  if (!keywordInput || !autoBox || !examSelect) return;
 
   autoBox.addEventListener('mouseleave', () => {
     autocompleteActiveIndex = -1;
     updateAutocompleteActiveItem();
   });
-
-  const adminTargetType = document.getElementById('adminTargetType');
-  const adminTargetValueGroup = document.getElementById('adminTargetValueGroup');
-  const adminTargetDrugSearch = document.getElementById('adminTargetDrugSearch');
-
-  if (adminTargetType) {
-    adminTargetType.addEventListener('change', syncAdminTargetValueUI);
-  }
-
-  if (adminTargetValueGroup) {
-    adminTargetValueGroup.addEventListener('change', () => {
-      document.getElementById('adminTargetValue').value = adminTargetValueGroup.value || '';
-    });
-  }
-
-  if (adminTargetDrugSearch) {
-    adminTargetDrugSearch.addEventListener('input', () => {
-      scheduleAdminDrugTargetSearch();
-    });
-
-    adminTargetDrugSearch.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        searchAdminDrugTargetList();
-      }
-    });
-  }
 
   keywordInput.addEventListener('compositionstart', () => {
     isComposing = true;
@@ -431,15 +391,63 @@ window.addEventListener('DOMContentLoaded', () => {
   autoBox.addEventListener('touchstart', () => {
     suppressBlurHide = true;
   }, { passive: true });
+}
 
+function bindAdminFormEvents() {
+  const adminTargetType = document.getElementById('adminTargetType');
+  const adminTargetValueGroup = document.getElementById('adminTargetValueGroup');
+  const adminTargetDrugSearch = document.getElementById('adminTargetDrugSearch');
+  const adminPasswordInput = document.getElementById('adminPassword');
+
+  if (adminTargetType) {
+    adminTargetType.addEventListener('change', syncAdminTargetValueUI);
+  }
+
+  if (adminTargetValueGroup) {
+    adminTargetValueGroup.addEventListener('change', () => {
+      const hidden = document.getElementById('adminTargetValue');
+      if (hidden) {
+        hidden.value = adminTargetValueGroup.value || '';
+      }
+    });
+  }
+
+  if (adminTargetDrugSearch) {
+    adminTargetDrugSearch.addEventListener('input', () => {
+      scheduleAdminDrugTargetSearch();
+    });
+
+    adminTargetDrugSearch.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        searchAdminDrugTargetList();
+      }
+    });
+  }
+
+  if (adminPasswordInput) {
+    adminPasswordInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        loginAdmin();
+      }
+    });
+  }
+}
+
+function bindGlobalEvents() {
   document.addEventListener('click', (e) => {
     const field = document.getElementById('keywordField');
-    if (field && !field.contains(e.target)) hideAutocomplete(true);
+    if (field && !field.contains(e.target)) {
+      hideAutocomplete(true);
+    }
   });
 
   document.addEventListener('touchstart', (e) => {
     const field = document.getElementById('keywordField');
-    if (field && !field.contains(e.target)) hideAutocomplete(true);
+    if (field && !field.contains(e.target)) {
+      hideAutocomplete(true);
+    }
   }, { passive: true });
 
   window.addEventListener('resize', () => {
@@ -466,14 +474,25 @@ window.addEventListener('DOMContentLoaded', () => {
   if (secretAdminTrigger) {
     secretAdminTrigger.addEventListener('click', handleSecretAdminTrigger);
   }
+}
 
-  const adminPasswordInput = document.getElementById('adminPassword');
-  if (adminPasswordInput) {
-    adminPasswordInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        loginAdmin();
-      }
-    });
-  }
+window.addEventListener('DOMContentLoaded', () => {
+  syncAppWidth();
+
+  bindStaticEvents();
+  bindDynamicSearchEvents();
+  bindDynamicAdminEvents();
+  bindKeywordEvents();
+  bindAdminFormEvents();
+  bindGlobalEvents();
+
+  setTimeout(() => {
+    syncAppWidth();
+  }, 50);
+
+  initializeApp();
+
+  setTimeout(() => {
+    syncAdminTargetValueUI();
+  }, 0);
 });
