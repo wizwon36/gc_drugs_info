@@ -405,6 +405,7 @@ function bindAdminFormEvents() {
   const adminTargetValueGroup = document.getElementById('adminTargetValueGroup');
   const adminTargetDrugSearch = document.getElementById('adminTargetDrugSearch');
   const adminPasswordInput = document.getElementById('adminPassword');
+  const adminDrugSearchInput = document.getElementById('adminDrugSearch');
 
   if (adminTargetType) {
     adminTargetType.addEventListener('change', syncAdminTargetValueUI);
@@ -428,6 +429,15 @@ function bindAdminFormEvents() {
       if (e.key === 'Enter') {
         e.preventDefault();
         searchAdminDrugTargetList();
+      }
+    });
+  }
+
+  if (adminDrugSearchInput) {
+    adminDrugSearchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        searchAdminDrugList(true);
       }
     });
   }
