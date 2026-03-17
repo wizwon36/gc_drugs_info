@@ -2041,12 +2041,6 @@ label,
   margin-top: 18px;
 }
 
-.group-section {
-  margin-bottom: 14px;
-  border-left: 4px solid #1594c6;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
 .group-master-slide[aria-hidden="false"] .group-section {
   border-color: #cfe4ef;
   box-shadow: 0 8px 20px rgba(21, 148, 198, 0.08);
