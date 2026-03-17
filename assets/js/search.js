@@ -147,7 +147,7 @@ async function runAutocompleteRequest(keyword) {
 
     showAutocompleteEmpty('자동완성 조회 중 오류가 발생했습니다.');
   }
-}    
+}
 
 function fetchAutocompleteSuggestions(keyword) {
   runAutocompleteRequest(keyword);
@@ -193,7 +193,6 @@ function renderAutocomplete(list, keyword = '') {
     return;
   }
 
-  // 이미 같은 키워드로 목록이 떠 있으면 다시 그리지 않음
   if (
     box.style.display === 'block' &&
     renderedAutocompleteKeyword === currentKeyword &&
@@ -317,43 +316,43 @@ function handleSearch() {
     true
   );
   clearResults();
-  
-    (async () => {
-      try {
-        const url = new URL(API_BASE);
-        url.searchParams.set('action', 'search');
-        url.searchParams.set('keyword', dedupedKeyword);
-        url.searchParams.set('examType', examType || '');
-        url.searchParams.set('mode', currentMode);
-        url.searchParams.set('userAgent', navigator.userAgent);
-    
-        const res = await fetch(url.toString(), { method: 'GET' });
-        const data = await res.json();
-    
-        isSearching = false;
-        setSearchButtonLoading(false);
-        hideLoadingOverlay();
-    
-        if (!data.success) {
-          showErrorPopup(data.message || '검색에 실패했습니다.');
-          return;
-        }
-    
-        renderResults(data);
-    
-        const groupArea = document.getElementById('groupArea');
-        if (groupArea.innerHTML.trim()) {
-          setTimeout(() => {
-            groupArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }, 80);
-        }
-      } catch (err) {
-        isSearching = false;
-        setSearchButtonLoading(false);
-        hideLoadingOverlay();
-        showErrorPopup('검색 중 오류가 발생했습니다: ' + (err?.message || String(err)));
+
+  (async () => {
+    try {
+      const url = new URL(API_BASE);
+      url.searchParams.set('action', 'search');
+      url.searchParams.set('keyword', dedupedKeyword);
+      url.searchParams.set('examType', examType || '');
+      url.searchParams.set('mode', currentMode);
+      url.searchParams.set('userAgent', navigator.userAgent);
+
+      const res = await fetch(url.toString(), { method: 'GET' });
+      const data = await res.json();
+
+      isSearching = false;
+      setSearchButtonLoading(false);
+      hideLoadingOverlay();
+
+      if (!data.success) {
+        showErrorPopup(data.message || '검색에 실패했습니다.');
+        return;
       }
-    })()
+
+      renderResults(data);
+
+      const groupArea = document.getElementById('groupArea');
+      if (groupArea.innerHTML.trim()) {
+        setTimeout(() => {
+          groupArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 80);
+      }
+    } catch (err) {
+      isSearching = false;
+      setSearchButtonLoading(false);
+      hideLoadingOverlay();
+      showErrorPopup('검색 중 오류가 발생했습니다: ' + getErrorMessage(err));
+    }
+  })();
 }
 
 function renderResults(res) {
@@ -403,9 +402,9 @@ function renderGroupedResults(groupedResults) {
         </div>
       `;
     } else {
-        const sortedRows = [...group.results].sort((a, b) => {
-          return Number(b.sort_weight || 0) - Number(a.sort_weight || 0);
-        });
+      const sortedRows = [...group.results].sort((a, b) => {
+        return Number(b.sort_weight || 0) - Number(a.sort_weight || 0);
+      });
 
       section.innerHTML = `
         <div class="group-header">
