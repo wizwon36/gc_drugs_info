@@ -267,9 +267,84 @@ function setMode(mode) {
   clearResults();
 }
 
+function bindDynamicSearchEvents() {
+  document.getElementById('autocompleteBox')?.addEventListener('click', (e) => {
+    const item = e.target.closest('[data-action="selectSuggestion"]');
+    if (!item) return;
+
+    const name = item.dataset.brandName || '';
+    if (name) {
+      selectSuggestion(name);
+    }
+  });
+
+  document.getElementById('autocompleteBox')?.addEventListener('mouseover', (e) => {
+    const item = e.target.closest('.autocomplete-item');
+    if (!item) return;
+
+    const index = Number(item.dataset.index);
+    if (!Number.isNaN(index)) {
+      setAutocompleteActive(index);
+    }
+  });
+
+  document.getElementById('groupArea')?.addEventListener('click', (e) => {
+    const chip = e.target.closest('[data-action="replaceKeywordAndSearch"]');
+    if (!chip) return;
+
+    const oldName = chip.dataset.oldName || '';
+    const newName = chip.dataset.newName || '';
+    replaceKeywordAndSearch(oldName, newName);
+  });
+}
+
+function bindDynamicAdminEvents() {
+  document.getElementById('adminDrugSearchList')?.addEventListener('click', (e) => {
+    const editBtn = e.target.closest('[data-action="editDrug"]');
+    if (editBtn) {
+      const drugId = editBtn.dataset.drugId || '';
+      if (drugId) editDrug(drugId);
+      return;
+    }
+
+    const toggleBtn = e.target.closest('[data-action="toggleDrug"]');
+    if (toggleBtn) {
+      const drugId = toggleBtn.dataset.drugId || '';
+      if (drugId) toggleDrug(drugId);
+    }
+  });
+
+  document.getElementById('adminRuleSearchList')?.addEventListener('click', (e) => {
+    const editBtn = e.target.closest('[data-action="editRule"]');
+    if (editBtn) {
+      const ruleId = editBtn.dataset.ruleId || '';
+      if (ruleId) editRule(ruleId);
+      return;
+    }
+
+    const toggleBtn = e.target.closest('[data-action="toggleRule"]');
+    if (toggleBtn) {
+      const ruleId = toggleBtn.dataset.ruleId || '';
+      if (ruleId) toggleRule(ruleId);
+    }
+  });
+
+  document.getElementById('adminTargetDrugSearchList')?.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-action="selectAdminTargetDrug"]');
+    if (!btn) return;
+
+    const drugId = btn.dataset.drugId || '';
+    const brandName = btn.dataset.brandName || '';
+    const ingredientName = btn.dataset.ingredientName || '';
+    selectAdminTargetDrug(drugId, brandName, ingredientName);
+  });
+}
+
 window.addEventListener('DOMContentLoaded', () => {
   syncAppWidth();
   bindStaticEvents();
+  bindDynamicSearchEvents();
+  bindDynamicAdminEvents();
   
   setTimeout(() => {
     syncAppWidth();
