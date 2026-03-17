@@ -2275,6 +2275,10 @@ label,
   margin-top: 18px;
 }
 
+.group-master-header + .group-tab-nav {
+  margin-top: 10px;
+}
+
 .group-master-header {
   display: flex;
   align-items: center;
