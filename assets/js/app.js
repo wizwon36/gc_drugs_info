@@ -126,6 +126,38 @@ function startModeWithLoading(mode) {
   }, 1500);
 }
 
+function bindStaticEvents() {
+  document.getElementById('startPatientBtn')?.addEventListener('click', startPatientMode);
+  document.getElementById('startStaffBtn')?.addEventListener('click', startStaffMode);
+  document.getElementById('homeBtn')?.addEventListener('click', goHome);
+
+  document.getElementById('patientModeBtn')?.addEventListener('click', () => setMode('patient'));
+  document.getElementById('staffModeBtn')?.addEventListener('click', () => setMode('staff'));
+  document.getElementById('adminModeBtn')?.addEventListener('click', openAdminPanel);
+
+  document.getElementById('searchBtn')?.addEventListener('click', handleSearch);
+  document.getElementById('searchBtnMobile')?.addEventListener('click', handleSearch);
+
+  document.getElementById('adminLoginBtn')?.addEventListener('click', loginAdmin);
+
+  document.getElementById('adminTabDrug')?.addEventListener('click', () => setAdminTab('drug'));
+  document.getElementById('adminTabRule')?.addEventListener('click', () => setAdminTab('rule'));
+  document.getElementById('adminTabStats')?.addEventListener('click', () => setAdminTab('stats'));
+  document.getElementById('closeAdminPanelBtn')?.addEventListener('click', closeAdminPanel);
+
+  document.getElementById('adminDrugSearchBtn')?.addEventListener('click', () => searchAdminDrugList(true));
+  document.getElementById('adminDrugRecentBtn')?.addEventListener('click', () => loadRecentAdminData(true));
+  document.getElementById('adminDrugNewBtn')?.addEventListener('click', prepareNewDrug);
+  document.getElementById('saveDrugBtn')?.addEventListener('click', saveDrugItem);
+  document.getElementById('toggleCurrentDrugBtn')?.addEventListener('click', toggleCurrentDrugActive);
+
+  document.getElementById('adminRuleSearchBtn')?.addEventListener('click', () => searchAdminRuleList(true));
+  document.getElementById('adminRuleRecentBtn')?.addEventListener('click', () => loadRecentAdminData(true));
+  document.getElementById('adminRuleNewBtn')?.addEventListener('click', prepareNewRule);
+  document.getElementById('saveRuleBtn')?.addEventListener('click', saveRuleItem);
+  document.getElementById('toggleCurrentRuleBtn')?.addEventListener('click', toggleCurrentRuleActive);
+}
+
 function goHome() {
   if (isSearching || isInitializing) return;
 
@@ -237,7 +269,8 @@ function setMode(mode) {
 
 window.addEventListener('DOMContentLoaded', () => {
   syncAppWidth();
-
+  bindStaticEvents();
+  
   setTimeout(() => {
     syncAppWidth();
   }, 50);
