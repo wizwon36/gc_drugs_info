@@ -1,29 +1,31 @@
-const API_BASE = 'https://script.google.com/macros/s/AKfycbziZUGLtMlQEZo3dCmuw21h8V2LuNH-5z5V54LunxPiI7Z6_HJySAdxmn5TSwhlO6uY6g/exec';
+const API_BASE = 'https://script.google.com/macros/s/AKfycbz1oAJVr17OoZBLfJznJ3VSRXlgIL1x3hC6NVpHn0JYRcdBBrWzK9g9y1bSQykjyZ5IiQ/exec';
 
-let currentMode = 'patient';
-let lockedMode = null;
-let appConfig = {};
-let examList = [];
-let drugGroupList = [];
-let isAdminLoggedIn = false;
-let currentAdminTab = 'drug';
-let autoTimer = null;
+const state = {
+  currentMode: 'patient',
+  lockedMode: null,
+  appConfig: {},
+  examList: [],
+  drugGroupList: [],
+  isAdminLoggedIn: false,
+  currentAdminTab: 'drug',
+  autoTimer: null,
 
-let autocompleteCache = new Map();
-let autocompleteRequestSeq = 0;
-let lastAutocompleteKeyword = '';
-let isSearching = false;
-let isInitializing = true;
-let suppressBlurHide = false;
+  autocompleteCache: new Map(),
+  autocompleteRequestSeq: 0,
+  lastAutocompleteKeyword: '',
+  isSearching: false,
+  isInitializing: true,
+  suppressBlurHide: false,
 
-let adminTapCount = 0;
-let adminTapTimer = null;
+  adminTapCount: 0,
+  adminTapTimer: null,
 
-let highlightTimer = null;
-let isComposing = false;
+  highlightTimer: null,
+  isComposing: false,
 
-let pendingAutocompleteKeyword = '';
-let renderedAutocompleteKeyword = '';
+  pendingAutocompleteKeyword: '',
+  renderedAutocompleteKeyword: '',
+  autocompleteActiveIndex: -1,
 
-let autocompleteActiveIndex = -1;
-let adminDrugTargetTimer = null;
+  adminDrugTargetTimer: null
+};
