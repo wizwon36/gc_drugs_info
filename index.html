@@ -3980,26 +3980,19 @@
       if (value === 'group') return '약물군';
       return value || '-';
     }
-
-    
+   
     function setStatus(text, isLoading = false) {
       const el = document.getElementById('statusText');
       if (!el) return;
-
+    
       el.textContent = text || '';
       el.classList.toggle('loading', !!isLoading);
-
+    
       if (!text) {
         el.classList.add('hidden');
-        return;
+      } else {
+        el.classList.remove('hidden');
       }
-
-      if (isLoading) {
-        el.classList.add('hidden');
-        return;
-      }
-
-      el.classList.add('hidden');
     }
 
     function showErrorPopup(message) {
