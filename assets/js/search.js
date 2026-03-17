@@ -687,8 +687,6 @@ function createResultCardHtml(item) {
   const examResults = Array.isArray(item.exam_results) ? item.exam_results : [];
 
   const commonInfo = `
-    <div class="group-keyword-chip">검색어: ${escapeHtml(item.search_keyword || '-')}</div>
-
     <div class="result-head">
       <div>
         <div class="drug-name">${escapeHtml(item.brand_name || '-')}</div>
