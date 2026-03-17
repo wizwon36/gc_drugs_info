@@ -1,125 +1,151 @@
 function renderExamOptions() {
   const select = document.getElementById('examType');
   const adminExam = document.getElementById('adminExamType');
-  select.innerHTML = '<option value="">전체 검사 기준으로 검색</option>';
-  adminExam.innerHTML = '<option value="">검사 선택</option>';
 
-  examList.forEach(item => {
-    const o1 = document.createElement('option');
-    o1.value = item.name;
-    o1.textContent = item.name;
-    select.appendChild(o1);
+  if (select) {
+    select.innerHTML = '<option value="">전체 검사 기준으로 검색</option>';
+    state.examList.forEach(item => {
+      const option = document.createElement('option');
+      option.value = item.name;
+      option.textContent = item.name;
+      select.appendChild(option);
+    });
+  }
 
-    const o2 = document.createElement('option');
-    o2.value = item.name;
-    o2.textContent = item.name;
-    adminExam.appendChild(o2);
-  });
+  if (adminExam) {
+    adminExam.innerHTML = '<option value="">검사 선택</option>';
+    state.examList.forEach(item => {
+      const option = document.createElement('option');
+      option.value = item.name;
+      option.textContent = item.name;
+      adminExam.appendChild(option);
+    });
+  }
 }
 
 function renderAdminOptions() {
   const drugGroupSelect = document.getElementById('adminDrugGroup');
   const targetGroupSelect = document.getElementById('adminTargetValueGroup');
 
-  drugGroupSelect.innerHTML = '<option value="">약물군 선택</option>';
-  targetGroupSelect.innerHTML = '<option value="">약물군 선택</option>';
+  if (drugGroupSelect) {
+    drugGroupSelect.innerHTML = '<option value="">약물군 선택</option>';
+    state.drugGroupList.forEach(item => {
+      const option = document.createElement('option');
+      option.value = item.name;
+      option.textContent = item.name;
+      drugGroupSelect.appendChild(option);
+    });
+  }
 
-  drugGroupList.forEach(item => {
-    const option1 = document.createElement('option');
-    option1.value = item.name;
-    option1.textContent = item.name;
-    drugGroupSelect.appendChild(option1);
-
-    const option2 = document.createElement('option');
-    option2.value = item.name;
-    option2.textContent = item.name;
-    targetGroupSelect.appendChild(option2);
-  });
+  if (targetGroupSelect) {
+    targetGroupSelect.innerHTML = '<option value="">약물군 선택</option>';
+    state.drugGroupList.forEach(item => {
+      const option = document.createElement('option');
+      option.value = item.name;
+      option.textContent = item.name;
+      targetGroupSelect.appendChild(option);
+    });
+  }
 }
 
 function openAdminPanel() {
-  if (isSearching || isInitializing) return;
+  if (state.isSearching || state.isInitializing) return;
 
   hideAutocomplete(true);
 
-  document.getElementById('adminPanel').classList.remove('hidden');
-  document.getElementById('adminLoginArea').classList.remove('hidden');
-  document.getElementById('adminContentArea').classList.add('hidden');
+  document.getElementById('adminPanel')?.classList.remove('hidden');
+  document.getElementById('adminLoginArea')?.classList.remove('hidden');
+  document.getElementById('adminContentArea')?.classList.add('hidden');
 
-  document.getElementById('adminModeBtn').classList.add('active');
-  document.getElementById('patientModeBtn').classList.remove('active');
-  document.getElementById('staffModeBtn').classList.remove('active');
+  document.getElementById('adminModeBtn')?.classList.add('active');
+  document.getElementById('patientModeBtn')?.classList.remove('active');
+  document.getElementById('staffModeBtn')?.classList.remove('active');
 
-  window.scrollTo({
-    top: document.getElementById('adminPanel').offsetTop - 10,
-    behavior: 'smooth'
-  });
+  const adminPanel = document.getElementById('adminPanel');
+  if (adminPanel) {
+    window.scrollTo({
+      top: adminPanel.offsetTop - 10,
+      behavior: 'smooth'
+    });
+  }
 }
 
 function closeAdminPanel() {
-  document.getElementById('adminPanel').classList.add('hidden');
-  document.getElementById('adminModeBtn').classList.remove('active');
+  document.getElementById('adminPanel')?.classList.add('hidden');
+  document.getElementById('adminModeBtn')?.classList.remove('active');
 
-  isAdminLoggedIn = false;
-  document.getElementById('adminPassword').value = '';
-  document.getElementById('adminLoginStatus').textContent = '';
-  document.getElementById('adminLoginArea').classList.add('hidden');
-  document.getElementById('adminContentArea').classList.add('hidden');
+  state.isAdminLoggedIn = false;
 
-  setMode(currentMode);
+  const adminPassword = document.getElementById('adminPassword');
+  const adminLoginStatus = document.getElementById('adminLoginStatus');
+
+  if (adminPassword) adminPassword.value = '';
+  if (adminLoginStatus) adminLoginStatus.textContent = '';
+
+  document.getElementById('adminLoginArea')?.classList.add('hidden');
+  document.getElementById('adminContentArea')?.classList.add('hidden');
+
+  setMode(state.currentMode);
 }
 
 function handleSecretAdminTrigger() {
-  adminTapCount += 1;
+  state.adminTapCount += 1;
 
-  clearTimeout(adminTapTimer);
-  adminTapTimer = setTimeout(() => {
-    adminTapCount = 0;
+  clearTimeout(state.adminTapTimer);
+  state.adminTapTimer = setTimeout(() => {
+    state.adminTapCount = 0;
   }, 1200);
 
-  if (adminTapCount >= 3) {
-    adminTapCount = 0;
+  if (state.adminTapCount >= 3) {
+    state.adminTapCount = 0;
     openAdminPanel();
   }
 }
 
 function setAdminTab(tab) {
-  currentAdminTab = tab;
-  document.getElementById('adminTabDrug').classList.toggle('active', tab === 'drug');
-  document.getElementById('adminTabRule').classList.toggle('active', tab === 'rule');
-  document.getElementById('adminTabStats').classList.toggle('active', tab === 'stats');
+  state.currentAdminTab = tab;
 
-  document.getElementById('adminDrugPane').classList.toggle('hidden', tab !== 'drug');
-  document.getElementById('adminRulePane').classList.toggle('hidden', tab !== 'rule');
-  document.getElementById('adminStatsPane').classList.toggle('hidden', tab !== 'stats');
+  document.getElementById('adminTabDrug')?.classList.toggle('active', tab === 'drug');
+  document.getElementById('adminTabRule')?.classList.toggle('active', tab === 'rule');
+  document.getElementById('adminTabStats')?.classList.toggle('active', tab === 'stats');
 
-  if (tab === 'stats' && isAdminLoggedIn) loadStats(true);
+  document.getElementById('adminDrugPane')?.classList.toggle('hidden', tab !== 'drug');
+  document.getElementById('adminRulePane')?.classList.toggle('hidden', tab !== 'rule');
+  document.getElementById('adminStatsPane')?.classList.toggle('hidden', tab !== 'stats');
+
+  if (tab === 'stats' && state.isAdminLoggedIn) {
+    loadStats(true);
+  }
 }
 
 async function loginAdmin() {
-  const pw = document.getElementById('adminPassword').value.trim();
+  const pw = document.getElementById('adminPassword')?.value.trim() || '';
 
   if (!pw) {
-    document.getElementById('adminLoginStatus').textContent = '비밀번호를 입력해주세요.';
+    const statusEl = document.getElementById('adminLoginStatus');
+    if (statusEl) statusEl.textContent = '비밀번호를 입력해주세요.';
     return;
   }
 
   showAdminLoading('관리자 로그인 중', '비밀번호를 확인하고 있습니다.');
-  document.getElementById('adminLoginStatus').textContent = '로그인 확인 중입니다...';
+
+  const statusEl = document.getElementById('adminLoginStatus');
+  if (statusEl) statusEl.textContent = '로그인 확인 중입니다...';
 
   try {
     const res = await apiGet('verifyAdmin', { password: pw });
 
     if (!res.success) {
       hideAdminLoading();
-      document.getElementById('adminLoginStatus').textContent = '비밀번호가 올바르지 않습니다.';
+      if (statusEl) statusEl.textContent = '비밀번호가 올바르지 않습니다.';
       return;
     }
 
-    isAdminLoggedIn = true;
-    document.getElementById('adminLoginStatus').textContent = '로그인되었습니다.';
-    document.getElementById('adminLoginArea').classList.add('hidden');
-    document.getElementById('adminContentArea').classList.remove('hidden');
+    state.isAdminLoggedIn = true;
+
+    if (statusEl) statusEl.textContent = '로그인되었습니다.';
+    document.getElementById('adminLoginArea')?.classList.add('hidden');
+    document.getElementById('adminContentArea')?.classList.remove('hidden');
 
     showAdminLoading('관리자 데이터 불러오는 중', '최근 등록 정보와 통계를 불러오고 있습니다.');
 
@@ -129,8 +155,9 @@ async function loginAdmin() {
     hideAdminLoading();
   } catch (err) {
     hideAdminLoading();
-    document.getElementById('adminLoginStatus').textContent =
-      '로그인 오류: ' + getErrorMessage(err);
+    if (statusEl) {
+      statusEl.textContent = '로그인 오류: ' + getErrorMessage(err);
+    }
   }
 }
 
@@ -145,21 +172,28 @@ async function loadRecentAdminData(showLoading = false) {
     if (showLoading) hideAdminLoading();
     if (!res.success) return;
 
-    document.getElementById('recentDrugList').innerHTML =
-      (res.drugs || []).map(item => `
-        <div class="admin-item">
-          <strong>${escapeHtml(item.drug_id)}</strong> · ${escapeHtml(item.brand_name)}
-          <br><span class="small">${escapeHtml(item.ingredient_name)} / ${escapeHtml(item.drug_group)} / ${escapeHtml(item.caution_level)} / ${escapeHtml(item.is_active)}</span>
-        </div>
-      `).join('') || '<div class="small">데이터가 없습니다.</div>';
+    const recentDrugList = document.getElementById('recentDrugList');
+    const recentRuleList = document.getElementById('recentRuleList');
 
-    document.getElementById('recentRuleList').innerHTML =
-      (res.rules || []).map(item => `
-        <div class="admin-item">
-          <strong>${escapeHtml(item.rule_id)}</strong> · ${escapeHtml(item.exam_type)}
-          <br><span class="small">${escapeHtml(item.target_display_type || item.target_type)} / ${escapeHtml(item.target_display_name || item.target_value)} / ${escapeHtml(item.caution_level || '일반')} / ${escapeHtml(item.need_hold)} / ${escapeHtml(item.is_active)}</span>
-        </div>
-      `).join('') || '<div class="small">데이터가 없습니다.</div>';
+    if (recentDrugList) {
+      recentDrugList.innerHTML =
+        (res.drugs || []).map(item => `
+          <div class="admin-item">
+            <strong>${escapeHtml(item.drug_id)}</strong> · ${escapeHtml(item.brand_name)}
+            <br><span class="small">${escapeHtml(item.ingredient_name)} / ${escapeHtml(item.drug_group)} / ${escapeHtml(item.caution_level)} / ${escapeHtml(item.is_active)}</span>
+          </div>
+        `).join('') || '<div class="small">데이터가 없습니다.</div>';
+    }
+
+    if (recentRuleList) {
+      recentRuleList.innerHTML =
+        (res.rules || []).map(item => `
+          <div class="admin-item">
+            <strong>${escapeHtml(item.rule_id)}</strong> · ${escapeHtml(item.exam_type)}
+            <br><span class="small">${escapeHtml(item.target_display_type || item.target_type)} / ${escapeHtml(item.target_display_name || item.target_value)} / ${escapeHtml(item.caution_level || '일반')} / ${escapeHtml(item.need_hold)} / ${escapeHtml(item.is_active)}</span>
+          </div>
+        `).join('') || '<div class="small">데이터가 없습니다.</div>';
+    }
   } catch (err) {
     if (showLoading) hideAdminLoading();
     console.error(err);
@@ -172,7 +206,7 @@ async function searchAdminDrugList(showLoading = true) {
       showAdminLoading('약물 검색 중', '관리자 약물 목록을 조회하고 있습니다.');
     }
 
-    const keyword = document.getElementById('adminDrugSearch').value.trim();
+    const keyword = document.getElementById('adminDrugSearch')?.value.trim() || '';
     const listEl = document.getElementById('adminDrugSearchList');
 
     const res = await apiGet('searchAdminDrugs', { keyword, active_only: 'Y' });
@@ -180,6 +214,8 @@ async function searchAdminDrugList(showLoading = true) {
     if (showLoading) hideAdminLoading();
 
     const items = res.items || [];
+
+    if (!listEl) return;
 
     if (!keyword || items.length === 0) {
       listEl.innerHTML = '';
@@ -214,7 +250,7 @@ async function searchAdminRuleList(showLoading = true) {
       showAdminLoading('규칙 검색 중', '관리자 규칙 목록을 조회하고 있습니다.');
     }
 
-    const keyword = document.getElementById('adminRuleSearch').value.trim();
+    const keyword = document.getElementById('adminRuleSearch')?.value.trim() || '';
     const listEl = document.getElementById('adminRuleSearchList');
 
     const res = await apiGet('searchAdminRules', { keyword });
@@ -222,6 +258,8 @@ async function searchAdminRuleList(showLoading = true) {
     if (showLoading) hideAdminLoading();
 
     const items = res.items || [];
+
+    if (!listEl) return;
 
     if (!keyword || items.length === 0) {
       listEl.innerHTML = '';
@@ -259,7 +297,8 @@ function prepareNewDrug() {
     listEl.classList.add('compact-empty');
   }
 
-  document.getElementById('adminDrugStatus').textContent = '신규 약물 입력 모드입니다.';
+  const statusEl = document.getElementById('adminDrugStatus');
+  if (statusEl) statusEl.textContent = '신규 약물 입력 모드입니다.';
 }
 
 function prepareNewRule() {
@@ -271,7 +310,8 @@ function prepareNewRule() {
     listEl.classList.add('compact-empty');
   }
 
-  document.getElementById('adminRuleStatus').textContent = '신규 규칙 입력 모드입니다.';
+  const statusEl = document.getElementById('adminRuleStatus');
+  if (statusEl) statusEl.textContent = '신규 규칙 입력 모드입니다.';
 }
 
 async function editDrug(drugId) {
@@ -279,18 +319,28 @@ async function editDrug(drugId) {
     const res = await apiGet('drugDetail', { drugId });
     if (!res.success) return;
 
-    const item = res.item;
-    document.getElementById('adminDrugId').value = item.drug_id || '';
-    document.getElementById('adminBrandName').value = item.brand_name || '';
-    document.getElementById('adminIngredientName').value = item.ingredient_name || '';
-    document.getElementById('adminDrugGroup').value = item.drug_group || '';
-    document.getElementById('adminAliases').value = item.aliases || '';
-    document.getElementById('adminPatientKeywords').value = item.patient_keywords || '';
-    document.getElementById('adminCommonUse').value = item.common_use || '';
-    document.getElementById('adminCautionLevel').value = item.caution_level || '일반';
-    document.getElementById('adminStaffNote').value = item.staff_note || '';
-    document.getElementById('adminDrugActive').value = item.is_active || 'Y';
-    document.getElementById('adminDrugStatus').textContent = `${item.drug_id} 수정 모드입니다.`;
+    const item = res.item || {};
+
+    const fieldMap = {
+      adminDrugId: item.drug_id || '',
+      adminBrandName: item.brand_name || '',
+      adminIngredientName: item.ingredient_name || '',
+      adminDrugGroup: item.drug_group || '',
+      adminAliases: item.aliases || '',
+      adminPatientKeywords: item.patient_keywords || '',
+      adminCommonUse: item.common_use || '',
+      adminCautionLevel: item.caution_level || '일반',
+      adminStaffNote: item.staff_note || '',
+      adminDrugActive: item.is_active || 'Y'
+    };
+
+    Object.entries(fieldMap).forEach(([id, value]) => {
+      const el = document.getElementById(id);
+      if (el) el.value = value;
+    });
+
+    const statusEl = document.getElementById('adminDrugStatus');
+    if (statusEl) statusEl.textContent = `${item.drug_id} 수정 모드입니다.`;
   } catch (err) {
     console.error(err);
   }
@@ -301,40 +351,60 @@ async function editRule(ruleId) {
     const res = await apiGet('ruleDetail', { ruleId });
     if (!res.success) return;
 
-    const item = res.item;
-    document.getElementById('adminRuleId').value = item.rule_id || '';
-    document.getElementById('adminExamType').value = item.exam_type || '';
-    document.getElementById('adminTargetType').value = item.target_type || 'group';
-    document.getElementById('adminTargetValue').value = item.target_value || '';
-    document.getElementById('adminRuleCautionLevel').value = item.caution_level || '일반';
-    document.getElementById('adminNeedHold').value = item.need_hold || 'Y';
-    document.getElementById('adminHoldPeriod').value = item.hold_period || '';
-    document.getElementById('adminPatientMessage').value = item.patient_message || '';
-    document.getElementById('adminStaffMessage').value = item.staff_message || '';
-    document.getElementById('adminExceptionNote').value = item.exception_note || '';
-    document.getElementById('adminPriority').value = item.priority || '9';
-    document.getElementById('adminRuleActive').value = item.is_active || 'Y';
+    const item = res.item || {};
+
+    const fieldMap = {
+      adminRuleId: item.rule_id || '',
+      adminExamType: item.exam_type || '',
+      adminTargetType: item.target_type || 'group',
+      adminTargetValue: item.target_value || '',
+      adminRuleCautionLevel: item.caution_level || '일반',
+      adminNeedHold: item.need_hold || 'Y',
+      adminHoldPeriod: item.hold_period || '',
+      adminPatientMessage: item.patient_message || '',
+      adminStaffMessage: item.staff_message || '',
+      adminExceptionNote: item.exception_note || '',
+      adminPriority: item.priority || '9',
+      adminRuleActive: item.is_active || 'Y'
+    };
+
+    Object.entries(fieldMap).forEach(([id, value]) => {
+      const el = document.getElementById(id);
+      if (el) el.value = value;
+    });
 
     syncAdminTargetValueUI();
 
     if ((item.target_type || '') === 'group') {
-      document.getElementById('adminTargetValueGroup').value = item.target_value || '';
-      document.getElementById('adminTargetValue').value = item.target_value || '';
+      const groupSelect = document.getElementById('adminTargetValueGroup');
+      const hiddenValue = document.getElementById('adminTargetValue');
+
+      if (groupSelect) groupSelect.value = item.target_value || '';
+      if (hiddenValue) hiddenValue.value = item.target_value || '';
+
       clearAdminTargetDrugSelection();
     } else {
-      document.getElementById('adminTargetDrugSearch').value = item.target_display_name || item.target_value || '';
-      document.getElementById('adminTargetDrugSelected').innerHTML =
-        `<div class="target-picked-box">선택됨: ${escapeHtml(item.target_display_name || item.target_value || '')}</div>`;
+      const targetSearch = document.getElementById('adminTargetDrugSearch');
+      const selectedBox = document.getElementById('adminTargetDrugSelected');
+
+      if (targetSearch) {
+        targetSearch.value = item.target_display_name || item.target_value || '';
+      }
+      if (selectedBox) {
+        selectedBox.innerHTML =
+          `<div class="target-picked-box">선택됨: ${escapeHtml(item.target_display_name || item.target_value || '')}</div>`;
+      }
     }
 
-    document.getElementById('adminRuleStatus').textContent = `${item.rule_id} 수정 모드입니다.`;
+    const statusEl = document.getElementById('adminRuleStatus');
+    if (statusEl) statusEl.textContent = `${item.rule_id} 수정 모드입니다.`;
   } catch (err) {
     console.error(err);
   }
 }
 
 async function saveDrugItem() {
-  if (!isAdminLoggedIn) return;
+  if (!state.isAdminLoggedIn) return;
 
   const payload = {
     drug_id: getValue('adminDrugId'),
@@ -364,8 +434,10 @@ async function saveDrugItem() {
   try {
     const res = await apiGet(action, payload);
 
-    document.getElementById('adminDrugStatus').textContent =
-      (res.message || '') + (res.drug_id ? ` (${res.drug_id})` : '');
+    const statusEl = document.getElementById('adminDrugStatus');
+    if (statusEl) {
+      statusEl.textContent = (res.message || '') + (res.drug_id ? ` (${res.drug_id})` : '');
+    }
 
     if (!res.success) {
       hideAdminLoading();
@@ -378,26 +450,29 @@ async function saveDrugItem() {
 
     await loadRecentAdminData(false);
     await searchAdminDrugList(false);
-    autocompleteCache.clear();
-    lastAutocompleteKeyword = '';
+    state.autocompleteCache.clear();
+    state.lastAutocompleteKeyword = '';
 
     hideAdminLoading();
   } catch (err) {
     hideAdminLoading();
-    document.getElementById('adminDrugStatus').textContent =
-      '저장 오류: ' + getErrorMessage(err);
+    const statusEl = document.getElementById('adminDrugStatus');
+    if (statusEl) {
+      statusEl.textContent = '저장 오류: ' + getErrorMessage(err);
+    }
   }
 }
 
 async function saveRuleItem() {
-  if (!isAdminLoggedIn) return;
+  if (!state.isAdminLoggedIn) return;
 
   const targetType = getValue('adminTargetType');
   let targetValue = '';
 
   if (targetType === 'group') {
     targetValue = getValue('adminTargetValueGroup');
-    document.getElementById('adminTargetValue').value = targetValue;
+    const hiddenValue = document.getElementById('adminTargetValue');
+    if (hiddenValue) hiddenValue.value = targetValue;
   } else {
     targetValue = getValue('adminTargetValue');
   }
@@ -442,8 +517,10 @@ async function saveRuleItem() {
   try {
     const res = await apiGet(action, payload);
 
-    document.getElementById('adminRuleStatus').textContent =
-      (res.message || '') + (res.rule_id ? ` (${res.rule_id})` : '');
+    const statusEl = document.getElementById('adminRuleStatus');
+    if (statusEl) {
+      statusEl.textContent = (res.message || '') + (res.rule_id ? ` (${res.rule_id})` : '');
+    }
 
     if (!res.success) {
       hideAdminLoading();
@@ -460,8 +537,10 @@ async function saveRuleItem() {
     hideAdminLoading();
   } catch (err) {
     hideAdminLoading();
-    document.getElementById('adminRuleStatus').textContent =
-      '저장 오류: ' + getErrorMessage(err);
+    const statusEl = document.getElementById('adminRuleStatus');
+    if (statusEl) {
+      statusEl.textContent = '저장 오류: ' + getErrorMessage(err);
+    }
   }
 }
 
@@ -471,7 +550,8 @@ async function toggleDrug(drugId) {
   try {
     const res = await apiGet('toggleDrug', { drugId });
 
-    document.getElementById('adminDrugStatus').textContent = res.message || '';
+    const statusEl = document.getElementById('adminDrugStatus');
+    if (statusEl) statusEl.textContent = res.message || '';
 
     if (!res.success) {
       hideAdminLoading();
@@ -480,14 +560,16 @@ async function toggleDrug(drugId) {
 
     await loadRecentAdminData(false);
     await searchAdminDrugList(false);
-    autocompleteCache.clear();
-    lastAutocompleteKeyword = '';
+    state.autocompleteCache.clear();
+    state.lastAutocompleteKeyword = '';
 
     hideAdminLoading();
   } catch (err) {
     hideAdminLoading();
-    document.getElementById('adminDrugStatus').textContent =
-      '변경 오류: ' + getErrorMessage(err);
+    const statusEl = document.getElementById('adminDrugStatus');
+    if (statusEl) {
+      statusEl.textContent = '변경 오류: ' + getErrorMessage(err);
+    }
   }
 }
 
@@ -497,7 +579,8 @@ async function toggleRule(ruleId) {
   try {
     const res = await apiGet('toggleRule', { ruleId });
 
-    document.getElementById('adminRuleStatus').textContent = res.message || '';
+    const statusEl = document.getElementById('adminRuleStatus');
+    if (statusEl) statusEl.textContent = res.message || '';
 
     if (!res.success) {
       hideAdminLoading();
@@ -510,15 +593,18 @@ async function toggleRule(ruleId) {
     hideAdminLoading();
   } catch (err) {
     hideAdminLoading();
-    document.getElementById('adminRuleStatus').textContent =
-      '변경 오류: ' + getErrorMessage(err);
+    const statusEl = document.getElementById('adminRuleStatus');
+    if (statusEl) {
+      statusEl.textContent = '변경 오류: ' + getErrorMessage(err);
+    }
   }
 }
 
 function toggleCurrentDrugActive() {
   const id = getValue('adminDrugId');
   if (!id) {
-    document.getElementById('adminDrugStatus').textContent = '먼저 수정할 약물을 불러오세요.';
+    const statusEl = document.getElementById('adminDrugStatus');
+    if (statusEl) statusEl.textContent = '먼저 수정할 약물을 불러오세요.';
     return;
   }
   toggleDrug(id);
@@ -527,7 +613,8 @@ function toggleCurrentDrugActive() {
 function toggleCurrentRuleActive() {
   const id = getValue('adminRuleId');
   if (!id) {
-    document.getElementById('adminRuleStatus').textContent = '먼저 수정할 규칙을 불러오세요.';
+    const statusEl = document.getElementById('adminRuleStatus');
+    if (statusEl) statusEl.textContent = '먼저 수정할 규칙을 불러오세요.';
     return;
   }
   toggleRule(id);
@@ -545,12 +632,15 @@ async function loadStats(showLoading = false) {
       return;
     }
 
-    document.getElementById('statsSummaryWrap').innerHTML = `
-      <div class="summary-card full">
-        <div class="summary-label">총 검색수</div>
-        <div class="summary-value summary-blue">${res.totalSearches || 0}</div>
-      </div>
-    `;
+    const summaryWrap = document.getElementById('statsSummaryWrap');
+    if (summaryWrap) {
+      summaryWrap.innerHTML = `
+        <div class="summary-card full">
+          <div class="summary-label">총 검색수</div>
+          <div class="summary-value summary-blue">${res.totalSearches || 0}</div>
+        </div>
+      `;
+    }
 
     renderStatsList('statsKeywordList', res.topKeywords || []);
     renderStatsList('statsExamList', res.topExams || []);
@@ -564,7 +654,10 @@ async function loadStats(showLoading = false) {
 }
 
 function renderStatsList(id, list) {
-  document.getElementById(id).innerHTML =
+  const el = document.getElementById(id);
+  if (!el) return;
+
+  el.innerHTML =
     list.map(item => `
       <div class="admin-item">
         <strong>${escapeHtml(item.name)}</strong>
@@ -574,27 +667,42 @@ function renderStatsList(id, list) {
 }
 
 function clearDrugForm() {
-  ['adminDrugId','adminBrandName','adminIngredientName','adminAliases','adminPatientKeywords','adminCommonUse','adminStaffNote'].forEach(id => {
-    document.getElementById(id).value = '';
+  ['adminDrugId', 'adminBrandName', 'adminIngredientName', 'adminAliases', 'adminPatientKeywords', 'adminCommonUse', 'adminStaffNote'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
   });
-  document.getElementById('adminDrugGroup').value = '';
-  document.getElementById('adminCautionLevel').value = '일반';
-  document.getElementById('adminDrugActive').value = 'Y';
+
+  const drugGroup = document.getElementById('adminDrugGroup');
+  const cautionLevel = document.getElementById('adminCautionLevel');
+  const active = document.getElementById('adminDrugActive');
+
+  if (drugGroup) drugGroup.value = '';
+  if (cautionLevel) cautionLevel.value = '일반';
+  if (active) active.value = 'Y';
 }
 
 function clearRuleForm() {
-  ['adminRuleId','adminTargetValue','adminHoldPeriod','adminPatientMessage','adminStaffMessage','adminExceptionNote'].forEach(id => {
-    document.getElementById(id).value = '';
+  ['adminRuleId', 'adminTargetValue', 'adminHoldPeriod', 'adminPatientMessage', 'adminStaffMessage', 'adminExceptionNote'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
   });
 
-  document.getElementById('adminExamType').value = '';
-  document.getElementById('adminTargetType').value = 'group';
-  document.getElementById('adminRuleCautionLevel').value = '일반';
-  document.getElementById('adminNeedHold').value = 'Y';
-  document.getElementById('adminPriority').value = '9';
-  document.getElementById('adminRuleActive').value = 'Y';
+  const examType = document.getElementById('adminExamType');
+  const targetType = document.getElementById('adminTargetType');
+  const cautionLevel = document.getElementById('adminRuleCautionLevel');
+  const needHold = document.getElementById('adminNeedHold');
+  const priority = document.getElementById('adminPriority');
+  const active = document.getElementById('adminRuleActive');
+  const targetValueGroup = document.getElementById('adminTargetValueGroup');
 
-  document.getElementById('adminTargetValueGroup').value = '';
+  if (examType) examType.value = '';
+  if (targetType) targetType.value = 'group';
+  if (cautionLevel) cautionLevel.value = '일반';
+  if (needHold) needHold.value = 'Y';
+  if (priority) priority.value = '9';
+  if (active) active.value = 'Y';
+  if (targetValueGroup) targetValueGroup.value = '';
+
   clearAdminTargetDrugSelection();
   syncAdminTargetValueUI();
 }
@@ -604,23 +712,26 @@ function syncAdminTargetValueUI() {
   const groupWrap = document.getElementById('adminTargetValueGroupWrap');
   const drugWrap = document.getElementById('adminTargetValueDrugWrap');
   const hiddenValue = document.getElementById('adminTargetValue');
+  const groupSelect = document.getElementById('adminTargetValueGroup');
+
+  if (!groupWrap || !drugWrap || !hiddenValue) return;
 
   if (type === 'group') {
     groupWrap.classList.remove('hidden');
     drugWrap.classList.add('hidden');
     clearAdminTargetDrugSelection();
-    hiddenValue.value = document.getElementById('adminTargetValueGroup').value || '';
+    hiddenValue.value = groupSelect ? (groupSelect.value || '') : '';
   } else {
     groupWrap.classList.add('hidden');
     drugWrap.classList.remove('hidden');
-    document.getElementById('adminTargetValueGroup').value = '';
+    if (groupSelect) groupSelect.value = '';
     hiddenValue.value = hiddenValue.value || '';
   }
 }
 
 function scheduleAdminDrugTargetSearch() {
-  clearTimeout(adminDrugTargetTimer);
-  adminDrugTargetTimer = setTimeout(() => {
+  clearTimeout(state.adminDrugTargetTimer);
+  state.adminDrugTargetTimer = setTimeout(() => {
     searchAdminDrugTargetList();
   }, 180);
 }
@@ -628,6 +739,8 @@ function scheduleAdminDrugTargetSearch() {
 async function searchAdminDrugTargetList() {
   const keyword = getValue('adminTargetDrugSearch');
   const listEl = document.getElementById('adminTargetDrugSearchList');
+
+  if (!listEl) return;
 
   if (!keyword || normalizeKeyword(keyword).length < 1) {
     listEl.innerHTML = '';
@@ -665,19 +778,31 @@ async function searchAdminDrugTargetList() {
 }
 
 function selectAdminTargetDrug(drugId, brandName, ingredientName) {
-  document.getElementById('adminTargetValue').value = drugId;
-  document.getElementById('adminTargetDrugSearch').value = brandName;
-  document.getElementById('adminTargetDrugSelected').innerHTML =
-    `<div class="target-picked-box">선택됨: ${escapeHtml(drugId)} · ${escapeHtml(brandName)}</div>`;
-
+  const hiddenValue = document.getElementById('adminTargetValue');
+  const targetSearch = document.getElementById('adminTargetDrugSearch');
+  const selectedBox = document.getElementById('adminTargetDrugSelected');
   const listEl = document.getElementById('adminTargetDrugSearchList');
-  listEl.innerHTML = '';
-  listEl.classList.add('compact-empty');
+
+  if (hiddenValue) hiddenValue.value = drugId;
+  if (targetSearch) targetSearch.value = brandName;
+  if (selectedBox) {
+    selectedBox.innerHTML = `<div class="target-picked-box">선택됨: ${escapeHtml(drugId)} · ${escapeHtml(brandName)}</div>`;
+  }
+  if (listEl) {
+    listEl.innerHTML = '';
+    listEl.classList.add('compact-empty');
+  }
 }
 
 function clearAdminTargetDrugSelection() {
-  document.getElementById('adminTargetDrugSearch').value = '';
-  document.getElementById('adminTargetDrugSelected').innerHTML = '';
-  document.getElementById('adminTargetDrugSearchList').innerHTML = '';
-  document.getElementById('adminTargetDrugSearchList').classList.add('compact-empty');
+  const targetSearch = document.getElementById('adminTargetDrugSearch');
+  const selectedBox = document.getElementById('adminTargetDrugSelected');
+  const listEl = document.getElementById('adminTargetDrugSearchList');
+
+  if (targetSearch) targetSearch.value = '';
+  if (selectedBox) selectedBox.innerHTML = '';
+  if (listEl) {
+    listEl.innerHTML = '';
+    listEl.classList.add('compact-empty');
+  }
 }
