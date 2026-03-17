@@ -6,6 +6,8 @@ const state = {
   appConfig: {},
   examList: [],
   drugGroupList: [],
+  adminExamList: [],
+  adminDrugGroupList: [],
   isAdminLoggedIn: false,
   currentAdminTab: 'drug',
   autoTimer: null,
