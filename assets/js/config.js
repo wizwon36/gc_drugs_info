@@ -1,4 +1,4 @@
-const API_BASE = 'https://script.google.com/macros/s/AKfycbz1oAJVr17OoZBLfJznJ3VSRXlgIL1x3hC6NVpHn0JYRcdBBrWzK9g9y1bSQykjyZ5IiQ/exec';
+const API_BASE = 'https://script.google.com/macros/s/AKfycbziZUGLtMlQEZo3dCmuw21h8V2LuNH-5z5V54LunxPiI7Z6_HJySAdxmn5TSwhlO6uY6g/exec';
 
 let currentMode = 'patient';
 let lockedMode = null;
