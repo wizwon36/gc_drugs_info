@@ -1894,7 +1894,7 @@ label,
 }
 
 .search-actions {
-  margin-top: 4px;
+  display: none;
 }
 
 .keyword-search-row {
@@ -2491,6 +2491,15 @@ label,
 
   .keyword-search-row .field:last-child {
     display: none;
+  }
+
+  .keyword-search-row {
+    grid-template-columns: 1fr;
+  }
+
+  .search-actions {
+    display: block;
+    margin-top: 8px;
   }
 }
 
