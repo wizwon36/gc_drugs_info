@@ -1103,7 +1103,7 @@ body{
 .drug-name{
   font-size:var(--font-card-title);
   font-weight:800;
-  margin:0 0 5px;
+  margin:2px 0 5px;
   word-break:keep-all;
   line-height:1.34;
   color:var(--gc-navy);
