@@ -3875,21 +3875,6 @@
     
                       <div class="k">예외 사항</div>
                       <div class="v">${escapeHtml(rule.exception_note || '-')}</div>
-    
-                      <div class="k">적용 기준</div>
-                      <div class="v">${escapeHtml(getTargetTypeLabel(rule.target_type))}</div>
-    
-                      <div class="k">적용 대상 값</div>
-                      <div class="v">${escapeHtml(rule.target_value || '-')}</div>
-    
-                      <div class="k">규칙 ID</div>
-                      <div class="v">${escapeHtml(rule.rule_id || '-')}</div>
-    
-                      <div class="k">검사 적용 주의도</div>
-                      <div class="v">${escapeHtml(rule.caution_level || item.caution_level || '일반')}</div>
-    
-                      <div class="k">우선순위</div>
-                      <div class="v">${escapeHtml(String(rule.priority || '-'))}</div>
                     ` : ''}
                   </div>
     
