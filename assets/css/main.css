@@ -2568,3 +2568,58 @@ label,
   background: #fff;
   color: #495c66;
 }
+
+/* 검색어 그룹 탭 */
+.group-tab-nav {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 12px 0 14px;
+}
+
+.group-tab-btn {
+  appearance: none;
+  border: 1px solid #d7e8f2;
+  background: #ffffff;
+  color: #4a6472;
+  border-radius: 999px;
+  min-height: 36px;
+  padding: 0 14px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all .15s ease;
+}
+
+.group-tab-btn:hover {
+  background: #f4fbfe;
+  border-color: #b9d9e8;
+  color: #0d6f97;
+}
+
+.group-tab-btn.active {
+  background: linear-gradient(135deg, #e5f5fc, #eefaff);
+  border-color: #8dc9df;
+  color: #0b6287;
+  box-shadow: 0 4px 10px rgba(13,141,190,.10);
+}
+
+.group-master-header {
+  padding: 10px 12px;
+  border: 1px solid #d7e8f2;
+  border-radius: 16px;
+  background: linear-gradient(180deg, #eef8fd, #f8fcff);
+}
+
+.group-master-title {
+  font-size: 17px;
+  font-weight: 800;
+  color: #0b6287;
+}
+
+.group-master-sub {
+  margin-top: 4px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #3f7388;
+}
