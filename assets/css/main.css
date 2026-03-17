@@ -2498,3 +2498,21 @@ label,
 .mode-switch {
   display: none !important;
 }
+
+#keyword {
+  min-height: 96px;
+  height: 96px;
+  padding: 14px;
+  resize: none;
+}
+
+#searchBtn.search-inline-btn {
+  min-height: 96px;
+  height: 96px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px;
+  line-height: 1;
+  font-size: 14px;
+}
