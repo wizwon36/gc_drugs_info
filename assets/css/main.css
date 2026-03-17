@@ -356,13 +356,6 @@ body{
   min-width:max-content;
 }
 
-.admin-btn{
-  background:#f3f8fb;
-  color:var(--text);
-  border:1px solid var(--line);
-  width:100%;
-}
-
 .admin-header-bar{
   display:flex;
   align-items:center;
