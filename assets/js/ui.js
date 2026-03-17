@@ -29,7 +29,7 @@ function setSearchButtonLoading(loading) {
 
   btn.disabled = !!loading;
   btn.classList.toggle('loading', !!loading);
-  btn.textContent = loading ? '조회중' : '🔍 조회';
+  btn.textContent = loading ? '조회중' : '조회';
 }
 
 function showLoadingOverlay(title, message) {
