@@ -24,6 +24,8 @@ async function initializeApp() {
     state.appConfig = data.config || {};
     state.examList = data.exams || [];
     state.drugGroupList = data.drugGroups || [];
+    state.adminExamList = data.adminExams || [];
+    state.adminDrugGroupList = data.adminDrugGroups || [];
 
     renderExamOptions();
     renderAdminOptions();
