@@ -130,7 +130,7 @@ async function loginAdmin() {
   } catch (err) {
     hideAdminLoading();
     document.getElementById('adminLoginStatus').textContent =
-      '로그인 오류: ' + (err?.message || String(err));
+      '로그인 오류: ' + getErrorMessage(err);
   }
 }
 
@@ -377,7 +377,7 @@ async function saveDrugItem() {
   } catch (err) {
     hideAdminLoading();
     document.getElementById('adminDrugStatus').textContent =
-      '저장 오류: ' + (err?.message || String(err));
+      '저장 오류: ' + getErrorMessage(err);
   }
 }
 
@@ -391,7 +391,7 @@ async function saveRuleItem() {
     targetValue = getValue('adminTargetValueGroup');
     document.getElementById('adminTargetValue').value = targetValue;
   } else {
-    targetValue = getValue('adminTargetValue'); // drug_id 저장
+    targetValue = getValue('adminTargetValue');
   }
 
   const payload = {
@@ -453,7 +453,7 @@ async function saveRuleItem() {
   } catch (err) {
     hideAdminLoading();
     document.getElementById('adminRuleStatus').textContent =
-      '저장 오류: ' + (err?.message || String(err));
+      '저장 오류: ' + getErrorMessage(err);
   }
 }
 
@@ -479,7 +479,7 @@ async function toggleDrug(drugId) {
   } catch (err) {
     hideAdminLoading();
     document.getElementById('adminDrugStatus').textContent =
-      '변경 오류: ' + (err?.message || String(err));
+      '변경 오류: ' + getErrorMessage(err);
   }
 }
 
@@ -503,7 +503,7 @@ async function toggleRule(ruleId) {
   } catch (err) {
     hideAdminLoading();
     document.getElementById('adminRuleStatus').textContent =
-      '변경 오류: ' + (err?.message || String(err));
+      '변경 오류: ' + getErrorMessage(err);
   }
 }
 
@@ -591,8 +591,6 @@ function clearRuleForm() {
   syncAdminTargetValueUI();
 }
 
-let adminDrugTargetTimer = null;
-
 function syncAdminTargetValueUI() {
   const type = getValue('adminTargetType');
   const groupWrap = document.getElementById('adminTargetValueGroupWrap');
@@ -671,4 +669,3 @@ function clearAdminTargetDrugSelection() {
   document.getElementById('adminTargetDrugSearchList').innerHTML = '';
   document.getElementById('adminTargetDrugSearchList').classList.add('compact-empty');
 }
-
