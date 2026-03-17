@@ -380,18 +380,79 @@ function renderGroupedResults(groupedResults) {
   area.innerHTML = '';
 
   if (!groupedResults.length) {
-    area.innerHTML = `<div class="group-section"><div class="empty">검색 결과가 없습니다.</div></div>`;
+    area.innerHTML = `
+      <div class="group-section">
+        <div class="empty">검색 결과가 없습니다.</div>
+      </div>
+    `;
     return;
   }
 
-  groupedResults.forEach((group, groupIndex) => {
-    const section = document.createElement('div');
-    section.className = 'group-section result-slider-section';
+  const outerSliderId = 'keywordGroupSlider';
 
-    if (!group.found) {
-      section.innerHTML = `
-        <div class="group-header">
-          <div>
+  area.innerHTML = `
+    <div class="group-master-slider-wrap">
+      <div class="group-master-header">
+        <div class="group-master-title-wrap">
+          <div class="group-master-title">검색 결과</div>
+          <div class="group-master-sub" id="${outerSliderId}-group-label"></div>
+        </div>
+
+        <div class="master-slider-nav" aria-label="검색어 그룹 이동">
+          <button
+            type="button"
+            class="master-slider-btn"
+            data-master-slider-target="${outerSliderId}"
+            data-direction="prev"
+            aria-label="이전 검색어 그룹"
+          >
+            ‹
+          </button>
+
+          <div class="master-slider-counter" id="${outerSliderId}-counter"></div>
+
+          <button
+            type="button"
+            class="master-slider-btn"
+            data-master-slider-target="${outerSliderId}"
+            data-direction="next"
+            aria-label="다음 검색어 그룹"
+          >
+            ›
+          </button>
+        </div>
+      </div>
+
+      <div class="group-master-slider" id="${outerSliderId}" data-current-index="0">
+        <div class="group-master-track">
+          ${groupedResults.map((group, groupIndex) => {
+            return `
+              <div
+                class="group-master-slide"
+                data-master-slide-index="${groupIndex}"
+                data-group-keyword="${escapeHtml(group.keyword)}"
+                aria-hidden="${groupIndex === 0 ? 'false' : 'true'}"
+              >
+                ${createGroupSlideHtml(group, groupIndex)}
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+
+  bindMasterSlider();
+  bindInnerResultSliders();
+  updateMasterSlider(document.getElementById(outerSliderId), 0, true);
+}
+
+function createGroupSlideHtml(group, groupIndex) {
+  if (!group.found) {
+    return `
+      <div class="group-section result-slider-section">
+        <div class="group-header slider-group-header">
+          <div class="slider-group-meta">
             <div class="group-title">검색어: ${escapeHtml(group.keyword)}</div>
             <div class="group-sub">결과 없음</div>
           </div>
@@ -400,22 +461,22 @@ function renderGroupedResults(groupedResults) {
         <div class="result-card slider-empty-card">
           <div class="empty-title">일치하는 약 정보를 찾지 못했습니다.</div>
           <div class="empty-desc">
-            복용 중단에 해당하는 약이 아니거나, 등록되지 않은 약입니다.
+            복용 중단 대상이 아니거나, 아직 등록되지 않은 약입니다.
           </div>
           ${renderSuggestionChips(group.suggestions || [], group.keyword)}
         </div>
-      `;
-      area.appendChild(section);
-      return;
-    }
+      </div>
+    `;
+  }
 
-    const sortedRows = [...group.results].sort((a, b) => {
-      return Number(b.sort_weight || 0) - Number(a.sort_weight || 0);
-    });
+  const sortedRows = [...group.results].sort((a, b) => {
+    return Number(b.sort_weight || 0) - Number(a.sort_weight || 0);
+  });
 
-    const sliderId = `resultSlider-${groupIndex}`;
+  const innerSliderId = `resultSlider-${groupIndex}`;
 
-    section.innerHTML = `
+  return `
+    <div class="group-section result-slider-section">
       <div class="group-header slider-group-header">
         <div class="slider-group-meta">
           <div class="group-title">검색어: ${escapeHtml(group.keyword)}</div>
@@ -426,19 +487,19 @@ function renderGroupedResults(groupedResults) {
           <button
             type="button"
             class="slider-nav-btn"
-            data-slider-target="${sliderId}"
+            data-slider-target="${innerSliderId}"
             data-direction="prev"
             aria-label="이전 결과"
           >
             ‹
           </button>
 
-          <div class="slider-counter" id="${sliderId}-counter">1 / ${sortedRows.length}</div>
+          <div class="slider-counter" id="${innerSliderId}-counter">1 / ${sortedRows.length}</div>
 
           <button
             type="button"
             class="slider-nav-btn"
-            data-slider-target="${sliderId}"
+            data-slider-target="${innerSliderId}"
             data-direction="next"
             aria-label="다음 결과"
           >
@@ -447,7 +508,7 @@ function renderGroupedResults(groupedResults) {
         </div>
       </div>
 
-      <div class="result-slider" id="${sliderId}" data-current-index="0">
+      <div class="result-slider" id="${innerSliderId}" data-current-index="0">
         <div class="result-slider-track">
           ${sortedRows.map((item, index) => `
             <div
@@ -460,15 +521,117 @@ function renderGroupedResults(groupedResults) {
           `).join('')}
         </div>
       </div>
-    `;
-
-    area.appendChild(section);
-  });
-
-  bindResultSliders();
+    </div>
+  `;
 }
 
-function bindResultSliders() {
+function bindMasterSlider() {
+  const buttons = document.querySelectorAll('.master-slider-btn');
+
+  buttons.forEach(btn => {
+    btn.onclick = () => {
+      const sliderId = btn.dataset.masterSliderTarget;
+      const direction = btn.dataset.direction;
+      const slider = document.getElementById(sliderId);
+      if (!slider) return;
+
+      const total = slider.querySelectorAll('.group-master-slide').length;
+      const current = Number(slider.dataset.currentIndex || 0);
+
+      let nextIndex = current;
+      if (direction === 'prev') nextIndex = Math.max(0, current - 1);
+      if (direction === 'next') nextIndex = Math.min(total - 1, current + 1);
+
+      updateMasterSlider(slider, nextIndex);
+    };
+  });
+
+  const sliders = document.querySelectorAll('.group-master-slider');
+  sliders.forEach(slider => {
+    attachMasterSliderSwipe(slider);
+  });
+}
+
+function updateMasterSlider(slider, nextIndex, skipAnimation = false) {
+  const track = slider.querySelector('.group-master-track');
+  const slides = Array.from(slider.querySelectorAll('.group-master-slide'));
+  if (!track || !slides.length) return;
+
+  const maxIndex = slides.length - 1;
+  const safeIndex = Math.min(Math.max(nextIndex, 0), maxIndex);
+
+  slider.dataset.currentIndex = String(safeIndex);
+
+  if (skipAnimation) {
+    track.classList.add('no-anim');
+  } else {
+    track.classList.remove('no-anim');
+  }
+
+  track.style.transform = `translateX(-${safeIndex * 100}%)`;
+
+  slides.forEach((slide, index) => {
+    slide.setAttribute('aria-hidden', index === safeIndex ? 'false' : 'true');
+  });
+
+  const counter = document.getElementById(`${slider.id}-counter`);
+  if (counter) {
+    counter.textContent = `${safeIndex + 1} / ${slides.length}`;
+  }
+
+  const label = document.getElementById(`${slider.id}-group-label`);
+  if (label) {
+    const keyword = slides[safeIndex]?.dataset.groupKeyword || '';
+    label.textContent = `검색어: ${keyword}`;
+  }
+
+  const prevBtn = document.querySelector(`.master-slider-btn[data-master-slider-target="${slider.id}"][data-direction="prev"]`);
+  const nextBtn = document.querySelector(`.master-slider-btn[data-master-slider-target="${slider.id}"][data-direction="next"]`);
+
+  if (prevBtn) prevBtn.disabled = safeIndex === 0;
+  if (nextBtn) nextBtn.disabled = safeIndex === maxIndex;
+
+  if (skipAnimation) {
+    requestAnimationFrame(() => {
+      track.classList.remove('no-anim');
+    });
+  }
+}
+
+function attachMasterSliderSwipe(slider) {
+  let startX = 0;
+  let deltaX = 0;
+  let isDragging = false;
+
+  slider.addEventListener('touchstart', (e) => {
+    if (!e.touches || !e.touches.length) return;
+    startX = e.touches[0].clientX;
+    deltaX = 0;
+    isDragging = true;
+  }, { passive: true });
+
+  slider.addEventListener('touchmove', (e) => {
+    if (!isDragging || !e.touches || !e.touches.length) return;
+    deltaX = e.touches[0].clientX - startX;
+  }, { passive: true });
+
+  slider.addEventListener('touchend', () => {
+    if (!isDragging) return;
+    isDragging = false;
+
+    const threshold = 50;
+    const current = Number(slider.dataset.currentIndex || 0);
+    const total = slider.querySelectorAll('.group-master-slide').length;
+
+    if (deltaX <= -threshold) {
+      updateMasterSlider(slider, Math.min(total - 1, current + 1));
+    } else if (deltaX >= threshold) {
+      updateMasterSlider(slider, Math.max(0, current - 1));
+    }
+  });
+}
+
+function bindInnerResultSliders() {
   const buttons = document.querySelectorAll('.slider-nav-btn');
 
   buttons.forEach(btn => {
@@ -485,18 +648,18 @@ function bindResultSliders() {
       if (direction === 'prev') nextIndex = Math.max(0, current - 1);
       if (direction === 'next') nextIndex = Math.min(total - 1, current + 1);
 
-      updateResultSlider(slider, nextIndex);
+      updateInnerResultSlider(slider, nextIndex);
     };
   });
 
   const sliders = document.querySelectorAll('.result-slider');
   sliders.forEach(slider => {
-    attachSliderSwipe(slider);
-    updateResultSlider(slider, Number(slider.dataset.currentIndex || 0), true);
+    attachInnerSliderSwipe(slider);
+    updateInnerResultSlider(slider, Number(slider.dataset.currentIndex || 0), true);
   });
 }
 
-function updateResultSlider(slider, nextIndex, skipAnimation = false) {
+function updateInnerResultSlider(slider, nextIndex, skipAnimation = false) {
   const track = slider.querySelector('.result-slider-track');
   const slides = Array.from(slider.querySelectorAll('.result-slide'));
   if (!track || !slides.length) return;
@@ -536,7 +699,7 @@ function updateResultSlider(slider, nextIndex, skipAnimation = false) {
   }
 }
 
-function attachSliderSwipe(slider) {
+function attachInnerSliderSwipe(slider) {
   let startX = 0;
   let deltaX = 0;
   let isDragging = false;
@@ -562,9 +725,9 @@ function attachSliderSwipe(slider) {
     const total = slider.querySelectorAll('.result-slide').length;
 
     if (deltaX <= -threshold) {
-      updateResultSlider(slider, Math.min(total - 1, current + 1));
+      updateInnerResultSlider(slider, Math.min(total - 1, current + 1));
     } else if (deltaX >= threshold) {
-      updateResultSlider(slider, Math.max(0, current - 1));
+      updateInnerResultSlider(slider, Math.max(0, current - 1));
     }
   });
 }
