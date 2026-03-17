@@ -3806,7 +3806,7 @@
     
         ${currentMode === 'patient' ? `
           <div class="patient-help-note">
-            검사별 안내를 꼭 확인하세요.
+            아래 검사별 안내를 꼭 확인하세요.
           </div>
         ` : ''}
       `;
@@ -3825,6 +3825,8 @@
             ${examResults.map(result => {
               const rule = result.applied_rule || {};
               const caution = getExamDisplayCaution(item, rule);
+              const showHoldPeriod = shouldShowHoldPeriod(rule);
+              const patientGuidance = getPatientGuidanceNote(rule);
     
               return `
                 <div class="exam-result-item">
@@ -3840,11 +3842,13 @@
                   </div>
     
                   <div class="exam-result-grid">
-                    <div class="k">중단 필요 여부</div>
-                    <div class="v">${formatNeedHold(rule.need_hold)}</div>
+                    <div class="k">복용 안내</div>
+                    <div class="v">${escapeHtml(formatNeedHold(rule.need_hold))}</div>
     
-                    <div class="k">중단 기간</div>
-                    <div class="v">${escapeHtml(rule.hold_period || '-')}</div>
+                    ${showHoldPeriod ? `
+                      <div class="k">중단 시점</div>
+                      <div class="v">${escapeHtml(rule.hold_period || '-')}</div>
+                    ` : ''}
     
                     <div class="k">${currentMode === 'staff' ? '환자 안내' : '안내 문구'}</div>
                     <div class="v">${escapeHtml(rule.patient_message || '-')}</div>
@@ -3872,6 +3876,12 @@
                       <div class="v">${escapeHtml(String(rule.priority || '-'))}</div>
                     ` : ''}
                   </div>
+    
+                  ${currentMode === 'patient' && patientGuidance ? `
+                    <div class="patient-guidance-box">
+                      <strong>안내:</strong> ${escapeHtml(patientGuidance)}
+                    </div>
+                  ` : ''}
                 </div>
               `;
             }).join('')}
