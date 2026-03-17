@@ -2614,10 +2614,12 @@ label,
 }
 
 .group-tab-btn.active {
-  background: linear-gradient(135deg, #e8f6fc, #f4fbfe);
-  border-color: #9fcfe2;
-  color: #0b6f97;
-  box-shadow: 0 4px 10px rgba(13,141,190,.10);
+  background: linear-gradient(135deg, #d8f0fb, #ebf8fe);
+  border-color: #69b9d8;
+  color: #075d84;
+  font-weight: 800;
+  box-shadow: 0 6px 14px rgba(13,141,190,.16);
+  transform: translateY(-1px);
 }
 
 /* 검색어별 결과 헤더도 현재 카드 톤에 맞춤 */
