@@ -518,6 +518,95 @@
       font-weight:800;
     }    
 
+     .exam-result-list{
+      display:grid;
+      gap:12px;
+      margin-top:14px;
+    }
+    
+    .exam-result-item{
+      border:1px solid #d8e8ef;
+      border-radius:16px;
+      background:linear-gradient(180deg,#ffffff 0%, #f8fcfe 100%);
+      padding:12px 13px;
+      box-shadow:0 4px 12px rgba(24,67,89,.04);
+    }
+    
+    .exam-result-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-bottom:10px;
+    }
+    
+    .exam-result-title{
+      font-size:calc(var(--font-base) + 1px);
+      font-weight:800;
+      color:var(--gc-navy);
+      line-height:1.35;
+      word-break:keep-all;
+    }
+    
+    .exam-result-meta{
+      display:flex;
+      gap:6px;
+      flex-wrap:wrap;
+    }
+    
+    .exam-meta-badge{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:28px;
+      padding:5px 10px;
+      border-radius:999px;
+      background:#eef7fb;
+      color:#1f6f98;
+      font-size:12px;
+      font-weight:800;
+      border:1px solid #cfe3ec;
+      white-space:nowrap;
+    }
+    
+    .exam-result-empty{
+      margin-top:12px;
+      border-radius:15px;
+      padding:12px 13px;
+      background:#f8fcff;
+      border:1px dashed #c6dfe9;
+      color:#59717c;
+      line-height:1.6;
+    }
+    
+    .exam-result-grid{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:5px 0;
+      font-size:var(--font-base);
+      line-height:1.62;
+    }
+    
+    .exam-result-grid .k{
+      color:#1f6f98;
+      font-weight:700;
+      word-break:keep-all;
+      margin-top:5px;
+    }
+    
+    .exam-result-grid .v{
+      color:var(--text);
+      word-break:break-word;
+      min-width:0;
+    }
+    
+    .patient-help-note{
+      margin-top:10px;
+      font-size:13px;
+      color:#6c858f;
+      line-height:1.5;
+    }
    
     .label-optional{
       color:#708892;
@@ -1541,7 +1630,7 @@
     
       .exam-result-grid .k{
         margin-top:0;
-      }
+      }     
     }
 
     @media (max-width:480px){
@@ -2083,7 +2172,7 @@
 
     let autocompleteActiveIndex = -1;
 
-    const API_BASE = 'https://script.google.com/macros/s/AKfycbyLkaTfqbYJsQfEHDi5aROV5fuHpNDOFtJ5xR6Wp5MBX2BXsJiZmuAdiKAqRpKrlTweGQ/exec';
+    const API_BASE = 'https://script.google.com/macros/s/AKfycbz1oAJVr17OoZBLfJznJ3VSRXlgIL1x3hC6NVpHn0JYRcdBBrWzK9g9y1bSQykjyZ5IiQ/exec';
 
     async function apiGet(action, params = {}) {
       const url = new URL(API_BASE);
@@ -3115,7 +3204,7 @@
     
       document.getElementById('adminRuleStatus').textContent = '신규 규칙 입력 모드입니다.';
     }
-
+    
     async function editDrug(drugId) {
       try {
         const res = await apiGet('drugDetail', { drugId });
@@ -3706,16 +3795,20 @@
               약물군: ${escapeHtml(item.drug_group || '-')}
             </div>
           </div>
-          <div class="badge ${getCautionClass(item.caution_level)}">
-            ${escapeHtml(item.caution_level || '일반')}
-          </div>
         </div>
     
         <div class="kv">
           <div class="k">일반 용도</div><div class="v">${escapeHtml(item.common_use || '-')}</div>
           <div class="k">검색 별칭</div><div class="v">${escapeHtml((item.aliases || []).join(', ') || '-')}</div>
+          ${currentMode === 'staff' ? `<div class="k">약물 기본 주의도</div><div class="v">${escapeHtml(item.caution_level || '일반')}</div>` : ''}
           ${currentMode === 'staff' ? `<div class="k">직원 참고 메모</div><div class="v">${escapeHtml(item.staff_note || '-')}</div>` : ''}
         </div>
+    
+        ${currentMode === 'patient' ? `
+          <div class="patient-help-note">
+            검사별 안내를 꼭 확인하세요.
+          </div>
+        ` : ''}
       `;
     
       let examHtml = '';
@@ -3731,15 +3824,14 @@
           <div class="exam-result-list">
             ${examResults.map(result => {
               const rule = result.applied_rule || {};
-              const ruleCautionLevel = getRuleCautionLevel(item, rule);
-              const cautionClass = getCautionClass(ruleCautionLevel);
+              const caution = getExamDisplayCaution(item, rule);
     
               return `
                 <div class="exam-result-item">
                   <div class="exam-result-head">
                     <div class="exam-result-title">${escapeHtml(result.exam_type || '검사 미지정')}</div>
                     <div class="exam-result-meta">
-                      <div class="badge ${cautionClass}">${escapeHtml(ruleCautionLevel)}</div>
+                      <div class="badge ${caution.className}">${escapeHtml(caution.label)}</div>
                       ${currentMode === 'staff'
                         ? `<div class="exam-meta-badge">매칭 ${escapeHtml(String(result.matched_rule_count || 0))}건</div>`
                         : ''
@@ -3773,6 +3865,9 @@
                       <div class="k">규칙 ID</div>
                       <div class="v">${escapeHtml(rule.rule_id || '-')}</div>
     
+                      <div class="k">검사 적용 주의도</div>
+                      <div class="v">${escapeHtml(rule.caution_level || item.caution_level || '일반')}</div>
+    
                       <div class="k">우선순위</div>
                       <div class="v">${escapeHtml(String(rule.priority || '-'))}</div>
                     ` : ''}
@@ -3786,7 +3881,7 @@
     
       return `<div class="result-card">${commonInfo}${examHtml}</div>`;
     }
-
+    
     function getRuleCautionLevel(item, rule) {
       return (rule && rule.caution_level) || item.caution_level || '일반';
     }
@@ -3809,7 +3904,7 @@
 
     function formatNeedHold(value) {
       if (value === 'Y') return '중단 필요';
-      if (value === 'N') return '대부분 유지';
+      if (value === 'N') return currentMode === 'patient' ? '복용 유지' : '대부분 유지';
       if (value === 'CONSULT') return '상담 필요';
       return value || '-';
     }
@@ -3820,6 +3915,43 @@
       return 'badge-normal';
     }
 
+    function mapPatientCautionLabel(level) {
+      const value = String(level || '').trim();
+    
+      if (currentMode === 'staff') {
+        return value || '일반';
+      }
+    
+      switch (value) {
+        case '일반':
+          return '복용 가능';
+        case '중간':
+          return '주의';
+        case '높음':
+          return '중요';
+        case '매우높음':
+          return '반드시 확인';
+        default:
+          return value || '복용 가능';
+      }
+    }
+    
+    function getExamDisplayCaution(item, rule) {
+      const rawLevel = (rule && rule.caution_level) || item.caution_level || '일반';
+      return {
+        raw: rawLevel,
+        label: mapPatientCautionLabel(rawLevel),
+        className: getCautionClass(rawLevel)
+      };
+    }
+    
+    function getTargetTypeLabel(value) {
+      if (value === 'drug') return '약 개별';
+      if (value === 'group') return '약물군';
+      return value || '-';
+    }
+
+    
     function setStatus(text, isLoading = false) {
       const el = document.getElementById('statusText');
       if (!el) return;
