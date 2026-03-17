@@ -2464,3 +2464,33 @@ label,
   line-height: 1.6;
   color: var(--sub);
 }
+
+/* 검색창 / 조회 버튼 정렬 보정 */
+#keyword {
+  min-height: 96px;
+  height: 96px;
+  padding: 14px;
+  resize: none;
+}
+
+#searchBtn.search-inline-btn {
+  min-height: 96px;
+  height: 96px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px;
+  line-height: 1;
+  font-size: 14px;
+}
+
+/* 혹시 다른 스타일에서 가상 아이콘이 들어오면 차단 */
+#searchBtn::before,
+#searchBtn::after,
+#searchBtnMobile::before,
+#searchBtnMobile::after,
+.search-inline-btn::before,
+.search-inline-btn::after {
+  content: none !important;
+  display: none !important;
+}
