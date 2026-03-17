@@ -20,23 +20,29 @@ function showErrorPopup(message) {
 
 function setSearchButtonLoading(loading) {
   const btn = document.getElementById('searchBtn');
+  if (!btn) return;
 
-  if (btn) {
-    btn.disabled = !!loading;
-    btn.classList.toggle('loading', !!loading);
-    btn.textContent = loading ? '조회중' : '🔍 조회';
-  }
+  btn.disabled = !!loading;
+  btn.classList.toggle('loading', !!loading);
+  btn.textContent = loading ? '조회중' : '🔍 조회';
 }
 
 function showLoadingOverlay(title, message) {
   const overlay = document.getElementById('loadingOverlay');
-  document.getElementById('loadingTitle').textContent = title || '불러오는 중';
-  document.getElementById('loadingMessage').textContent = message || '처리 중입니다.';
+  if (!overlay) return;
+
+  const titleEl = document.getElementById('loadingTitle');
+  const msgEl = document.getElementById('loadingMessage');
+
+  if (titleEl) titleEl.textContent = title || '불러오는 중';
+  if (msgEl) msgEl.textContent = message || '처리 중입니다.';
+
   overlay.classList.remove('hidden');
 }
 
 function hideLoadingOverlay() {
   const overlay = document.getElementById('loadingOverlay');
+  if (!overlay) return;
   overlay.classList.add('hidden');
 }
 
@@ -49,8 +55,10 @@ function hideAdminLoading() {
 }
 
 function clearResults() {
-  document.getElementById('summaryArea').innerHTML = '';
-  document.getElementById('groupArea').innerHTML = '';
+  const summaryArea = document.getElementById('summaryArea');
+  const groupArea = document.getElementById('groupArea');
+  if (summaryArea) summaryArea.innerHTML = '';
+  if (groupArea) groupArea.innerHTML = '';
 }
 
 function resetSearchUI() {
