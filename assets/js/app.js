@@ -1,5 +1,5 @@
 async function initializeApp() {
-  isInitializing = true;
+  state.isInitializing = true;
   showLoadingOverlay('초기 데이터 불러오는 중', '약물 및 검사 정보를 준비하고 있습니다.');
   setStatus('초기 데이터를 불러오는 중입니다...', true);
 
@@ -13,7 +13,7 @@ async function initializeApp() {
 
     const data = await res.json();
 
-    isInitializing = false;
+    state.isInitializing = false;
     hideLoadingOverlay();
 
     if (!data.success) {
@@ -21,25 +21,26 @@ async function initializeApp() {
       return;
     }
 
-    appConfig = data.config || {};
-    examList = data.exams || [];
-    drugGroupList = data.drugGroups || [];
+    state.appConfig = data.config || {};
+    state.examList = data.exams || [];
+    state.drugGroupList = data.drugGroups || [];
+
     renderExamOptions();
     renderAdminOptions();
     applyConfig();
     setStatus('약 이름만 입력해도 검색할 수 있습니다.');
   } catch (err) {
-    isInitializing = false;
+    state.isInitializing = false;
     hideLoadingOverlay();
     showErrorPopup('초기화 중 오류가 발생했습니다: ' + getErrorMessage(err));
   }
 }
 
 function applyConfig() {
-  const hospitalName = appConfig.hospital_name || '녹십자아이메드';
-  const patientNotice = appConfig.patient_notice || '복용약은 임의로 중단하지 말고, 반드시 검진센터 또는 처방의와 상담 후 결정하세요.';
-  const staffNotice = appConfig.staff_notice || '최종 안내 전 검사 종류와 환자 상태를 다시 확인하세요.';
-  const contactPhone = appConfig.contact_phone || '';
+  const hospitalName = state.appConfig.hospital_name || '녹십자아이메드';
+  const patientNotice = state.appConfig.patient_notice || '복용약은 임의로 중단하지 말고, 반드시 검진센터 또는 처방의와 상담 후 결정하세요.';
+  const staffNotice = state.appConfig.staff_notice || '최종 안내 전 검사 종류와 환자 상태를 다시 확인하세요.';
+  const contactPhone = state.appConfig.contact_phone || '';
   const contactText = contactPhone ? `<div class="contact">문의: ${escapeHtml(contactPhone)}</div>` : '';
 
   document.getElementById('footerNotice').innerHTML = `<div>${escapeHtml(patientNotice)}</div>${contactText}`;
@@ -61,12 +62,12 @@ function applyConfig() {
 }
 
 function startPatientMode() {
-  lockedMode = 'patient';
+  state.lockedMode = 'patient';
   startModeWithLoading('patient');
 }
 
 function startStaffMode() {
-  if (isSearching || isInitializing) return;
+  if (state.isSearching || state.isInitializing) return;
 
   const pw = window.prompt('직원용 조회 비밀번호를 입력하세요.');
 
@@ -85,12 +86,12 @@ function startStaffMode() {
     return;
   }
 
-  lockedMode = 'staff';
+  state.lockedMode = 'staff';
   startModeWithLoading('staff');
 }
 
 function startModeWithLoading(mode) {
-  if (isSearching || isInitializing) return;
+  if (state.isSearching || state.isInitializing) return;
 
   const title = mode === 'patient' ? '환자용 화면 준비 중' : '직원용 화면 준비 중';
   const message = mode === 'patient'
@@ -126,40 +127,8 @@ function startModeWithLoading(mode) {
   }, 1500);
 }
 
-function bindStaticEvents() {
-  document.getElementById('startPatientBtn')?.addEventListener('click', startPatientMode);
-  document.getElementById('startStaffBtn')?.addEventListener('click', startStaffMode);
-  document.getElementById('homeBtn')?.addEventListener('click', goHome);
-
-  document.getElementById('patientModeBtn')?.addEventListener('click', () => setMode('patient'));
-  document.getElementById('staffModeBtn')?.addEventListener('click', () => setMode('staff'));
-  document.getElementById('adminModeBtn')?.addEventListener('click', openAdminPanel);
-
-  document.getElementById('searchBtn')?.addEventListener('click', handleSearch);
-  document.getElementById('searchBtnMobile')?.addEventListener('click', handleSearch);
-
-  document.getElementById('adminLoginBtn')?.addEventListener('click', loginAdmin);
-
-  document.getElementById('adminTabDrug')?.addEventListener('click', () => setAdminTab('drug'));
-  document.getElementById('adminTabRule')?.addEventListener('click', () => setAdminTab('rule'));
-  document.getElementById('adminTabStats')?.addEventListener('click', () => setAdminTab('stats'));
-  document.getElementById('closeAdminPanelBtn')?.addEventListener('click', closeAdminPanel);
-
-  document.getElementById('adminDrugSearchBtn')?.addEventListener('click', () => searchAdminDrugList(true));
-  document.getElementById('adminDrugRecentBtn')?.addEventListener('click', () => loadRecentAdminData(true));
-  document.getElementById('adminDrugNewBtn')?.addEventListener('click', prepareNewDrug);
-  document.getElementById('saveDrugBtn')?.addEventListener('click', saveDrugItem);
-  document.getElementById('toggleCurrentDrugBtn')?.addEventListener('click', toggleCurrentDrugActive);
-
-  document.getElementById('adminRuleSearchBtn')?.addEventListener('click', () => searchAdminRuleList(true));
-  document.getElementById('adminRuleRecentBtn')?.addEventListener('click', () => loadRecentAdminData(true));
-  document.getElementById('adminRuleNewBtn')?.addEventListener('click', prepareNewRule);
-  document.getElementById('saveRuleBtn')?.addEventListener('click', saveRuleItem);
-  document.getElementById('toggleCurrentRuleBtn')?.addEventListener('click', toggleCurrentRuleActive);
-}
-
 function goHome() {
-  if (isSearching || isInitializing) return;
+  if (state.isSearching || state.isInitializing) return;
 
   showLoadingOverlay('처음 화면으로 이동 중', '입력 내용과 검색 결과를 정리하고 있습니다.');
   setStatus('처음 화면으로 이동 중입니다...', true);
@@ -172,12 +141,14 @@ function goHome() {
     document.getElementById('adminPanel').classList.add('hidden');
     document.getElementById('homeBtn').classList.add('hidden');
 
-    currentMode = 'patient';
-    lockedMode = null;
-    isAdminLoggedIn = false;
+    state.currentMode = 'patient';
+    state.lockedMode = null;
+    state.isAdminLoggedIn = false;
+
     document.getElementById('adminModeBtn').classList.remove('active');
     document.getElementById('patientModeBtn').classList.add('active');
     document.getElementById('staffModeBtn').classList.remove('active');
+
     applyLockedModeUI();
 
     document.getElementById('footerNotice').innerHTML =
@@ -215,16 +186,16 @@ function applyLockedModeUI() {
 
   if (!patientBtn || !staffBtn) return;
 
-  if (!lockedMode) {
+  if (!state.lockedMode) {
     patientBtn.classList.remove('hidden');
     staffBtn.classList.remove('hidden');
     return;
   }
 
-  if (lockedMode === 'patient') {
+  if (state.lockedMode === 'patient') {
     patientBtn.classList.remove('hidden');
     staffBtn.classList.add('hidden');
-  } else if (lockedMode === 'staff') {
+  } else if (state.lockedMode === 'staff') {
     patientBtn.classList.add('hidden');
     staffBtn.classList.remove('hidden');
   }
@@ -246,9 +217,9 @@ function updateHeroModeLabel(mode) {
 }
 
 function setMode(mode) {
-  if (lockedMode && mode !== lockedMode) return;
+  if (state.lockedMode && mode !== state.lockedMode) return;
 
-  currentMode = mode;
+  state.currentMode = mode;
   hideAutocomplete(true);
 
   document.getElementById('patientModeBtn').classList.toggle('active', mode === 'patient');
@@ -256,15 +227,49 @@ function setMode(mode) {
   document.getElementById('adminModeBtn').classList.remove('active');
 
   if (mode === 'patient') {
-    document.getElementById('footerNotice').innerHTML = `<div>${escapeHtml(window.patientNotice || '')}</div>${window.contactText || ''}`;
+    document.getElementById('footerNotice').innerHTML =
+      `<div>${escapeHtml(window.patientNotice || '')}</div>${window.contactText || ''}`;
     simplifyPatientUI();
   } else {
-    document.getElementById('footerNotice').innerHTML = `<div>${escapeHtml(window.staffNotice || '')}</div>${window.contactText || ''}`;
+    document.getElementById('footerNotice').innerHTML =
+      `<div>${escapeHtml(window.staffNotice || '')}</div>${window.contactText || ''}`;
     restoreFullUI();
   }
 
   document.getElementById('adminPanel').classList.add('hidden');
   clearResults();
+}
+
+function bindStaticEvents() {
+  document.getElementById('startPatientBtn')?.addEventListener('click', startPatientMode);
+  document.getElementById('startStaffBtn')?.addEventListener('click', startStaffMode);
+  document.getElementById('homeBtn')?.addEventListener('click', goHome);
+
+  document.getElementById('patientModeBtn')?.addEventListener('click', () => setMode('patient'));
+  document.getElementById('staffModeBtn')?.addEventListener('click', () => setMode('staff'));
+  document.getElementById('adminModeBtn')?.addEventListener('click', openAdminPanel);
+
+  document.getElementById('searchBtn')?.addEventListener('click', handleSearch);
+  document.getElementById('searchBtnMobile')?.addEventListener('click', handleSearch);
+
+  document.getElementById('adminLoginBtn')?.addEventListener('click', loginAdmin);
+
+  document.getElementById('adminTabDrug')?.addEventListener('click', () => setAdminTab('drug'));
+  document.getElementById('adminTabRule')?.addEventListener('click', () => setAdminTab('rule'));
+  document.getElementById('adminTabStats')?.addEventListener('click', () => setAdminTab('stats'));
+  document.getElementById('closeAdminPanelBtn')?.addEventListener('click', closeAdminPanel);
+
+  document.getElementById('adminDrugSearchBtn')?.addEventListener('click', () => searchAdminDrugList(true));
+  document.getElementById('adminDrugRecentBtn')?.addEventListener('click', () => loadRecentAdminData(true));
+  document.getElementById('adminDrugNewBtn')?.addEventListener('click', prepareNewDrug);
+  document.getElementById('saveDrugBtn')?.addEventListener('click', saveDrugItem);
+  document.getElementById('toggleCurrentDrugBtn')?.addEventListener('click', toggleCurrentDrugActive);
+
+  document.getElementById('adminRuleSearchBtn')?.addEventListener('click', () => searchAdminRuleList(true));
+  document.getElementById('adminRuleRecentBtn')?.addEventListener('click', () => loadRecentAdminData(true));
+  document.getElementById('adminRuleNewBtn')?.addEventListener('click', prepareNewRule);
+  document.getElementById('saveRuleBtn')?.addEventListener('click', saveRuleItem);
+  document.getElementById('toggleCurrentRuleBtn')?.addEventListener('click', toggleCurrentRuleActive);
 }
 
 function bindDynamicSearchEvents() {
@@ -348,16 +353,16 @@ function bindKeywordEvents() {
   if (!keywordInput || !autoBox || !examSelect) return;
 
   autoBox.addEventListener('mouseleave', () => {
-    autocompleteActiveIndex = -1;
+    state.autocompleteActiveIndex = -1;
     updateAutocompleteActiveItem();
   });
 
   keywordInput.addEventListener('compositionstart', () => {
-    isComposing = true;
+    state.isComposing = true;
   });
 
   keywordInput.addEventListener('compositionend', () => {
-    isComposing = false;
+    state.isComposing = false;
     setTimeout(() => {
       scheduleAutocomplete();
     }, 30);
@@ -375,8 +380,8 @@ function bindKeywordEvents() {
 
   keywordInput.addEventListener('blur', () => {
     setTimeout(() => {
-      if (!suppressBlurHide) hideAutocomplete(true);
-      suppressBlurHide = false;
+      if (!state.suppressBlurHide) hideAutocomplete(true);
+      state.suppressBlurHide = false;
     }, 120);
   });
 
@@ -385,11 +390,11 @@ function bindKeywordEvents() {
   examSelect.addEventListener('change', () => {});
 
   autoBox.addEventListener('mousedown', () => {
-    suppressBlurHide = true;
+    state.suppressBlurHide = true;
   });
 
   autoBox.addEventListener('touchstart', () => {
-    suppressBlurHide = true;
+    state.suppressBlurHide = true;
   }, { passive: true });
 }
 
