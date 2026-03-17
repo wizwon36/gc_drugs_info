@@ -2075,6 +2075,11 @@ label,
   font-weight: 800;
 }
 
+.group-master-slide[aria-hidden="false"] {
+  opacity: 1;
+  transform: scale(1);
+}
+
 .group-count-badge,
 .exam-meta-badge,
 .badge {
@@ -2322,7 +2327,8 @@ label,
 .group-master-track {
   display: flex;
   align-items: stretch;
-  transition: transform 0.32s ease;
+  width: 100%;
+  transition: transform 0.42s cubic-bezier(0.22, 1, 0.36, 1);
   will-change: transform;
 }
 
@@ -2334,11 +2340,19 @@ label,
   width: 100%;
   min-width: 100%;
   flex: 0 0 100%;
+  overflow: hidden;
+  contain: layout paint;
+  opacity: 0.32;
+  transform: scale(0.985);
+  transition:
+    opacity 0.28s ease,
+    transform 0.28s ease;
 }
 
 .group-master-slide > .group-section {
   margin-bottom: 0;
   min-height: 520px;
+  width: 100%;
 }
 
 /* inner result slider */
@@ -2416,7 +2430,7 @@ label,
 .result-slider-track {
   display: flex;
   align-items: stretch;
-  transition: transform 0.28s ease;
+  transition: transform 0.34s cubic-bezier(0.22, 1, 0.36, 1);
   will-change: transform;
 }
 
