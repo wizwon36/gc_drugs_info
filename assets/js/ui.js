@@ -10,7 +10,12 @@ function setStatus(text, isLoading = false) {
     return;
   }
 
-  el.classList.remove('hidden');
+  if (isLoading) {
+    el.classList.add('hidden');
+    return;
+  }
+
+  el.classList.add('hidden');
 }
 
 function showErrorPopup(message) {
@@ -43,6 +48,7 @@ function showLoadingOverlay(title, message) {
 function hideLoadingOverlay() {
   const overlay = document.getElementById('loadingOverlay');
   if (!overlay) return;
+
   overlay.classList.add('hidden');
 }
 
@@ -57,6 +63,7 @@ function hideAdminLoading() {
 function clearResults() {
   const summaryArea = document.getElementById('summaryArea');
   const groupArea = document.getElementById('groupArea');
+
   if (summaryArea) summaryArea.innerHTML = '';
   if (groupArea) groupArea.innerHTML = '';
 }
@@ -82,14 +89,18 @@ function resetSearchUI() {
 
   clearResults();
   hideAutocomplete(true);
+
   clearTimeout(state.autoTimer);
   clearTimeout(state.highlightTimer);
 
   state.autocompleteCache.clear();
-  state.autocompleteRequestSeq++;
+  state.autocompleteRequestSeq += 1;
   state.lastAutocompleteKeyword = '';
   state.isSearching = false;
   state.suppressBlurHide = false;
+  state.pendingAutocompleteKeyword = '';
+  state.renderedAutocompleteKeyword = '';
+  state.autocompleteActiveIndex = -1;
 
   setSearchButtonLoading(false);
   setStatus('');
