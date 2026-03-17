@@ -31,7 +31,7 @@ async function initializeApp() {
   } catch (err) {
     isInitializing = false;
     hideLoadingOverlay();
-    showErrorPopup('초기화 중 오류가 발생했습니다: ' + (err?.message || String(err)));
+    showErrorPopup('초기화 중 오류가 발생했습니다: ' + getErrorMessage(err));
   }
 }
 
@@ -54,16 +54,16 @@ function applyConfig() {
     heroModeLabel.classList.add('hidden');
     heroModeLabel.textContent = '환자용';
     heroModeLabel.classList.remove('staff');
-  }  
+  }
 
   const homeBtn = document.getElementById('homeBtn');
-  if (homeBtn) homeBtn.classList.add('hidden');      
+  if (homeBtn) homeBtn.classList.add('hidden');
 }
 
-  function startPatientMode() {
-    lockedMode = 'patient';
-    startModeWithLoading('patient');
-  }
+function startPatientMode() {
+  lockedMode = 'patient';
+  startModeWithLoading('patient');
+}
 
 function startStaffMode() {
   if (isSearching || isInitializing) return;
@@ -84,6 +84,7 @@ function startStaffMode() {
     showErrorPopup('비밀번호가 올바르지 않습니다.');
     return;
   }
+
   lockedMode = 'staff';
   startModeWithLoading('staff');
 }
@@ -259,22 +260,22 @@ window.addEventListener('DOMContentLoaded', () => {
   const adminTargetType = document.getElementById('adminTargetType');
   const adminTargetValueGroup = document.getElementById('adminTargetValueGroup');
   const adminTargetDrugSearch = document.getElementById('adminTargetDrugSearch');
-  
+
   if (adminTargetType) {
     adminTargetType.addEventListener('change', syncAdminTargetValueUI);
   }
-  
+
   if (adminTargetValueGroup) {
     adminTargetValueGroup.addEventListener('change', () => {
       document.getElementById('adminTargetValue').value = adminTargetValueGroup.value || '';
     });
   }
-  
+
   if (adminTargetDrugSearch) {
     adminTargetDrugSearch.addEventListener('input', () => {
       scheduleAdminDrugTargetSearch();
     });
-  
+
     adminTargetDrugSearch.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
         e.preventDefault();
@@ -282,7 +283,7 @@ window.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
-  
+
   keywordInput.addEventListener('compositionstart', () => {
     isComposing = true;
   });
@@ -368,4 +369,3 @@ window.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
-
