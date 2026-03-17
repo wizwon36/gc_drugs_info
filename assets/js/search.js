@@ -394,7 +394,7 @@ function renderGroupedResults(groupedResults) {
     <div class="group-master-slider-wrap">
       <div class="group-master-header">
         <div class="group-master-title-wrap">
-          <div class="group-master-title">검색 결과</div>
+          <div class="group-master-title">검색어별 결과</div>
           <div class="group-master-sub" id="${outerSliderId}-group-label"></div>
         </div>
 
@@ -480,7 +480,7 @@ function createGroupSlideHtml(group, groupIndex) {
       <div class="group-header slider-group-header">
         <div class="slider-group-meta">
           <div class="group-title">검색어: ${escapeHtml(group.keyword)}</div>
-          <div class="group-sub">총 ${sortedRows.length}건</div>
+          <div class="group-sub">결과 카드 ${sortedRows.length}건</div>
         </div>
 
         <div class="slider-nav" aria-label="결과 카드 이동">
@@ -582,7 +582,7 @@ function updateMasterSlider(slider, nextIndex, skipAnimation = false) {
   const label = document.getElementById(`${slider.id}-group-label`);
   if (label) {
     const keyword = slides[safeIndex]?.dataset.groupKeyword || '';
-    label.textContent = `검색어: ${keyword}`;
+    label.textContent = `현재 검색어 그룹 · ${keyword}`;
   }
 
   const prevBtn = document.querySelector(`.master-slider-btn[data-master-slider-target="${slider.id}"][data-direction="prev"]`);
