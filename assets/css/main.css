@@ -2266,3 +2266,143 @@ label,
     font-size: 15px;
   }
 }
+
+/* =========================================================
+   Result card slider
+   ========================================================= */
+
+.result-slider-section {
+  overflow: hidden;
+}
+
+.slider-group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.slider-group-meta {
+  min-width: 0;
+}
+
+.group-sub {
+  margin-top: 4px;
+  font-size: 13px;
+  color: var(--sub);
+}
+
+.slider-nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.slider-counter {
+  min-width: 56px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--sub);
+}
+
+.slider-nav-btn {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+}
+
+.slider-nav-btn:hover:not(:disabled) {
+  background: var(--surface-soft);
+  border-color: var(--line-strong);
+}
+
+.slider-nav-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.result-slider {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+}
+
+.result-slider-track {
+  display: flex;
+  align-items: stretch;
+  transition: transform 0.28s ease;
+  will-change: transform;
+}
+
+.result-slider-track.no-anim {
+  transition: none;
+}
+
+.result-slide {
+  width: 100%;
+  min-width: 100%;
+  flex: 0 0 100%;
+}
+
+.result-slide > .result-card,
+.result-slide > .warning-box,
+.result-slide > .patient-guidance-box,
+.result-slide > .rule-box {
+  height: 100%;
+}
+
+/* 카드 높이를 너무 요동치지 않게 */
+.result-slide .result-card {
+  min-height: 420px;
+}
+
+/* 결과 없음 카드 */
+.slider-empty-card {
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.empty-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.empty-desc {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--sub);
+}
+
+@media (max-width: 720px) {
+  .slider-group-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .slider-nav {
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .slider-counter {
+    flex: 1;
+  }
+
+  .result-slide .result-card {
+    min-height: auto;
+  }
+}
