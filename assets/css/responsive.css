@@ -3,7 +3,6 @@
     background:#fff;
     color:#000;
   }
-
   .landing-panel,
   .mode-switch,
   .admin-panel,
@@ -22,31 +21,26 @@
   .app-topbar{
     display:none !important;
   }
-
   .hero,.panel,.result-card,.rule-box{
     background:#fff !important;
     color:#000 !important;
     box-shadow:none !important;
     border:1px solid #ccc !important;
   }
-
   .subline,.kv .k,.kv .v,.rule-title,.drug-name,.group-title,.top-note{
     color:#000 !important;
   }
-
   .app-shell{
     max-width:100%;
     width:100%;
     padding:0;
   }
-
   .badge{
     border:1px solid #999;
     color:#000 !important;
     background:#fff !important;
   }
-
-        
+  
   .admin-action-toolbar{
     display:flex;
     gap:12px;
@@ -249,5 +243,4 @@
     padding:0 8px;
     font-size:11px;
   }
-
 }
