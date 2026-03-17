@@ -82,14 +82,14 @@ function resetSearchUI() {
 
   clearResults();
   hideAutocomplete(true);
-  clearTimeout(autoTimer);
-  clearTimeout(highlightTimer);
+  clearTimeout(state.autoTimer);
+  clearTimeout(state.highlightTimer);
 
-  autocompleteCache.clear();
-  autocompleteRequestSeq++;
-  lastAutocompleteKeyword = '';
-  isSearching = false;
-  suppressBlurHide = false;
+  state.autocompleteCache.clear();
+  state.autocompleteRequestSeq++;
+  state.lastAutocompleteKeyword = '';
+  state.isSearching = false;
+  state.suppressBlurHide = false;
 
   setSearchButtonLoading(false);
   setStatus('');
