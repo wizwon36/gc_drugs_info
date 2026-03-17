@@ -397,30 +397,21 @@ function renderGroupedResults(groupedResults) {
           <div class="group-master-title">검색어별 결과</div>
           <div class="group-master-sub" id="${outerSliderId}-group-label"></div>
         </div>
+      </div>
 
-        <div class="master-slider-nav" aria-label="검색어 그룹 이동">
+      <div class="group-tab-nav" id="${outerSliderId}-tabs" role="tablist" aria-label="검색어 그룹 선택">
+        ${groupedResults.map((group, groupIndex) => `
           <button
             type="button"
-            class="master-slider-btn"
-            data-master-slider-target="${outerSliderId}"
-            data-direction="prev"
-            aria-label="이전 검색어 그룹"
+            class="group-tab-btn ${groupIndex === 0 ? 'active' : ''}"
+            data-master-tab-target="${outerSliderId}"
+            data-master-tab-index="${groupIndex}"
+            role="tab"
+            aria-selected="${groupIndex === 0 ? 'true' : 'false'}"
           >
-            ‹
+            ${escapeHtml(group.keyword)}
           </button>
-
-          <div class="master-slider-counter" id="${outerSliderId}-counter"></div>
-
-          <button
-            type="button"
-            class="master-slider-btn"
-            data-master-slider-target="${outerSliderId}"
-            data-direction="next"
-            aria-label="다음 검색어 그룹"
-          >
-            ›
-          </button>
-        </div>
+        `).join('')}
       </div>
 
       <div class="group-master-slider" id="${outerSliderId}" data-current-index="0">
@@ -442,7 +433,7 @@ function renderGroupedResults(groupedResults) {
     </div>
   `;
 
-  bindMasterSlider();
+  bindMasterTabs();
   bindInnerResultSliders();
   updateMasterSlider(document.getElementById(outerSliderId), 0, true);
 }
@@ -525,33 +516,6 @@ function createGroupSlideHtml(group, groupIndex) {
   `;
 }
 
-function bindMasterSlider() {
-  const buttons = document.querySelectorAll('.master-slider-btn');
-
-  buttons.forEach(btn => {
-    btn.onclick = () => {
-      const sliderId = btn.dataset.masterSliderTarget;
-      const direction = btn.dataset.direction;
-      const slider = document.getElementById(sliderId);
-      if (!slider) return;
-
-      const total = slider.querySelectorAll('.group-master-slide').length;
-      const current = Number(slider.dataset.currentIndex || 0);
-
-      let nextIndex = current;
-      if (direction === 'prev') nextIndex = Math.max(0, current - 1);
-      if (direction === 'next') nextIndex = Math.min(total - 1, current + 1);
-
-      updateMasterSlider(slider, nextIndex);
-    };
-  });
-
-  const sliders = document.querySelectorAll('.group-master-slider');
-  sliders.forEach(slider => {
-    attachMasterSliderSwipe(slider);
-  });
-}
-
 function updateMasterSlider(slider, nextIndex, skipAnimation = false) {
   const track = slider.querySelector('.group-master-track');
   const slides = Array.from(slider.querySelectorAll('.group-master-slide'));
@@ -574,61 +538,24 @@ function updateMasterSlider(slider, nextIndex, skipAnimation = false) {
     slide.setAttribute('aria-hidden', index === safeIndex ? 'false' : 'true');
   });
 
-  const counter = document.getElementById(`${slider.id}-counter`);
-  if (counter) {
-    counter.textContent = `${safeIndex + 1} / ${slides.length}`;
-  }
-
   const label = document.getElementById(`${slider.id}-group-label`);
   if (label) {
     const keyword = slides[safeIndex]?.dataset.groupKeyword || '';
-    label.textContent = `현재 검색어 그룹 · ${keyword}`;
+    label.textContent = `현재 검색어 · ${keyword}`;
   }
 
-  const prevBtn = document.querySelector(`.master-slider-btn[data-master-slider-target="${slider.id}"][data-direction="prev"]`);
-  const nextBtn = document.querySelector(`.master-slider-btn[data-master-slider-target="${slider.id}"][data-direction="next"]`);
-
-  if (prevBtn) prevBtn.disabled = safeIndex === 0;
-  if (nextBtn) nextBtn.disabled = safeIndex === maxIndex;
+  const tabButtons = document.querySelectorAll(`.group-tab-btn[data-master-tab-target="${slider.id}"]`);
+  tabButtons.forEach((btn, index) => {
+    const isActive = index === safeIndex;
+    btn.classList.toggle('active', isActive);
+    btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+  });
 
   if (skipAnimation) {
     requestAnimationFrame(() => {
       track.classList.remove('no-anim');
     });
   }
-}
-
-function attachMasterSliderSwipe(slider) {
-  let startX = 0;
-  let deltaX = 0;
-  let isDragging = false;
-
-  slider.addEventListener('touchstart', (e) => {
-    if (!e.touches || !e.touches.length) return;
-    startX = e.touches[0].clientX;
-    deltaX = 0;
-    isDragging = true;
-  }, { passive: true });
-
-  slider.addEventListener('touchmove', (e) => {
-    if (!isDragging || !e.touches || !e.touches.length) return;
-    deltaX = e.touches[0].clientX - startX;
-  }, { passive: true });
-
-  slider.addEventListener('touchend', () => {
-    if (!isDragging) return;
-    isDragging = false;
-
-    const threshold = 50;
-    const current = Number(slider.dataset.currentIndex || 0);
-    const total = slider.querySelectorAll('.group-master-slide').length;
-
-    if (deltaX <= -threshold) {
-      updateMasterSlider(slider, Math.min(total - 1, current + 1));
-    } else if (deltaX >= threshold) {
-      updateMasterSlider(slider, Math.max(0, current - 1));
-    }
-  });
 }
 
 function bindInnerResultSliders() {
@@ -928,4 +855,19 @@ function getTargetTypeLabel(value) {
   if (value === 'drug') return '약 개별';
   if (value === 'group') return '약물군';
   return value || '-';
+}
+
+function bindMasterTabs() {
+  const buttons = document.querySelectorAll('.group-tab-btn');
+
+  buttons.forEach(btn => {
+    btn.onclick = () => {
+      const sliderId = btn.dataset.masterTabTarget;
+      const index = Number(btn.dataset.masterTabIndex || 0);
+      const slider = document.getElementById(sliderId);
+      if (!slider) return;
+
+      updateMasterSlider(slider, index);
+    };
+  });
 }
