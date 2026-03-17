@@ -226,7 +226,7 @@ async function searchAdminDrugList(showLoading = true) {
     const keyword = document.getElementById('adminDrugSearch')?.value.trim() || '';
     const listEl = document.getElementById('adminDrugSearchList');
 
-    const res = await apiGet('searchAdminDrugs', { keyword, active_only: 'Y' });
+    const res = await apiGet('searchAdminDrugs', { keyword });
 
     if (showLoading) hideAdminLoading();
 
