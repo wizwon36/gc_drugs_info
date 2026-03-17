@@ -961,7 +961,22 @@
       animation:spin .8s linear infinite;
       flex:none;
     }
-
+    
+    .patient-guidance-box{
+      margin-top:10px;
+      padding:11px 12px;
+      border-radius:12px;
+      background:#f7fbfd;
+      border:1px solid #d9e8ef;
+      color:#476572;
+      font-size:14px;
+      line-height:1.55;
+    }
+    
+    .patient-guidance-box strong{
+      color:#1c4f67;
+    }
+    
     .auto-title{
       font-size:var(--font-base);
       font-weight:800;
@@ -1891,8 +1906,9 @@
           <div class="grid-admin">
             <div class="admin-content-box">
               <h3 class="admin-section-title">약물 추가 / 수정</h3>
-              <div class="required-note">* 표시 항목은 필수 입력입니다.</div>
-                            
+              <div class="status" id="adminDrugStatus"></div>  
+              <div class="required-note">* 표시 항목은 필수 입력입니다.</div>  
+              
               <div class="field admin-search-field">
                 <label class="label-optional">약물 검색</label>
                 <input id="adminDrugSearch" class="input" placeholder="약품명, 성분명, drug_id 검색">
@@ -3896,12 +3912,6 @@
       return (rule && rule.caution_level) || item.caution_level || '일반';
     }
     
-    function getTargetTypeLabel(value) {
-      if (value === 'drug') return '약 개별';
-      if (value === 'group') return '약물군';
-      return value || '-';
-    }
-
     function clearResults() {
       document.getElementById('summaryArea').innerHTML = '';
       document.getElementById('groupArea').innerHTML = '';
@@ -3919,6 +3929,31 @@
       return value || '-';
     }
 
+    function shouldShowHoldPeriod(rule) {
+      const needHold = String(rule?.need_hold || '').trim();
+      const holdPeriod = String(rule?.hold_period || '').trim();
+    
+      if (!holdPeriod) return false;
+      if (needHold === 'N' && holdPeriod === '임의중단 금지') return false;
+    
+      return true;
+    }
+    
+    function getPatientGuidanceNote(rule) {
+      const needHold = String(rule?.need_hold || '').trim();
+    
+      if (needHold === 'Y') {
+        return '검사 전까지 중단 시점을 꼭 확인하세요.';
+      }
+      if (needHold === 'CONSULT') {
+        return '임의로 결정하지 말고 검진센터 또는 처방의와 먼저 상의하세요.';
+      }
+      if (needHold === 'N') {
+        return '별도 안내가 없는 경우 복용 후 방문하세요.';
+      }
+      return '';
+    }
+    
     function getCautionClass(level) {
       if (level === '매우높음' || level === '높음') return 'badge-danger';
       if (level === '중간') return 'badge-warn';
