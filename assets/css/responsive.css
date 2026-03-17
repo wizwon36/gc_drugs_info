@@ -259,3 +259,28 @@
     min-width:0;
   }
 }
+
+
+@media (max-width: 720px) {
+  .group-master-header,
+  .slider-group-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .master-slider-nav,
+  .slider-nav {
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .master-slider-counter,
+  .slider-counter {
+    flex: 1;
+  }
+
+  .group-master-slide .group-section,
+  .result-slide .result-card {
+    min-height: auto;
+  }
+}
