@@ -309,15 +309,13 @@ body{
 }
 
 .mode-switch,
-.admin-switch,
 .toolbar{
   display:flex;
   gap:10px;
   flex-wrap:wrap;
 }
 
-.mode-switch,
-.admin-switch{
+.mode-switch{
   margin-top:10px;
   margin-bottom:14px;
 }
@@ -363,6 +361,57 @@ body{
   color:var(--text);
   border:1px solid var(--line);
   width:100%;
+}
+
+.admin-header-bar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-top:10px;
+  margin-bottom:16px;
+  flex-wrap:wrap;
+}
+
+.admin-switch{
+  display:grid;
+  grid-template-columns:repeat(3, minmax(0, 1fr));
+  gap:10px;
+  flex:1 1 520px;
+  margin:0;
+}
+
+.admin-header-actions{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  flex:0 0 auto;
+}
+
+.admin-btn{
+  background:#f3f8fb;
+  color:var(--text);
+  border:1px solid var(--line);
+  width:100%;
+  min-height:52px;
+  border-radius:16px;
+  font-weight:800;
+}
+
+.admin-btn.active{
+  background:linear-gradient(135deg,var(--primary),#169fd4);
+  color:#fff;
+  box-shadow:0 8px 18px rgba(13,141,190,.20);
+}
+
+.admin-close-btn{
+  min-height:52px;
+  min-width:92px;
+  border-radius:16px;
+  white-space:nowrap;
+  background:#f7fafc;
+  border:1px solid #d7e3ea;
+  color:#5b7480;
 }
 
 .mode-btn.active,.admin-btn.active{
