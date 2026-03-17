@@ -1,4 +1,5 @@
 :root{
+  /* GC iMED inspired palette */
   --bg:#eef4f7;
   --bg-grad-1:#f7fbfd;
   --bg-grad-2:#e9f2f6;
@@ -46,7 +47,7 @@
   --gc-accent-strong:#0a6f97;
 
   --card-edge:#d8e8f0;
-  --group-edge:#cfe3ec;
+  --group-edge:#cfe3ec;      
 
   --shadow:0 10px 28px rgba(24,67,89,.08);
   --shadow-soft:0 5px 16px rgba(24,67,89,.06);
