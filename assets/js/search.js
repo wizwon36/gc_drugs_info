@@ -6,12 +6,12 @@ function handleKeywordKeydown(e) {
   if (e.key === 'ArrowDown') {
     if (!isOpen) return;
     e.preventDefault();
-    clearTimeout(autoTimer);
+    clearTimeout(state.autoTimer);
 
-    if (autocompleteActiveIndex < 0) {
-      autocompleteActiveIndex = 0;
+    if (state.autocompleteActiveIndex < 0) {
+      state.autocompleteActiveIndex = 0;
     } else {
-      autocompleteActiveIndex = Math.min(autocompleteActiveIndex + 1, items.length - 1);
+      state.autocompleteActiveIndex = Math.min(state.autocompleteActiveIndex + 1, items.length - 1);
     }
 
     updateAutocompleteActiveItem();
@@ -21,12 +21,12 @@ function handleKeywordKeydown(e) {
   if (e.key === 'ArrowUp') {
     if (!isOpen) return;
     e.preventDefault();
-    clearTimeout(autoTimer);
+    clearTimeout(state.autoTimer);
 
-    if (autocompleteActiveIndex < 0) {
-      autocompleteActiveIndex = items.length - 1;
+    if (state.autocompleteActiveIndex < 0) {
+      state.autocompleteActiveIndex = items.length - 1;
     } else {
-      autocompleteActiveIndex = Math.max(autocompleteActiveIndex - 1, 0);
+      state.autocompleteActiveIndex = Math.max(state.autocompleteActiveIndex - 1, 0);
     }
 
     updateAutocompleteActiveItem();
@@ -36,8 +36,8 @@ function handleKeywordKeydown(e) {
   if (e.key === 'Enter' && !e.shiftKey) {
     e.preventDefault();
 
-    if (isOpen && autocompleteActiveIndex >= 0 && items[autocompleteActiveIndex]) {
-      items[autocompleteActiveIndex].click();
+    if (isOpen && state.autocompleteActiveIndex >= 0 && items[state.autocompleteActiveIndex]) {
+      items[state.autocompleteActiveIndex].click();
       return;
     }
 
@@ -55,37 +55,37 @@ function updateAutocompleteActiveItem() {
   const items = Array.from(box.querySelectorAll('.autocomplete-item'));
 
   items.forEach((item, index) => {
-    item.classList.toggle('active', index === autocompleteActiveIndex);
+    item.classList.toggle('active', index === state.autocompleteActiveIndex);
   });
 
-  if (autocompleteActiveIndex >= 0 && items[autocompleteActiveIndex]) {
-    items[autocompleteActiveIndex].scrollIntoView({
+  if (state.autocompleteActiveIndex >= 0 && items[state.autocompleteActiveIndex]) {
+    items[state.autocompleteActiveIndex].scrollIntoView({
       block: 'nearest'
     });
   }
 }
 
 function scheduleAutocomplete() {
-  if (isSearching || isInitializing) {
+  if (state.isSearching || state.isInitializing) {
     hideAutocomplete(true);
     return;
   }
 
-  clearTimeout(autoTimer);
+  clearTimeout(state.autoTimer);
 
-  autoTimer = setTimeout(() => {
+  state.autoTimer = setTimeout(() => {
     const keyword = normalizeKeyword(getLastToken(document.getElementById('keyword').value || ''));
 
     if (!keyword || keyword.length < 2) {
-      pendingAutocompleteKeyword = '';
+      state.pendingAutocompleteKeyword = '';
       hideAutocomplete(true);
-      autocompleteRequestSeq++;
+      state.autocompleteRequestSeq++;
       return;
     }
 
-    pendingAutocompleteKeyword = keyword;
+    state.pendingAutocompleteKeyword = keyword;
     runAutocompleteRequest(keyword);
-  }, isComposing ? 120 : 60);
+  }, state.isComposing ? 120 : 60);
 }
 
 async function runAutocompleteRequest(keyword) {
@@ -100,12 +100,12 @@ async function runAutocompleteRequest(keyword) {
     keyword = currentKeyword;
   }
 
-  if (autocompleteCache.has(keyword)) {
-    renderAutocomplete(autocompleteCache.get(keyword), keyword);
+  if (state.autocompleteCache.has(keyword)) {
+    renderAutocomplete(state.autocompleteCache.get(keyword), keyword);
     return;
   }
 
-  const requestId = ++autocompleteRequestSeq;
+  const requestId = ++state.autocompleteRequestSeq;
   showAutocompleteLoading();
 
   try {
@@ -118,8 +118,8 @@ async function runAutocompleteRequest(keyword) {
 
     const latestKeyword = normalizeKeyword(getLastToken(document.getElementById('keyword').value || ''));
 
-    if (requestId !== autocompleteRequestSeq) return;
-    if (isSearching || isInitializing) return;
+    if (requestId !== state.autocompleteRequestSeq) return;
+    if (state.isSearching || state.isInitializing) return;
 
     if (!latestKeyword || latestKeyword.length < 2) {
       hideAutocomplete(true);
@@ -132,13 +132,13 @@ async function runAutocompleteRequest(keyword) {
     }
 
     const list = (data && data.suggestions) ? data.suggestions : [];
-    autocompleteCache.set(keyword, list);
+    state.autocompleteCache.set(keyword, list);
     renderAutocomplete(list, keyword);
   } catch (e) {
     const latestKeyword = normalizeKeyword(getLastToken(document.getElementById('keyword').value || ''));
 
-    if (requestId !== autocompleteRequestSeq) return;
-    if (isSearching || isInitializing) return;
+    if (requestId !== state.autocompleteRequestSeq) return;
+    if (state.isSearching || state.isInitializing) return;
 
     if (!latestKeyword || latestKeyword.length < 2 || latestKeyword !== keyword) {
       hideAutocomplete(true);
@@ -155,7 +155,7 @@ function fetchAutocompleteSuggestions(keyword) {
 
 function showAutocompleteLoading() {
   const box = document.getElementById('autocompleteBox');
-  autocompleteActiveIndex = -1;
+  state.autocompleteActiveIndex = -1;
   box.innerHTML = `
     <div class="autocomplete-loading">
       <span class="mini-spinner"></span>
@@ -167,7 +167,7 @@ function showAutocompleteLoading() {
 
 function showAutocompleteEmpty(message) {
   const box = document.getElementById('autocompleteBox');
-  autocompleteActiveIndex = -1;
+  state.autocompleteActiveIndex = -1;
   box.innerHTML = `<div class="autocomplete-empty">${escapeHtml(message || '검색 결과가 없습니다.')}</div>`;
   box.style.display = 'block';
 }
@@ -187,22 +187,22 @@ function renderAutocomplete(list, keyword = '') {
   }
 
   if (!list || !list.length) {
-    autocompleteActiveIndex = -1;
-    renderedAutocompleteKeyword = currentKeyword;
+    state.autocompleteActiveIndex = -1;
+    state.renderedAutocompleteKeyword = currentKeyword;
     showAutocompleteEmpty('일치하는 약물이 없습니다.');
     return;
   }
 
   if (
     box.style.display === 'block' &&
-    renderedAutocompleteKeyword === currentKeyword &&
+    state.renderedAutocompleteKeyword === currentKeyword &&
     box.querySelectorAll('.autocomplete-item').length === list.length
   ) {
     return;
   }
 
-  autocompleteActiveIndex = -1;
-  renderedAutocompleteKeyword = currentKeyword;
+  state.autocompleteActiveIndex = -1;
+  state.renderedAutocompleteKeyword = currentKeyword;
 
   box.innerHTML = list.map((item, index) => `
     <div class="autocomplete-item"
@@ -218,7 +218,7 @@ function renderAutocomplete(list, keyword = '') {
 }
 
 function setAutocompleteActive(index) {
-  autocompleteActiveIndex = index;
+  state.autocompleteActiveIndex = index;
   updateAutocompleteActiveItem();
 }
 
@@ -234,8 +234,8 @@ function selectSuggestion(name) {
   }
 
   hideAutocomplete(true);
-  lastAutocompleteKeyword = '';
-  autocompleteRequestSeq++;
+  state.lastAutocompleteKeyword = '';
+  state.autocompleteRequestSeq++;
   triggerSelectionFeedback();
   textarea.focus();
 }
@@ -243,13 +243,13 @@ function selectSuggestion(name) {
 function triggerSelectionFeedback() {
   const textarea = document.getElementById('keyword');
   textarea.classList.remove('highlighted');
-  clearTimeout(highlightTimer);
+  clearTimeout(state.highlightTimer);
 
   requestAnimationFrame(() => {
     textarea.classList.add('highlighted');
   });
 
-  highlightTimer = setTimeout(() => {
+  state.highlightTimer = setTimeout(() => {
     textarea.classList.remove('highlighted');
   }, 520);
 
@@ -262,17 +262,17 @@ function hideAutocomplete(forceReset = false) {
   const box = document.getElementById('autocompleteBox');
   box.style.display = 'none';
   box.innerHTML = '';
-  autocompleteActiveIndex = -1;
-  renderedAutocompleteKeyword = '';
+  state.autocompleteActiveIndex = -1;
+  state.renderedAutocompleteKeyword = '';
 
   if (forceReset) {
-    clearTimeout(autoTimer);
-    pendingAutocompleteKeyword = '';
+    clearTimeout(state.autoTimer);
+    state.pendingAutocompleteKeyword = '';
   }
 }
 
 function handleSearch() {
-  if (isSearching) return;
+  if (state.isSearching) return;
 
   const keywordRaw = document.getElementById('keyword').value.trim();
   const examType = document.getElementById('examType').value;
@@ -298,10 +298,10 @@ function handleSearch() {
   }
 
   hideAutocomplete(true);
-  autocompleteRequestSeq++;
+  state.autocompleteRequestSeq++;
   if (document.activeElement) document.activeElement.blur();
 
-  isSearching = true;
+  state.isSearching = true;
   setSearchButtonLoading(true);
   showLoadingOverlay(
     '검색 중',
@@ -323,13 +323,13 @@ function handleSearch() {
       url.searchParams.set('action', 'search');
       url.searchParams.set('keyword', dedupedKeyword);
       url.searchParams.set('examType', examType || '');
-      url.searchParams.set('mode', currentMode);
+      url.searchParams.set('mode', state.currentMode);
       url.searchParams.set('userAgent', navigator.userAgent);
 
       const res = await fetch(url.toString(), { method: 'GET' });
       const data = await res.json();
 
-      isSearching = false;
+      state.isSearching = false;
       setSearchButtonLoading(false);
       hideLoadingOverlay();
 
@@ -347,7 +347,7 @@ function handleSearch() {
         }, 80);
       }
     } catch (err) {
-      isSearching = false;
+      state.isSearching = false;
       setSearchButtonLoading(false);
       hideLoadingOverlay();
       showErrorPopup('검색 중 오류가 발생했습니다: ' + getErrorMessage(err));
@@ -465,11 +465,11 @@ function createResultCardHtml(item) {
     <div class="kv">
       <div class="k">일반 용도</div><div class="v">${escapeHtml(item.common_use || '-')}</div>
       <div class="k">검색 별칭</div><div class="v">${escapeHtml((item.aliases || []).join(', ') || '-')}</div>
-      ${currentMode === 'staff' ? `<div class="k">약물 기본 주의도</div><div class="v">${escapeHtml(item.caution_level || '일반')}</div>` : ''}
-      ${currentMode === 'staff' ? `<div class="k">직원 참고 메모</div><div class="v">${escapeHtml(item.staff_note || '-')}</div>` : ''}
+      ${state.currentMode === 'staff' ? `<div class="k">약물 기본 주의도</div><div class="v">${escapeHtml(item.caution_level || '일반')}</div>` : ''}
+      ${state.currentMode === 'staff' ? `<div class="k">직원 참고 메모</div><div class="v">${escapeHtml(item.staff_note || '-')}</div>` : ''}
     </div>
 
-    ${currentMode === 'patient' ? `
+    ${state.currentMode === 'patient' ? `
       <div class="patient-help-note">
         아래 검사별 안내를 꼭 확인하세요.
       </div>
@@ -499,7 +499,7 @@ function createResultCardHtml(item) {
                 <div class="exam-result-title">${escapeHtml(result.exam_type || '검사 미지정')}</div>
                 <div class="exam-result-meta">
                   <div class="badge ${caution.className}">${escapeHtml(caution.label)}</div>
-                  ${currentMode === 'staff'
+                  ${state.currentMode === 'staff'
                     ? `<div class="exam-meta-badge">매칭 ${escapeHtml(String(result.matched_rule_count || 0))}건</div>`
                     : ''
                   }
@@ -515,10 +515,10 @@ function createResultCardHtml(item) {
                   <div class="v">${escapeHtml(rule.hold_period || '-')}</div>
                 ` : ''}
 
-                <div class="k">${currentMode === 'staff' ? '환자 안내' : '안내 문구'}</div>
+                <div class="k">${state.currentMode === 'staff' ? '환자 안내' : '안내 문구'}</div>
                 <div class="v">${escapeHtml(rule.patient_message || '-')}</div>
 
-                ${currentMode === 'staff' ? `
+                ${state.currentMode === 'staff' ? `
                   <div class="k">직원 안내</div>
                   <div class="v">${escapeHtml(rule.staff_message || '-')}</div>
 
@@ -527,7 +527,7 @@ function createResultCardHtml(item) {
                 ` : ''}
               </div>
 
-              ${currentMode === 'patient' && patientGuidance ? `
+              ${state.currentMode === 'patient' && patientGuidance ? `
                 <div class="patient-guidance-box">
                   <strong>안내:</strong> ${escapeHtml(patientGuidance)}
                 </div>
@@ -548,7 +548,7 @@ function getRuleCautionLevel(item, rule) {
 
 function formatNeedHold(value) {
   if (value === 'Y') return '중단 필요';
-  if (value === 'N') return currentMode === 'patient' ? '복용 유지' : '대부분 유지';
+  if (value === 'N') return state.currentMode === 'patient' ? '복용 유지' : '대부분 유지';
   if (value === 'CONSULT') return '상담 필요';
   return value || '-';
 }
@@ -587,7 +587,7 @@ function getCautionClass(level) {
 function mapPatientCautionLabel(level) {
   const value = String(level || '').trim();
 
-  if (currentMode === 'staff') {
+  if (state.currentMode === 'staff') {
     return value || '일반';
   }
 
