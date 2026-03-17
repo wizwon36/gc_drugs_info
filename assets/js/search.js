@@ -206,9 +206,9 @@ function renderAutocomplete(list, keyword = '') {
 
   box.innerHTML = list.map((item, index) => `
     <div class="autocomplete-item"
-        data-index="${index}"
-        onmouseenter="setAutocompleteActive(${index})"
-        onclick="selectSuggestion('${escapeJs(item.brand_name)}')">
+         data-index="${index}"
+         data-action="selectSuggestion"
+         data-brand-name="${escapeHtml(item.brand_name)}">
       <div class="auto-title">${escapeHtml(item.brand_name)}</div>
       <div class="auto-sub">${escapeHtml(item.ingredient_name)} · ${escapeHtml(item.drug_group)}</div>
     </div>
@@ -427,7 +427,12 @@ function renderSuggestionChips(list, originalKeyword) {
   return `
     <div class="suggest-list">
       ${list.map(item => `
-        <button class="suggest-chip" onclick="replaceKeywordAndSearch('${escapeJs(originalKeyword)}','${escapeJs(item.brand_name)}')">${escapeHtml(item.brand_name)}</button>
+        <button class="suggest-chip"
+                data-action="replaceKeywordAndSearch"
+                data-old-name="${escapeHtml(originalKeyword)}"
+                data-new-name="${escapeHtml(item.brand_name)}">
+          ${escapeHtml(item.brand_name)}
+        </button>
       `).join('')}
     </div>
   `;
