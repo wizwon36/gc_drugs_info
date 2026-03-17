@@ -244,3 +244,24 @@
     font-size:11px;
   }
 }
+
+@media (max-width: 640px){
+  .admin-header-bar{
+    flex-direction:column;
+    align-items:stretch;
+  }
+
+  .admin-switch{
+    grid-template-columns:1fr;
+    flex:1 1 auto;
+  }
+
+  .admin-header-actions{
+    justify-content:flex-start;
+  }
+
+  .admin-close-btn{
+    width:100%;
+    min-width:0;
+  }
+}
