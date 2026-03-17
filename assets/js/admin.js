@@ -244,7 +244,7 @@ async function searchAdminDrugList(showLoading = true) {
     listEl.innerHTML = items.map(item => `
       <div class="admin-item">
         <strong>${escapeHtml(item.drug_id)}</strong> · ${escapeHtml(item.brand_name)}
-        <br><span class="small">${escapeHtml(item.ingredient_name)} / ${escapeHtml(item.drug_group)} / ${escapeHtml(item.is_active)}</span>
+        <br><span class="small">${escapeHtml(item.ingredient_name)} / ${escapeHtml(item.drug_group)} / ${escapeHtml(item.is_active === 'Y' ? '활성' : '비활성')}</span>
         <div class="toolbar">
           <button class="btn secondary"
                   data-action="editDrug"
