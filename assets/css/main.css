@@ -2584,4 +2584,130 @@ label,
   .slider-group-header {
     padding: 12px;
   }
+
+  .group-tab-nav {
+  gap: 6px;
+  margin: 6px 0 8px;
+  }
+
+  .group-tab-btn {
+    min-height: 30px;
+    padding: 0 12px;
+    font-size: 12px;
+  }
+  
+  .group-master-header,
+  .slider-group-header {
+    padding: 10px 12px;
+    border-radius: 14px;
+  }
+  
+  .group-title {
+    font-size: 16px;
+    line-height: 1.25;
+  }
+  
+  .group-sub {
+    margin-top: 2px;
+    font-size: 12px;
+  }
+  
+  .slider-nav-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 18px;
+  }
+  
+  .slider-counter {
+    min-width: 44px;
+    font-size: 12px;
+  }
+  
+  .result-card {
+    padding: 12px;
+  }
+  
+  .group-keyword-chip {
+    padding: 4px 10px;
+    margin: 0 0 10px 0;
+    font-size: 11px;
+  }
+  
+  .drug-name {
+    font-size: 18px;
+    margin: 2px 0 6px;
+    line-height: 1.28;
+  }
+  
+  .subline {
+    font-size: 14px;
+    line-height: 1.45;
+  }
+  
+  .kv {
+    gap: 2px 0;
+    margin-top: 8px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  
+  .kv .k {
+    margin-top: 4px;
+  }
+  
+  .patient-help-note {
+    margin-top: 8px;
+    font-size: 12px;
+    line-height: 1.45;
+  }
+  
+  .exam-result-list {
+    gap: 10px;
+    margin-top: 10px;
+  }
+  
+  .exam-result-item {
+    padding: 10px 11px;
+    border-radius: 14px;
+  }
+  
+  .exam-result-head {
+    margin-bottom: 8px;
+  }
+  
+  .exam-result-title {
+    font-size: 15px;
+  }
+  
+  .exam-result-grid {
+    gap: 3px 0;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  
+  .exam-result-grid .k {
+    margin-top: 4px;
+  }
+  
+  .patient-guidance-box {
+    margin-top: 8px;
+    padding: 10px 11px;
+    font-size: 13px;
+    line-height: 1.45;
+  }
+  
+  .group-section {
+    margin-bottom: 10px;
+    border-radius: 16px;
+    box-shadow: 0 4px 10px rgba(24, 67, 89, 0.05);
+  }
+  
+  .group-master-slide[aria-hidden="false"] .group-section {
+    box-shadow: 0 6px 14px rgba(21, 148, 198, 0.06);
+  }
+  
+  .group-master-slide > .group-section,
+  .result-slide .result-card {
+    min-height: auto;
+  }
 }
