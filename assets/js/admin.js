@@ -193,8 +193,12 @@ async function searchAdminDrugList(showLoading = true) {
         <strong>${escapeHtml(item.drug_id)}</strong> · ${escapeHtml(item.brand_name)}
         <br><span class="small">${escapeHtml(item.ingredient_name)} / ${escapeHtml(item.drug_group)} / ${escapeHtml(item.is_active)}</span>
         <div class="toolbar">
-          <button class="btn secondary" onclick="editDrug('${escapeJs(item.drug_id)}')">수정</button>
-          <button class="btn secondary" onclick="toggleDrug('${escapeJs(item.drug_id)}')">활성/비활성</button>
+          <button class="btn secondary"
+                  data-action="editDrug"
+                  data-drug-id="${escapeHtml(item.drug_id)}">수정</button>
+          <button class="btn secondary"
+                  data-action="toggleDrug"
+                  data-drug-id="${escapeHtml(item.drug_id)}">활성/비활성</button>
         </div>
       </div>
     `).join('');
@@ -231,8 +235,12 @@ async function searchAdminRuleList(showLoading = true) {
         <strong>${escapeHtml(item.rule_id)}</strong> · ${escapeHtml(item.exam_type)}
         <br><span class="small">${escapeHtml(item.target_display_type || item.target_type)} / ${escapeHtml(item.target_display_name || item.target_value)} / ${escapeHtml(item.caution_level || '일반')} / ${escapeHtml(item.need_hold)} / ${escapeHtml(item.is_active)}</span>
         <div class="toolbar">
-          <button class="btn secondary" onclick="editRule('${escapeJs(item.rule_id)}')">수정</button>
-          <button class="btn secondary" onclick="toggleRule('${escapeJs(item.rule_id)}')">활성/비활성</button>
+          <button class="btn secondary"
+                  data-action="editRule"
+                  data-rule-id="${escapeHtml(item.rule_id)}">수정</button>
+          <button class="btn secondary"
+                  data-action="toggleRule"
+                  data-rule-id="${escapeHtml(item.rule_id)}">활성/비활성</button>
         </div>
       </div>
     `).join('');
@@ -643,7 +651,11 @@ async function searchAdminDrugTargetList() {
         <strong>${escapeHtml(item.drug_id)}</strong> · ${escapeHtml(item.brand_name)}
         <br><span class="small">${escapeHtml(item.ingredient_name)} / ${escapeHtml(item.drug_group)} / ${escapeHtml(item.is_active)}</span>
         <div class="toolbar">
-          <button class="btn secondary" onclick="selectAdminTargetDrug('${escapeJs(item.drug_id)}','${escapeJs(item.brand_name)}','${escapeJs(item.ingredient_name)}')">선택</button>
+          <button class="btn secondary"
+                  data-action="selectAdminTargetDrug"
+                  data-drug-id="${escapeHtml(item.drug_id)}"
+                  data-brand-name="${escapeHtml(item.brand_name)}"
+                  data-ingredient-name="${escapeHtml(item.ingredient_name)}">선택</button>
         </div>
       </div>
     `).join('');
