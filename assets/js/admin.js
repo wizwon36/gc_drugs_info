@@ -26,23 +26,40 @@ function renderExamOptions() {
 function renderAdminOptions() {
   const drugGroupSelect = document.getElementById('adminDrugGroup');
   const targetGroupSelect = document.getElementById('adminTargetValueGroup');
+  const adminExam = document.getElementById('adminExamType');
+
+  if (adminExam) {
+    adminExam.innerHTML = '<option value="">검사 선택</option>';
+    state.adminExamList.forEach(item => {
+      const option = document.createElement('option');
+      option.value = item.name;
+      option.textContent = item.is_active === 'Y'
+        ? item.name
+        : `${item.name} (비활성)`;
+      adminExam.appendChild(option);
+    });
+  }
 
   if (drugGroupSelect) {
     drugGroupSelect.innerHTML = '<option value="">약물군 선택</option>';
-    state.drugGroupList.forEach(item => {
+    state.adminDrugGroupList.forEach(item => {
       const option = document.createElement('option');
       option.value = item.name;
-      option.textContent = item.name;
+      option.textContent = item.is_active === 'Y'
+        ? item.name
+        : `${item.name} (비활성)`;
       drugGroupSelect.appendChild(option);
     });
   }
 
   if (targetGroupSelect) {
     targetGroupSelect.innerHTML = '<option value="">약물군 선택</option>';
-    state.drugGroupList.forEach(item => {
+    state.adminDrugGroupList.forEach(item => {
       const option = document.createElement('option');
       option.value = item.name;
-      option.textContent = item.name;
+      option.textContent = item.is_active === 'Y'
+        ? item.name
+        : `${item.name} (비활성)`;
       targetGroupSelect.appendChild(option);
     });
   }
