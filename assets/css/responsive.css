@@ -214,10 +214,10 @@
     padding:10px 12px;
     font-size:13px;
   }
-  .search-inline-btn{
-    min-height:124px;
-    font-size:14px;
-    border-radius:14px;
+  
+  #searchBtn.search-inline-btn {
+    min-height: 96px;
+    height: 96px;
   }
 
   .hero-title-row{
@@ -238,11 +238,6 @@
     gap:8px;
   }
 
-  .search-inline-btn{
-    min-height:124px;
-    font-size:14px;
-    border-radius:14px;
-  }
   .topbar-mode{
     min-height:32px;
     padding:0 8px;
