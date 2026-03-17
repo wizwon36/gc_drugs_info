@@ -34,7 +34,7 @@
         </div>
 
         <div class="topbar-actions">
-          <button class="btn secondary hidden" id="homeBtn" onclick="goHome()">처음으로</button>
+          <button class="btn secondary hidden" id="homeBtn">처음으로</button>
         </div>
       </div>
     </div>
@@ -49,7 +49,7 @@
       <div class="landing-grid">
         <div class="landing-action-card primary">
           <div class="landing-action-top">
-            <button class="landing-action-btn" onclick="startPatientMode()">
+            <button class="landing-action-btn" id="startPatientBtn">
               환자용 안내 시작
             </button>
           </div>
@@ -61,7 +61,7 @@
 
         <div class="landing-action-card secondary">
           <div class="landing-action-top">
-            <button class="landing-action-btn" onclick="startStaffMode()">
+            <button class="landing-action-btn" id="startStaffBtn">
               직원용 조회
             </button>
           </div>
@@ -83,9 +83,9 @@
 
     <section class="panel hidden" id="mainPanel">
       <div class="mode-switch">
-        <button class="mode-btn active" id="patientModeBtn" onclick="setMode('patient')">환자용 안내</button>
-        <button class="mode-btn" id="staffModeBtn" onclick="setMode('staff')">직원용 조회</button>
-        <button class="mode-btn hidden" id="adminModeBtn" onclick="openAdminPanel()">관리자</button>
+        <button class="mode-btn active" id="patientModeBtn">환자용 안내</button>
+        <button class="mode-btn" id="staffModeBtn">직원용 조회</button>
+        <button class="mode-btn hidden" id="adminModeBtn">관리자</button>
       </div>
       <div id="searchSection">
         <div class="search-layout">
@@ -99,7 +99,7 @@
               </div>
               <div class="field">
                 <label>&nbsp;</label>
-                <button class="search-inline-btn" id="searchBtn" onclick="handleSearch()">🔍 조회</button>
+                <button class="search-inline-btn" id="searchBtn">🔍 조회</button>
               </div>
             </div>
           </div>
@@ -114,7 +114,9 @@
           </div>
 
           <div class="search-actions">
-            <button class="btn primary" style="width:100%;min-height:54px;" onclick="handleSearch()">조회</button>
+            <button class="btn primary" id="searchBtnMobile" style="width:100%;min-height:54px;">
+              조회
+            </button>
           </div>
         </div>
 
@@ -128,10 +130,10 @@
 
     <section class="admin-panel hidden" id="adminPanel">
       <div class="admin-switch">
-        <button class="admin-btn active" id="adminTabDrug" onclick="setAdminTab('drug')">약물 관리</button>
-        <button class="admin-btn" id="adminTabRule" onclick="setAdminTab('rule')">규칙 관리</button>
-        <button class="admin-btn" id="adminTabStats" onclick="setAdminTab('stats')">통계</button>
-        <button class="btn secondary" onclick="closeAdminPanel()">닫기</button>
+        <button class="admin-btn active" id="adminTabDrug">약물 관리</button>
+        <button class="admin-btn" id="adminTabRule">규칙 관리</button>
+        <button class="admin-btn" id="adminTabStats">통계</button>
+        <button class="btn secondary" id="closeAdminPanelBtn">닫기</button>
       </div>
 
       <div id="adminLoginArea" class="admin-login-box hidden">
@@ -143,7 +145,9 @@
           </div>
           <div class="field">
             <label>&nbsp;</label>
-            <button class="btn primary" style="width:100%;min-height:52px;" onclick="loginAdmin()">로그인</button>
+            <button class="btn primary" id="adminLoginBtn" style="width:100%;min-height:52px;">
+              로그인
+            </button>
           </div>
         </div>
         <div class="status" id="adminLoginStatus"></div>
@@ -163,9 +167,9 @@
               </div>
               
               <div class="toolbar admin-search-toolbar">
-                <button class="btn secondary" onclick="searchAdminDrugList()">검색</button>
-                <button class="btn secondary" onclick="loadRecentAdminData(true)">최근목록</button>
-                <button class="btn secondary" onclick="prepareNewDrug()">신규입력</button>
+                <button class="btn secondary" id="adminDrugSearchBtn">검색</button>
+                <button class="btn secondary" id="adminDrugRecentBtn">최근목록</button>
+                <button class="btn secondary" id="adminDrugNewBtn">신규입력</button>
               </div>
               
               <div class="admin-list compact-empty" id="adminDrugSearchList"></div>
@@ -238,8 +242,8 @@
               </div>
               
               <div class="admin-action-toolbar">
-                <button class="btn primary" onclick="saveDrugItem()">저장</button>
-                <button class="btn secondary" onclick="toggleCurrentDrugActive()">활성/비활성 전환</button>
+                <button class="btn primary" id="saveDrugBtn">저장</button>
+                <button class="btn secondary" id="toggleCurrentDrugBtn">활성/비활성 전환</button>
               </div>
               </div>
               
@@ -262,9 +266,9 @@
               </div>
               
               <div class="toolbar admin-search-toolbar">
-                <button class="btn secondary" onclick="searchAdminRuleList()">검색</button>
-                <button class="btn secondary" onclick="loadRecentAdminData(true)">최근목록</button>
-                <button class="btn secondary" onclick="prepareNewRule()">신규입력</button>
+                <button class="btn secondary" id="adminRuleSearchBtn">검색</button>
+                <button class="btn secondary" id="adminRuleRecentBtn">최근목록</button>
+                <button class="btn secondary" id="adminRuleNewBtn">신규입력</button>
               </div>
               
               <div class="admin-list compact-empty" id="adminRuleSearchList"></div>
@@ -371,8 +375,8 @@
               </div>
 
               <div class="admin-action-toolbar">
-                <button class="btn primary" onclick="saveRuleItem()">저장</button>
-                <button class="btn secondary" onclick="toggleCurrentRuleActive()">활성/비활성 전환</button>
+                <button class="btn primary" id="saveRuleBtn">저장</button>
+                <button class="btn secondary" id="toggleCurrentRuleBtn">활성/비활성 전환</button>
               </div>
               <div class="status" id="adminRuleStatus"></div>
             </div>
