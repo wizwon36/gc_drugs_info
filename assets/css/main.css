@@ -1148,26 +1148,26 @@ body{
 }
 
 .kv{
-  display:grid;
-  grid-template-columns:1fr;
-  gap:4px 0;
-  margin-top:10px;
-  font-size:var(--font-base);
-  line-height:1.62;
-  align-items:start;
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 8px 12px;
+  margin-top: 10px;
+  font-size: var(--font-base);
+  line-height: 1.58;
+  align-items: start;
 }
 
 .kv .k{
-  color:#1f6f98;
-  font-weight:700;
-  word-break:keep-all;
-  margin-top:5px;
+  color: #1f6f98;
+  font-weight: 700;
+  word-break: keep-all;
+  margin-top: 0;
 }
 
 .kv .v{
-  color:var(--text);
-  word-break:break-word;
-  min-width:0;
+  color: var(--text);
+  word-break: break-word;
+  min-width: 0;
 }
 
 .rule-box{
@@ -1250,25 +1250,25 @@ body{
   line-height:1.6;
 }
 
-.exam-result-grid{
-  display:grid;
-  grid-template-columns:1fr;
-  gap:5px 0;
-  font-size:var(--font-base);
-  line-height:1.62;
+.exam-result-grid {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 8px 12px;
+  font-size: var(--font-base);
+  line-height: 1.58;
 }
 
-.exam-result-grid .k{
-  color:#1f6f98;
-  font-weight:700;
-  word-break:keep-all;
-  margin-top:5px;
+.exam-result-grid .k {
+  color: #1f6f98;
+  font-weight: 700;
+  word-break: keep-all;
+  margin-top: 0;
 }
 
-.exam-result-grid .v{
-  color:var(--text);
-  word-break:break-word;
-  min-width:0;
+.exam-result-grid .v {
+  color: var(--text);
+  word-break: break-word;
+  min-width: 0;
 }
 
 .empty{
@@ -2777,14 +2777,22 @@ label,
   }
 
   .kv {
-    gap: 2px 0;
+    display: grid;
+    grid-template-columns: 84px minmax(0, 1fr);
+    gap: 6px 10px;
     margin-top: 8px;
     font-size: 14px;
     line-height: 1.5;
+    align-items: start;
   }
 
   .kv .k {
-    margin-top: 4px;
+    margin-top: 0;
+  }
+
+  .kv .v {
+    min-width: 0;
+    word-break: break-word;
   }
 
   .patient-help-note {
@@ -2812,13 +2820,20 @@ label,
   }
 
   .exam-result-grid {
-    gap: 3px 0;
+    display: grid;
+    grid-template-columns: 84px minmax(0, 1fr);
+    gap: 6px 10px;
     font-size: 14px;
     line-height: 1.5;
   }
 
   .exam-result-grid .k {
-    margin-top: 4px;
+    margin-top: 0;
+  }
+
+  .exam-result-grid .v {
+    min-width: 0;
+    word-break: break-word;
   }
 
   .patient-guidance-box {
