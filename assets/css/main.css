@@ -2971,3 +2971,362 @@ label,
     white-space:nowrap;
   }
 }
+
+/* =========================================================
+   GCfont design tuning
+   main.css 맨 아래 추가
+   ========================================================= */
+
+/* 브랜드/타이틀 계열 */
+.brand-title,
+.landing-title,
+.admin-section-title,
+.group-title,
+.drug-name,
+.exam-result-title,
+.rule-title,
+.warning-title,
+.group-master-title,
+.summary-value,
+.hero-mode,
+.group-tab-btn,
+.btn,
+.mode-btn,
+.admin-btn {
+  font-family: 'GCfont', sans-serif;
+  letter-spacing: -0.02em;
+}
+
+/* 헤더 영역 정리 */
+.app-topbar-inner {
+  align-items: center;
+}
+
+.topbar-brand {
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.brand-full-logo {
+  display: block;
+  height: 26px;
+  width: auto;
+  object-fit: contain;
+  flex: none;
+}
+
+.brand-meta {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+}
+
+.brand-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: nowrap;
+  min-width: 0;
+}
+
+.brand-title {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.05;
+  color: var(--gc-navy);
+  white-space: nowrap;
+}
+
+.brand-sub-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: nowrap;
+  min-width: 0;
+}
+
+.brand-sub {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans KR', sans-serif;
+  font-size: 13px;
+  line-height: 1.2;
+  color: var(--sub);
+  white-space: nowrap;
+}
+
+.hero-mode {
+  min-height: 26px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+
+/* 처음으로 버튼 */
+.topbar-actions .btn {
+  min-height: 42px;
+  padding: 0 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  font-weight: 700;
+}
+
+/* 랜딩 */
+.landing-title {
+  font-size: clamp(26px, 4vw, 34px);
+  line-height: 1.15;
+  font-weight: 700;
+}
+
+.landing-action-btn {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* 검색 탭/슬라이더 */
+.group-master-title {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.group-title {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.group-tab-btn {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.slider-counter,
+.summary-value {
+  font-weight: 700;
+}
+
+/* 카드 내부 */
+.result-head {
+  align-items: flex-start;
+  text-align: left;
+}
+
+.result-head > div {
+  width: 100%;
+}
+
+.drug-name {
+  font-size: clamp(24px, 2.2vw, 28px);
+  font-weight: 700;
+  line-height: 1.15;
+  margin: 0 0 8px;
+  color: var(--gc-navy);
+  text-align: left;
+}
+
+.subline {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans KR', sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--sub);
+  text-align: left;
+}
+
+.kv,
+.exam-result-grid {
+  line-height: 1.55;
+}
+
+.kv .k,
+.exam-result-grid .k {
+  font-weight: 700;
+}
+
+.kv .v,
+.exam-result-grid .v,
+.patient-help-note,
+.patient-guidance-box,
+.footer-note,
+.status,
+.warning-item,
+.empty,
+.auto-sub {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans KR', sans-serif;
+}
+
+/* 버튼/관리자 */
+.btn,
+.mode-btn,
+.admin-btn {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.exam-result-title,
+.rule-title,
+.warning-title,
+.admin-section-title {
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+/* 모바일 보정 */
+@media (max-width: 720px) {
+  .app-topbar-inner {
+    padding: 10px 14px;
+    gap: 10px;
+  }
+
+  .topbar-brand {
+    gap: 10px;
+  }
+
+  .brand-full-logo {
+    height: 23px;
+  }
+
+  .brand-title {
+    font-size: 20px;
+    line-height: 1.05;
+  }
+
+  .brand-sub {
+    font-size: 12px;
+  }
+
+  .hero-mode {
+    min-height: 24px;
+    padding: 0 8px;
+    font-size: 11px;
+  }
+
+  .topbar-actions .btn {
+    min-height: 38px;
+    padding: 0 12px;
+    font-size: 12px;
+  }
+
+  .group-master-title {
+    font-size: 17px;
+  }
+
+  .group-title {
+    font-size: 17px;
+  }
+
+  .drug-name {
+    font-size: 21px;
+    margin: 0 0 6px;
+  }
+
+  .subline {
+    font-size: 14px;
+    line-height: 1.45;
+  }
+}
+
+@media (max-width: 480px) {
+  .app-topbar {
+    margin-bottom: 6px;
+    padding-top: 0;
+  }
+
+  .app-topbar-inner {
+    padding: 8px 10px;
+    gap: 8px;
+  }
+
+  .topbar-brand {
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .brand-full-logo {
+    height: 21px;
+  }
+
+  .brand-meta {
+    gap: 3px;
+    min-width: 0;
+  }
+
+  .brand-title-row,
+  .brand-sub-row {
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .brand-title {
+    font-size: 17px;
+    line-height: 1.05;
+    white-space: nowrap;
+  }
+
+  .brand-sub {
+    font-size: 11px;
+    line-height: 1.15;
+    white-space: nowrap;
+  }
+
+  .hero-mode {
+    min-height: 22px;
+    padding: 0 8px;
+    font-size: 10px;
+    flex: none;
+  }
+
+  .topbar-actions .btn {
+    min-height: 36px;
+    padding: 0 10px;
+    font-size: 11px;
+    border-radius: 12px;
+  }
+
+  .group-master-title {
+    font-size: 16px;
+  }
+
+  .group-title {
+    font-size: 16px;
+  }
+
+  .group-tab-btn {
+    font-size: 12px;
+  }
+
+  .drug-name {
+    font-size: 18px;
+    line-height: 1.18;
+    margin: 0 0 6px;
+  }
+
+  .subline {
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  .exam-result-title,
+  .rule-title,
+  .warning-title,
+  .admin-section-title {
+    font-size: 15px;
+  }
+
+  .btn,
+  .mode-btn,
+  .admin-btn {
+    letter-spacing: -0.015em;
+  }
+}
