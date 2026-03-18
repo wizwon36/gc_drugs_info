@@ -59,16 +59,6 @@ body{
   calc(var(--app-inner-gap) + var(--safe-left));
 }
 
-.app-topbar{
-  position:sticky;
-  top:0;
-  z-index:80;
-  margin-bottom:10px;
-  padding-top:2px;
-  backdrop-filter:blur(14px);
-  -webkit-backdrop-filter:blur(14px);
-}
-
 #heroSection{
   display:none !important;
 }
@@ -77,14 +67,6 @@ body{
   background:#eef7f2;
   color:#218559;
   border-color:#cfead9;
-}
-
-.app-topbar-inner{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:14px;
-  padding:12px 16px;
 }
 
 .topbar-brand{
