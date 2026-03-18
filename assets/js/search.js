@@ -85,7 +85,7 @@ function scheduleAutocomplete() {
 
     state.pendingAutocompleteKeyword = keyword;
     runAutocompleteRequest(keyword);
-  }, state.isComposing ? 120 : 60);
+  }, state.isComposing ? 90 : 40);
 }
 
 async function runAutocompleteRequest(keyword) {
@@ -100,12 +100,17 @@ async function runAutocompleteRequest(keyword) {
     keyword = currentKeyword;
   }
 
+  if (state.autocompleteLoadingKeyword === keyword) {
+    return;
+  }
+
   if (state.autocompleteCache.has(keyword)) {
     renderAutocomplete(state.autocompleteCache.get(keyword), keyword);
     return;
   }
 
   const requestId = ++state.autocompleteRequestSeq;
+  state.autocompleteLoadingKeyword = keyword;
   showAutocompleteLoading();
 
   try {
@@ -133,6 +138,7 @@ async function runAutocompleteRequest(keyword) {
 
     const list = (data && data.suggestions) ? data.suggestions : [];
     state.autocompleteCache.set(keyword, list);
+    state.autocompleteLoadingKeyword = '';
     renderAutocomplete(list, keyword);
   } catch (e) {
     const latestKeyword = normalizeKeyword(getLastToken(document.getElementById('keyword').value || ''));
@@ -145,6 +151,7 @@ async function runAutocompleteRequest(keyword) {
       return;
     }
 
+    state.autocompleteLoadingKeyword = '';
     showAutocompleteEmpty('자동완성 조회 중 오류가 발생했습니다.');
   }
 }
@@ -264,6 +271,7 @@ function hideAutocomplete(forceReset = false) {
   box.innerHTML = '';
   state.autocompleteActiveIndex = -1;
   state.renderedAutocompleteKeyword = '';
+  state.autocompleteLoadingKeyword = '';
 
   if (forceReset) {
     clearTimeout(state.autoTimer);
@@ -324,7 +332,7 @@ function handleSearch() {
       url.searchParams.set('keyword', dedupedKeyword);
       url.searchParams.set('examType', examType || '');
       url.searchParams.set('mode', state.currentMode);
-      url.searchParams.set('userAgent', navigator.userAgent);
+      // url.searchParams.set('userAgent', navigator.userAgent);
 
       const res = await fetch(url.toString(), { method: 'GET' });
       const data = await res.json();
