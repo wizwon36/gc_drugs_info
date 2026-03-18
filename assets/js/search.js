@@ -890,3 +890,26 @@ function bindMasterTabs() {
     };
   });
 }
+
+function ensureKeywordVisibleOnMobile() {
+  const keyword = document.getElementById('keyword');
+  if (!keyword) return;
+
+  const isMobile = window.innerWidth <= 720;
+  if (!isMobile) return;
+
+  setTimeout(() => {
+    const rect = keyword.getBoundingClientRect();
+    const topOffset = 84; // 상단 헤더 + 여유 공간
+    const bottomSafe = window.innerHeight - 260; // 키보드 올라온 상황 가정
+
+    if (rect.top < topOffset || rect.bottom > bottomSafe) {
+      const absoluteTop = window.scrollY + rect.top;
+      const targetY = Math.max(0, absoluteTop - topOffset);
+      window.scrollTo({
+        top: targetY,
+        behavior: 'smooth'
+      });
+    }
+  }, 250);
+}
