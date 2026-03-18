@@ -111,7 +111,7 @@ function handleSecretAdminTrigger() {
   clearTimeout(state.adminTapTimer);
   state.adminTapTimer = setTimeout(() => {
     state.adminTapCount = 0;
-  }, 1200);
+  }, 600);
 
   if (state.adminTapCount >= 3) {
     state.adminTapCount = 0;
