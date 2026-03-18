@@ -46,7 +46,11 @@ function applyConfig() {
   const contactText = contactPhone ? `<div class="contact">문의: ${escapeHtml(contactPhone)}</div>` : '';
 
   document.getElementById('footerNotice').innerHTML = `<div>${escapeHtml(patientNotice)}</div>${contactText}`;
-  document.querySelector('.brand-title').textContent = hospitalName;
+  
+  const brandTitle = document.querySelector('.brand-title');
+  if (brandTitle) {
+    brandTitle.textContent = hospitalName;
+  }
 
   window.patientNotice = patientNotice;
   window.staffNotice = staffNotice;
