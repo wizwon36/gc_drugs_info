@@ -2323,6 +2323,9 @@ label,
   overflow: hidden;
   border-radius: 20px;
   isolation: isolate;
+  touch-action: pan-y;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 .group-master-track {
@@ -2331,6 +2334,7 @@ label,
   width: 100%;
   transition: transform 0.42s cubic-bezier(0.22, 1, 0.36, 1);
   will-change: transform;
+  touch-action: pan-y;
 }
 
 .group-master-track.no-anim {
@@ -2426,6 +2430,9 @@ label,
   position: relative;
   overflow: hidden;
   width: 100%;
+  touch-action: pan-y;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 .result-slider-track {
@@ -2433,6 +2440,7 @@ label,
   align-items: stretch;
   transition: transform 0.34s cubic-bezier(0.22, 1, 0.36, 1);
   will-change: transform;
+  touch-action: pan-y;
 }
 
 .result-slider-track.no-anim {
