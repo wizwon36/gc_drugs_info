@@ -2672,15 +2672,20 @@ label,
     width: var(--app-width);
     max-width: var(--app-width);
     padding:
-      calc(8px + var(--safe-top))
+      calc(2px + var(--safe-top))
       calc(var(--app-inner-gap) + var(--safe-right))
-      calc(16px + var(--safe-bottom))
+      calc(12px + var(--safe-bottom))
       calc(var(--app-inner-gap) + var(--safe-left));
   }
 
+  .app-topbar {
+    margin-bottom: 6px;
+    padding-top: 0;
+  }  
+  
   .app-topbar-inner {
     border-radius: 16px;
-    padding: 10px 11px;
+    padding: 8px 10px;
   }
 
   .hero,
@@ -2911,5 +2916,11 @@ label,
   .drug-name,
   .subline{
     text-align:left;
+  }
+
+  .panel,
+  .landing-panel,
+  .admin-panel {
+    margin-top: 0;
   }
 }
