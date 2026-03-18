@@ -1,5 +1,3 @@
-const UI_LOADING_DELAY = 750;
-
 async function initializeApp() {
   state.isInitializing = true;
   showLoadingOverlay('초기 데이터 불러오는 중', '약물 및 검사 정보를 준비하고 있습니다.');
