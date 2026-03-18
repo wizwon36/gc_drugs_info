@@ -1,5 +1,4 @@
 const API_BASE = 'https://script.google.com/macros/s/AKfycbyrR40UQWw2FwlU6tiPplAfAQqzE1d3JBvmamNvxNRymOg1vH9IP6fFZ2qDm5hxNFqwmg/exec';
-const UI_LOADING_DELAY = 750;
 
 const state = {
   currentMode: 'patient',
