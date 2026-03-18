@@ -419,7 +419,7 @@ function bindKeywordEvents() {
     setTimeout(() => {
       if (!state.suppressBlurHide) hideAutocomplete(true);
       state.suppressBlurHide = false;
-    }, 120);
+    }, 60);
   });
 
   keywordInput.addEventListener('keydown', handleKeywordKeydown);
