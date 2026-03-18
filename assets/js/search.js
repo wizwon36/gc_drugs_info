@@ -913,3 +913,32 @@ function ensureKeywordVisibleOnMobile() {
     }
   }, 250);
 }
+
+function bindKeywordEvents() {
+  const keywordInput = document.getElementById('keyword');
+  if (!keywordInput) return;
+
+  keywordInput.addEventListener('input', scheduleAutocomplete);
+  keywordInput.addEventListener('keydown', handleKeywordKeydown);
+
+  keywordInput.addEventListener('compositionstart', () => {
+    state.isComposing = true;
+  });
+
+  keywordInput.addEventListener('compositionend', () => {
+    state.isComposing = false;
+    setTimeout(() => {
+      scheduleAutocomplete();
+      ensureKeywordVisibleOnMobile();
+    }, 30);
+  });
+
+  keywordInput.addEventListener('focus', () => {
+    scheduleAutocomplete();
+    ensureKeywordVisibleOnMobile();
+  });
+
+  keywordInput.addEventListener('click', () => {
+    ensureKeywordVisibleOnMobile();
+  });
+}
