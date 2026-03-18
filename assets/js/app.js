@@ -130,7 +130,7 @@ function startModeWithLoading(mode) {
       const keyword = document.getElementById('keyword');
       if (keyword) keyword.focus();
     }, 50);
-  }, 1500);
+  }, 600);
 }
 
 function goHome() {
@@ -177,7 +177,7 @@ function goHome() {
 
     hideLoadingOverlay();
     window.scrollTo(0, 0);
-  }, 1500);
+  }, 600);
 }
 
 function simplifyPatientUI() {
