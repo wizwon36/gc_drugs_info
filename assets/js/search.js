@@ -628,24 +628,40 @@ function updateInnerResultSlider(slider, nextIndex, skipAnimation = false) {
 
 function attachInnerSliderSwipe(slider) {
   let startX = 0;
+  let startY = 0;
   let deltaX = 0;
+  let deltaY = 0;
   let isDragging = false;
+  let isHorizontalSwipe = false;
 
   slider.addEventListener('touchstart', (e) => {
     if (!e.touches || !e.touches.length) return;
+
     startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
     deltaX = 0;
+    deltaY = 0;
     isDragging = true;
+    isHorizontalSwipe = false;
   }, { passive: true });
 
   slider.addEventListener('touchmove', (e) => {
     if (!isDragging || !e.touches || !e.touches.length) return;
+
     deltaX = e.touches[0].clientX - startX;
-  }, { passive: true });
+    deltaY = e.touches[0].clientY - startY;
+
+    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 8) {
+      isHorizontalSwipe = true;
+      e.preventDefault();
+    }
+  }, { passive: false });
 
   slider.addEventListener('touchend', () => {
     if (!isDragging) return;
     isDragging = false;
+
+    if (!isHorizontalSwipe) return;
 
     const threshold = 50;
     const current = Number(slider.dataset.currentIndex || 0);
@@ -656,6 +672,11 @@ function attachInnerSliderSwipe(slider) {
     } else if (deltaX >= threshold) {
       updateInnerResultSlider(slider, Math.max(0, current - 1));
     }
+  });
+
+  slider.addEventListener('touchcancel', () => {
+    isDragging = false;
+    isHorizontalSwipe = false;
   });
 }
 
