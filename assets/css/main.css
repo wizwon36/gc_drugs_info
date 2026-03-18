@@ -84,10 +84,7 @@ body{
 .topbar-brand{
   display:flex;
   align-items:center;
-  gap:12px;
-  min-width:0;
-  flex:1;
-  cursor:pointer;
+  gap:10px;
 }
 
 .brand-full-logo{
@@ -129,9 +126,11 @@ body{
 }
 
 .brand-logo{
-  max-width:90%;
-  max-height:90%;
+  display:block;
+  width:auto;
+  height:34px;
   object-fit:contain;
+  flex:none;
 }
 
 .brand-meta{
@@ -140,11 +139,11 @@ body{
 }
 
 .brand-title{
-  font-size:15px;
-  font-weight:800;
+  font-size:30px;
+  font-weight:900;
+  line-height:1.05;
+  letter-spacing:-0.02em;
   color:var(--gc-navy);
-  line-height:1.2;
-  letter-spacing:-0.01em;
 }
 
 .brand-title-row{
@@ -2933,5 +2932,17 @@ label,
   .landing-panel,
   .admin-panel {
     margin-top: 0;
+  }
+
+  .brand-logo{
+    height:26px;
+  }
+  
+  .brand-title{
+    font-size:20px;
+  }
+  
+  .brand-sub{
+    font-size:11px;
   }
 }
