@@ -1794,6 +1794,20 @@ label,
   color: var(--sub);
 }
 
+#keywordField label{
+  font-size:16px;
+  line-height:1.35;
+  font-weight:700;
+}
+
+.keyword-label-sub{
+  display:inline-block;
+  margin-top:2px;
+  font-size:13px;
+  font-weight:500;
+  color:#6b7b88;
+}
+
 .required-mark {
   color: var(--danger);
 }
@@ -2836,6 +2850,14 @@ label,
     margin-top: 6px;
   }
 
+  #keywordField label{
+    font-size:15px;
+  }
+  
+  .keyword-label-sub{
+    font-size:12px;
+  }
+  
   #searchBtn.search-inline-btn {
     min-height: 96px;
     height: 96px;
