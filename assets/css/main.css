@@ -263,21 +263,18 @@ body{
   border:1px solid var(--line);
   border-radius:22px;
   background:#fff;
-  box-shadow:var(--shadow-soft);
+  box-shadow:none;
   overflow:hidden;
 }
 
 .landing-action-top{
   padding:14px;
-  background:linear-gradient(180deg,#ffffff,#f9fcfe);
+  background:transparent;
 }
 
-.landing-action-card.primary .landing-action-top{
-  background:linear-gradient(135deg,#ebf7fc,#ffffff);
-}
-
+.landing-action-card.primary .landing-action-top,
 .landing-action-card.secondary .landing-action-top{
-  background:linear-gradient(135deg,#edf9f3,#ffffff);
+  background:transparent;
 }
 
 .landing-action-btn{
