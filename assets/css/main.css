@@ -1636,8 +1636,8 @@ color: var(--sub);
 .landing-action-card {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  min-height: 188px;
+  justify-content: flex-start;
+  min-height: auto;
   padding: 18px;
   border-radius: 18px;
   border: 1px solid var(--line);
@@ -2974,5 +2974,73 @@ label,
     font-size:10px;
     min-height:18px;
     top:1px;
+  }
+}
+
+@media (max-width: 932px) and (orientation: landscape) {
+  .app-shell{
+    min-height:auto;
+    padding:
+      calc(6px + var(--safe-top))
+      calc(10px + var(--safe-right))
+      calc(10px + var(--safe-bottom))
+      calc(10px + var(--safe-left));
+  }
+
+  .landing-panel,
+  .panel,
+  .admin-panel{
+    min-height:auto;
+    padding:12px;
+  }
+
+  .landing-grid{
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    margin-bottom:10px;
+  }
+
+  .landing-action-card{
+    min-height:auto;
+    height:auto;
+  }
+
+  .landing-action-top{
+    padding:10px;
+    margin-bottom:0;
+  }
+
+  .landing-action-bottom{
+    padding:10px 12px 12px;
+  }
+
+  .landing-action-btn{
+    min-height:52px;
+    padding:14px 14px;
+    font-size:16px;
+  }
+
+  .landing-action-desc{
+    font-size:13px;
+    line-height:1.45;
+  }
+
+  .landing-title{
+    margin-bottom:6px;
+    font-size:22px;
+  }
+
+  .landing-desc{
+    margin-bottom:10px;
+    font-size:13px;
+    line-height:1.5;
+  }
+
+  body,
+  .app-shell,
+  .landing-panel,
+  .panel,
+  .admin-panel{
+    min-height:unset;
   }
 }
