@@ -3083,4 +3083,27 @@ label,
     font-size: 13px;
     line-height: 1.5;
   }
+
+  .brand-meta {
+    position: relative;
+    top: 1px;
+  }
+
+  .brand-sub {
+    position: relative;
+    top: 1px;
+  }
+
+  .hero-mode {
+    position: relative;
+    top: 1px;
+  }
+
+  .brand-title-row {
+    align-items: center;
+  }
+
+  .brand-sub-row {
+    align-items: center;
+  }
 }
