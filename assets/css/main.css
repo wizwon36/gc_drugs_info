@@ -124,6 +124,8 @@ body{
   flex-direction:column;
   justify-content:center;
   gap:4px;
+  position:relative;
+  top:1px; /* 텍스트/배지 전체를 아주 미세하게 아래로 */
 }
 
 .brand-title-row{
@@ -144,6 +146,8 @@ body{
   color:var(--gc-navy);
   min-width:0;
   white-space:nowrap;
+  position:relative;
+  top:1px; /* 텍스트만 1px 아래 */
 }
 
 .brand-sub-row{
@@ -163,6 +167,8 @@ body{
   align-items:center;
   min-height:20px;
   white-space:nowrap;
+  position:relative;
+  top:1px; /* 서브텍스트도 같이 약간 아래 */
 }
 
 .hero-mode{
@@ -180,6 +186,8 @@ body{
   line-height:1;
   white-space:nowrap;
   flex:none;
+  position:relative;
+  top:1px; /* 배지도 1px 아래 */
 }
 
 .hero-mode.staff{
@@ -2752,6 +2760,7 @@ label,
     min-height:20px;
     padding:0 7px;
     font-size:10px;
+    top:1px;
   }
 
   #heroDescription {
@@ -2943,6 +2952,7 @@ label,
     font-size:16px;
     line-height:1.08;
     letter-spacing:-0.02em;
+    top:1px;
   }
   
   .brand-title-row{
@@ -2954,6 +2964,7 @@ label,
   .brand-meta{
     justify-content:center;
     gap:3px;
+    top:1px;
   }
   
   .brand-sub-row{
@@ -2966,5 +2977,6 @@ label,
   .brand-sub{
     font-size:10px;
     min-height:18px;
+    top:1px;
   }
 }
