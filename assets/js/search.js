@@ -727,8 +727,8 @@ function createResultCardHtml(item) {
     </div>
 
     <div class="kv">
-      <div class="k">일반 용도</div><div class="v">${escapeHtml(item.common_use || '-')}</div>
-      <div class="k">검색 별칭</div><div class="v">${escapeHtml((item.aliases || []).join(', ') || '-')}</div>
+      <div class="k">용도</div><div class="v">${escapeHtml(item.common_use || '-')}</div>
+      <div class="k">연관검색어</div><div class="v">${escapeHtml((item.aliases || []).join(', ') || '-')}</div>
       ${state.currentMode === 'staff' ? `<div class="k">약물 기본 주의도</div><div class="v">${escapeHtml(item.caution_level || '일반')}</div>` : ''}
       ${state.currentMode === 'staff' ? `<div class="k">직원 참고 메모</div><div class="v">${escapeHtml(item.staff_note || '-')}</div>` : ''}
     </div>
