@@ -771,22 +771,22 @@ function createResultCardHtml(item) {
               </div>
 
               <div class="exam-result-grid">
-                <div class="k">복용 안내</div>
+                <div class="k">복용안내</div>
                 <div class="v">${escapeHtml(formatNeedHold(rule.need_hold))}</div>
 
                 ${showHoldPeriod ? `
-                  <div class="k">중단 시점</div>
+                  <div class="k">중단시점</div>
                   <div class="v">${escapeHtml(rule.hold_period || '-')}</div>
                 ` : ''}
 
-                <div class="k">${state.currentMode === 'staff' ? '환자 안내' : '안내 문구'}</div>
+                <div class="k">${state.currentMode === 'staff' ? '환자 참고사항' : '참고사항'}</div>
                 <div class="v">${escapeHtml(rule.patient_message || '-')}</div>
 
                 ${state.currentMode === 'staff' ? `
-                  <div class="k">직원 안내</div>
+                  <div class="k">직원 참고사항</div>
                   <div class="v">${escapeHtml(rule.staff_message || '-')}</div>
 
-                  <div class="k">예외 사항</div>
+                  <div class="k">예외사항</div>
                   <div class="v">${escapeHtml(rule.exception_note || '-')}</div>
                 ` : ''}
               </div>
