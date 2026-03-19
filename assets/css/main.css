@@ -125,7 +125,6 @@ body{
   justify-content:center;
   gap:4px;
   position:relative;
-  top:1px; /* 텍스트/배지 전체를 아주 미세하게 아래로 */
 }
 
 .brand-title-row{
@@ -147,7 +146,6 @@ body{
   min-width:0;
   white-space:nowrap;
   position:relative;
-  top:1px; /* 텍스트만 1px 아래 */
 }
 
 .brand-sub-row{
@@ -168,7 +166,6 @@ body{
   min-height:20px;
   white-space:nowrap;
   position:relative;
-  top:1px; /* 서브텍스트도 같이 약간 아래 */
 }
 
 .hero-mode{
@@ -187,7 +184,6 @@ body{
   white-space:nowrap;
   flex:none;
   position:relative;
-  top:1px; /* 배지도 1px 아래 */
 }
 
 .hero-mode.staff{
