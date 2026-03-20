@@ -3128,4 +3128,62 @@ label,
   .brand-sub-row {
     align-items: center;
   }
+
+   /* ===== 최종 보정 (조회버튼 + 외곽 프레임 제거) ===== */
+  
+  /* 조회버튼 정렬 */
+  .keyword-search-row{
+    grid-template-columns:minmax(0,1fr) 104px;
+    align-items:stretch;
+  }
+  
+  .keyword-search-row > .field:last-child{
+    display:flex;
+    align-items:stretch;
+    justify-content:center;
+  }
+  
+  .keyword-search-row > .field:last-child label{
+    display:none;
+  }
+  
+  #searchBtn.search-inline-btn{
+    width:100%;
+    height:100%;
+    min-height:96px;
+    align-self:stretch;
+    margin:0;
+  }
+  
+  /* 모바일에서는 인라인 버튼 제거 */
+  @media (max-width:960px){
+    .keyword-search-row{
+      grid-template-columns:1fr;
+    }
+  
+    .keyword-search-row > .field:last-child{
+      display:none;
+    }
+  }
+  
+  /* 외곽 흰 프레임 제거 */
+  .app-shell{
+    background:transparent !important;
+    border:none !important;
+    box-shadow:none !important;
+  }
+  
+  .app-topbar{
+    background:transparent !important;
+    border:none !important;
+    box-shadow:none !important;
+  }
+  
+  .app-shell::before,
+  .app-shell::after,
+  .app-topbar::before,
+  .app-topbar::after{
+    display:none !important;
+    content:none !important;
+  }
 }
