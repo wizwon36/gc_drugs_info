@@ -3270,3 +3270,30 @@ label,
   background:transparent !important;
   background-image:none !important;
 }
+
+/* ===== 하단 여백 슬림화 ===== */
+
+/* 전체 하단 여백 줄이기 */
+.app-shell{
+  padding-bottom: calc(12px + var(--safe-bottom)) !important;
+}
+
+/* 카드 ↔ 안내문 간격 축소 */
+.footer-note{
+  margin-top: 8px !important;
+  padding: 10px 12px !important;
+  border-radius: 12px !important;
+}
+
+/* 모바일에서는 더 타이트하게 */
+@media (max-width: 480px){
+  .app-shell{
+    padding-bottom: calc(8px + var(--safe-bottom)) !important;
+  }
+
+  .footer-note{
+    margin-top: 6px !important;
+    padding: 9px 10px !important;
+    font-size: 12px;
+  }
+}
