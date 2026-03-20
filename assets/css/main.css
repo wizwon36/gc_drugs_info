@@ -604,6 +604,20 @@ body{
   font-weight:600;
 } 
 
+#keywordField label{
+  font-size:16px;
+  line-height:1.35;
+  font-weight:700;
+}
+
+.keyword-label-sub{
+  display:inline-block;
+  margin-top:2px;
+  font-size:13px;
+  font-weight:500;
+  color:#6b7b88;
+}
+
 .admin-content-box .field + .toolbar{
   margin-top:16px;
 }
@@ -2924,6 +2938,14 @@ label,
     text-align: left;
   }
 
+  #keywordField label{
+    font-size:15px;
+  }
+  
+  .keyword-label-sub{
+    font-size:12px;
+  }
+  
   .kv {
     display: grid;
     grid-template-columns: 84px minmax(0, 1fr);
