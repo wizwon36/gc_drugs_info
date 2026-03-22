@@ -363,6 +363,27 @@ function handleSearch() {
   })();
 }
 
+function renderSkeletonResults(count = 2) {
+  const area = document.getElementById('groupArea');
+  if (!area) return;
+
+  area.innerHTML = `
+    <div class="skeleton-wrap">
+      ${Array.from({ length: count }).map(() => `
+        <div class="skeleton-card">
+          <div class="skeleton-line title"></div>
+          <div class="skeleton-line w-55"></div>
+          <div class="skeleton-line w-40"></div>
+          <div class="skeleton-chip"></div>
+          <div class="skeleton-line w-30"></div>
+          <div class="skeleton-line w-70"></div>
+          <div class="skeleton-box"></div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
 function renderResults(res) {
   renderSummary(res.summary || null);
   renderGroupedResults(res.groupedResults || []);
