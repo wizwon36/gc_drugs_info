@@ -323,8 +323,9 @@ function handleSearch() {
       : '약물과 연결된 전체 검사 기준을 검색 중입니다...',
     true
   );
-  clearResults();
-
+ clearResults();
+ renderSkeletonResults();
+  
   (async () => {
     try {
       const url = new URL(API_BASE);
@@ -342,10 +343,12 @@ function handleSearch() {
       hideLoadingOverlay();
 
       if (!data.success) {
+        clearResults();
         showErrorPopup(data.message || '검색에 실패했습니다.');
         return;
       }
-
+      
+      clearResults();
       renderResults(data);
 
       const groupArea = document.getElementById('groupArea');
@@ -358,6 +361,7 @@ function handleSearch() {
       state.isSearching = false;
       setSearchButtonLoading(false);
       hideLoadingOverlay();
+      clearResults();
       showErrorPopup('검색 중 오류가 발생했습니다: ' + getErrorMessage(err));
     }
   })();
