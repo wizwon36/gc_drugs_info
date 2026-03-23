@@ -1,0 +1,29 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main  # main 브랜치에 push 시 자동 실행
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 저장소 체크아웃
+        uses: actions/checkout@v4
+
+      # config.template.js의 __API_BASE__ 플레이스홀더를
+      # GitHub Secret의 실제 URL로 교체하여 config.js 생성
+      - name: API URL 주입
+        run: |
+          sed 's|__API_BASE__|${{ secrets.API_BASE }}|g' \
+            assets/js/config.template.js > assets/js/config.js
+
+      - name: GitHub Pages 배포
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./
+          # 배포 브랜치 (기본값 gh-pages 사용)
+          publish_branch: gh-pages
