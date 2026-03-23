@@ -25,10 +25,15 @@ jobs:
       - name: 저장소 체크아웃
         uses: actions/checkout@v4
 
-      - name: API URL 주입
+      - name: 배포용 폴더 준비
         run: |
+          # ✅ 전체 파일을 _site 폴더에 복사 (.gitignore 영향 없음)
+          cp -r . _site
+          # ✅ config.template.js의 __API_BASE__를 실제 URL로 교체하여 config.js 생성
           sed 's|__API_BASE__|${{ secrets.API_BASE }}|g' \
-            assets/js/config.template.js > assets/js/config.js
+            _site/assets/js/config.template.js > _site/assets/js/config.js
+          # 불필요한 폴더 제거
+          rm -rf _site/.git _site/.github _site/_site
 
       - name: Pages 설정
         uses: actions/configure-pages@v5
@@ -36,8 +41,8 @@ jobs:
       - name: 파일 업로드
         uses: actions/upload-pages-artifact@v3
         with:
-          # ✅ 전체 디렉토리 업로드 (config.js 포함)
-          path: .
+          # ✅ .gitignore 영향을 받지 않는 _site 폴더에서 업로드
+          path: _site
 
       - name: GitHub Pages 배포
         id: deployment
