@@ -30,5 +30,10 @@ const state = {
   renderedAutocompleteKeyword: '',
   autocompleteActiveIndex: -1,
 
-  adminDrugTargetTimer: null
+  adminDrugTargetTimer: null,
+
+  // ✅ 추가: window.* 전역 변수 대신 state로 관리
+  patientNotice: '',
+  staffNotice: '',
+  contactText: ''
 };
