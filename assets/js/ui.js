@@ -1,21 +1,27 @@
+// ✅ 수정: isLoading 여부와 관계없이 항상 hidden을 붙이던 버그 수정
+//         - isLoading=true  → hidden 유지 (로딩 오버레이가 대신 표시하므로)
+//         - isLoading=false → hidden 제거하여 텍스트 노출
+//         - text가 없으면 → hidden
 function setStatus(text, isLoading = false) {
   const el = document.getElementById('statusText');
   if (!el) return;
 
-  el.textContent = text || '';
+  if (!text) {
+    el.textContent = '';
+    el.classList.add('hidden');
+    return;
+  }
+
+  el.textContent = text;
   el.classList.toggle('loading', !!isLoading);
 
-  if (!text) {
-    el.classList.add('hidden');
-    return;
-  }
-
   if (isLoading) {
+    // 로딩 중엔 오버레이가 화면을 덮고 있으므로 statusText는 숨김 유지
     el.classList.add('hidden');
-    return;
+  } else {
+    // 로딩 완료 후엔 결과 텍스트를 화면에 표시
+    el.classList.remove('hidden');
   }
-
-  el.classList.add('hidden');
 }
 
 function showErrorPopup(message) {
