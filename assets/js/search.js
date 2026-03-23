@@ -59,9 +59,7 @@ function updateAutocompleteActiveItem() {
   });
 
   if (state.autocompleteActiveIndex >= 0 && items[state.autocompleteActiveIndex]) {
-    items[state.autocompleteActiveIndex].scrollIntoView({
-      block: 'nearest'
-    });
+    items[state.autocompleteActiveIndex].scrollIntoView({ block: 'nearest' });
   }
 }
 
@@ -73,6 +71,8 @@ function scheduleAutocomplete() {
 
   clearTimeout(state.autoTimer);
 
+  // ✅ 수정: 40ms/90ms 이중 분기 → 300ms 단일 값으로 통일
+  //         한글 조합 중(isComposing)이어도 300ms — compositionend 후 한 번 더 실행되므로 충분
   state.autoTimer = setTimeout(() => {
     const keyword = normalizeKeyword(getLastToken(document.getElementById('keyword').value || ''));
 
@@ -85,7 +85,7 @@ function scheduleAutocomplete() {
 
     state.pendingAutocompleteKeyword = keyword;
     runAutocompleteRequest(keyword);
-  }, state.isComposing ? 90 : 40);
+  }, 300);
 }
 
 async function runAutocompleteRequest(keyword) {
@@ -114,12 +114,8 @@ async function runAutocompleteRequest(keyword) {
   showAutocompleteLoading();
 
   try {
-    const url = new URL(API_BASE);
-    url.searchParams.set('action', 'suggest');
-    url.searchParams.set('keyword', keyword);
-
-    const res = await fetch(url.toString(), { method: 'GET' });
-    const data = await res.json();
+    // ✅ 수정: 직접 fetch → apiGet 으로 통일
+    const data = await apiGet('suggest', { keyword });
 
     const latestKeyword = normalizeKeyword(getLastToken(document.getElementById('keyword').value || ''));
 
@@ -323,20 +319,17 @@ function handleSearch() {
       : '약물과 연결된 전체 검사 기준을 검색 중입니다...',
     true
   );
- clearResults();
- renderSkeletonResults();
-  
+  clearResults();
+  renderSkeletonResults();
+
   (async () => {
     try {
-      const url = new URL(API_BASE);
-      url.searchParams.set('action', 'search');
-      url.searchParams.set('keyword', dedupedKeyword);
-      url.searchParams.set('examType', examType || '');
-      url.searchParams.set('mode', state.currentMode);
-      // url.searchParams.set('userAgent', navigator.userAgent);
-
-      const res = await fetch(url.toString(), { method: 'GET' });
-      const data = await res.json();
+      // ✅ 수정: 직접 fetch → apiGet 으로 통일
+      const data = await apiGet('search', {
+        keyword: dedupedKeyword,
+        examType: examType || '',
+        mode: state.currentMode
+      });
 
       state.isSearching = false;
       setSearchButtonLoading(false);
@@ -347,7 +340,7 @@ function handleSearch() {
         showErrorPopup(data.message || '검색에 실패했습니다.');
         return;
       }
-      
+
       clearResults();
       renderResults(data);
 
@@ -855,15 +848,9 @@ function shouldShowHoldPeriod(rule) {
 function getPatientGuidanceNote(rule) {
   const needHold = String(rule?.need_hold || '').trim();
 
-  if (needHold === 'Y') {
-    return '검사 전까지 중단 시점을 꼭 확인하세요.';
-  }
-  if (needHold === 'CONSULT') {
-    return '임의로 결정하지 말고 검진센터 또는 처방의와 먼저 상의하세요.';
-  }
-  if (needHold === 'N') {
-    return '별도 안내가 없는 경우 복용 후 방문하세요.';
-  }
+  if (needHold === 'Y') return '검사 전까지 중단 시점을 꼭 확인하세요.';
+  if (needHold === 'CONSULT') return '임의로 결정하지 말고 검진센터 또는 처방의와 먼저 상의하세요.';
+  if (needHold === 'N') return '별도 안내가 없는 경우 복용 후 방문하세요.';
   return '';
 }
 
@@ -876,21 +863,14 @@ function getCautionClass(level) {
 function mapPatientCautionLabel(level) {
   const value = String(level || '').trim();
 
-  if (state.currentMode === 'staff') {
-    return value || '일반';
-  }
+  if (state.currentMode === 'staff') return value || '일반';
 
   switch (value) {
-    case '일반':
-      return '복용 가능';
-    case '중간':
-      return '주의';
-    case '높음':
-      return '중요';
-    case '매우높음':
-      return '반드시 확인';
-    default:
-      return value || '복용 가능';
+    case '일반':    return '복용 가능';
+    case '중간':    return '주의';
+    case '높음':    return '중요';
+    case '매우높음': return '반드시 확인';
+    default:       return value || '복용 가능';
   }
 }
 
