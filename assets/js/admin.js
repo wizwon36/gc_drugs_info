@@ -1,3 +1,12 @@
+// ✅ 추가: app.js의 INIT_CACHE_KEY와 동일한 키로 캐시 초기화
+function clearInitCache_() {
+  try {
+    sessionStorage.removeItem('gc_init_v1');
+  } catch (e) {
+    // 무시
+  }
+}
+
 function renderExamOptions() {
   const select = document.getElementById('examType');
   const adminExam = document.getElementById('adminExamType');
@@ -461,6 +470,9 @@ async function saveDrugItem() {
       return;
     }
 
+    // ✅ 추가: 약물 저장 성공 시 init 캐시 초기화 → 다음 일반 사용자 방문 시 최신 데이터 반영
+    clearInitCache_();
+
     if (!payload.drug_id) {
       clearDrugForm();
     }
@@ -544,6 +556,9 @@ async function saveRuleItem() {
       return;
     }
 
+    // ✅ 추가: 규칙 저장 성공 시 init 캐시 초기화 → 다음 일반 사용자 방문 시 최신 데이터 반영
+    clearInitCache_();
+
     if (!payload.rule_id) {
       clearRuleForm();
     }
@@ -575,6 +590,9 @@ async function toggleDrug(drugId) {
       return;
     }
 
+    // ✅ 추가: 약물 활성/비활성 변경 시 init 캐시 초기화
+    clearInitCache_();
+
     await loadRecentAdminData(false);
     await searchAdminDrugList(false);
     state.autocompleteCache.clear();
@@ -603,6 +621,9 @@ async function toggleRule(ruleId) {
       hideAdminLoading();
       return;
     }
+
+    // ✅ 추가: 규칙 활성/비활성 변경 시 init 캐시 초기화
+    clearInitCache_();
 
     await loadRecentAdminData(false);
     await searchAdminRuleList(false);
