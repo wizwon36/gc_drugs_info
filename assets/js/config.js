@@ -32,8 +32,10 @@ const state = {
 
   adminDrugTargetTimer: null,
 
-  // ✅ 추가: window.* 전역 변수 대신 state로 관리
   patientNotice: '',
   staffNotice: '',
-  contactText: ''
+  contactText: '',
+
+  // ✅ 추가: 관리자 세션 토큰 (로그인 시 GAS에서 발급)
+  adminToken: ''
 };
