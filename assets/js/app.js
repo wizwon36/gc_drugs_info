@@ -296,9 +296,9 @@ function bindStaticEvents() {
   document.getElementById('staffModeBtn')?.addEventListener('click', () => setMode('staff'));
   document.getElementById('adminModeBtn')?.addEventListener('click', openAdminPanel);
 
+  // ✅ 수정: 두 버튼 모두 이벤트 유지 — CSS 미디어쿼리로 화면 크기에 따라 표시/숨김
   document.getElementById('searchBtn')?.addEventListener('click', handleSearch);
-  // ✅ 수정: searchBtnMobile 이벤트 바인딩 제거 → CSS 미디어쿼리로 대체
-  // document.getElementById('searchBtnMobile')?.addEventListener('click', handleSearch);
+  document.getElementById('searchBtnMobile')?.addEventListener('click', handleSearch);
 
   document.getElementById('adminLoginBtn')?.addEventListener('click', loginAdmin);
 
