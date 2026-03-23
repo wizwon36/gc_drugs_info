@@ -71,8 +71,6 @@ function scheduleAutocomplete() {
 
   clearTimeout(state.autoTimer);
 
-  // ✅ 수정: 40ms/90ms 이중 분기 → 300ms 단일 값으로 통일
-  //         한글 조합 중(isComposing)이어도 300ms — compositionend 후 한 번 더 실행되므로 충분
   state.autoTimer = setTimeout(() => {
     const keyword = normalizeKeyword(getLastToken(document.getElementById('keyword').value || ''));
 
@@ -87,6 +85,10 @@ function scheduleAutocomplete() {
     runAutocompleteRequest(keyword);
   }, 300);
 }
+
+// ✅ 수정: 자동완성 캐시 TTL 5분 추가
+//         Map 값을 { list, ts } 구조로 변경 → 5분 경과 시 재요청
+const AUTOCOMPLETE_CACHE_TTL = 5 * 60 * 1000; // 5분
 
 async function runAutocompleteRequest(keyword) {
   const currentKeyword = normalizeKeyword(getLastToken(document.getElementById('keyword').value || ''));
@@ -104,8 +106,10 @@ async function runAutocompleteRequest(keyword) {
     return;
   }
 
-  if (state.autocompleteCache.has(keyword)) {
-    renderAutocomplete(state.autocompleteCache.get(keyword), keyword);
+  // ✅ 수정: TTL 체크 포함한 캐시 조회
+  const cached = state.autocompleteCache.get(keyword);
+  if (cached && Date.now() - cached.ts < AUTOCOMPLETE_CACHE_TTL) {
+    renderAutocomplete(cached.list, keyword);
     return;
   }
 
@@ -114,7 +118,6 @@ async function runAutocompleteRequest(keyword) {
   showAutocompleteLoading();
 
   try {
-    // ✅ 수정: 직접 fetch → apiGet 으로 통일
     const data = await apiGet('suggest', { keyword });
 
     const latestKeyword = normalizeKeyword(getLastToken(document.getElementById('keyword').value || ''));
@@ -133,7 +136,9 @@ async function runAutocompleteRequest(keyword) {
     }
 
     const list = (data && data.suggestions) ? data.suggestions : [];
-    state.autocompleteCache.set(keyword, list);
+
+    // ✅ 수정: { list, ts } 구조로 저장
+    state.autocompleteCache.set(keyword, { list, ts: Date.now() });
     state.autocompleteLoadingKeyword = '';
     renderAutocomplete(list, keyword);
   } catch (e) {
@@ -324,7 +329,6 @@ function handleSearch() {
 
   (async () => {
     try {
-      // ✅ 수정: 직접 fetch → apiGet 으로 통일
       const data = await apiGet('search', {
         keyword: dedupedKeyword,
         examType: examType || '',
@@ -382,7 +386,7 @@ function renderSkeletonResults(count = 2) {
 }
 
 function renderResults(res) {
-  renderSummary(res.summary || null);
+  // ✅ 수정: renderSummary 호출 제거 (clearResults에서 이미 summaryArea를 비우므로 중복)
   renderGroupedResults(res.groupedResults || []);
 
   const totalKeywords = (res.keywords || []).length;
@@ -396,10 +400,7 @@ function renderResults(res) {
   }
 }
 
-function renderSummary(summary) {
-  const area = document.getElementById('summaryArea');
-  area.innerHTML = '';
-}
+// ✅ 제거: renderSummary 함수 삭제 (빈 함수였으며 clearResults가 동일한 역할을 함)
 
 function renderGroupedResults(groupedResults) {
   const area = document.getElementById('groupArea');
@@ -662,7 +663,6 @@ function attachInnerSliderSwipe(slider) {
 
   slider.addEventListener('touchstart', (e) => {
     if (!e.touches || !e.touches.length) return;
-
     startX = e.touches[0].clientX;
     startY = e.touches[0].clientY;
     deltaX = 0;
@@ -673,10 +673,8 @@ function attachInnerSliderSwipe(slider) {
 
   slider.addEventListener('touchmove', (e) => {
     if (!isDragging || !e.touches || !e.touches.length) return;
-
     deltaX = e.touches[0].clientX - startX;
     deltaY = e.touches[0].clientY - startY;
-
     if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 8) {
       isHorizontalSwipe = true;
       e.preventDefault();
@@ -686,7 +684,6 @@ function attachInnerSliderSwipe(slider) {
   slider.addEventListener('touchend', () => {
     if (!isDragging) return;
     isDragging = false;
-
     if (!isHorizontalSwipe) return;
 
     const threshold = 50;
@@ -838,16 +835,13 @@ function formatNeedHold(value) {
 function shouldShowHoldPeriod(rule) {
   const needHold = String(rule?.need_hold || '').trim();
   const holdPeriod = String(rule?.hold_period || '').trim();
-
   if (!holdPeriod) return false;
   if (needHold === 'N' && holdPeriod === '임의중단 금지') return false;
-
   return true;
 }
 
 function getPatientGuidanceNote(rule) {
   const needHold = String(rule?.need_hold || '').trim();
-
   if (needHold === 'Y') return '검사 전까지 중단 시점을 꼭 확인하세요.';
   if (needHold === 'CONSULT') return '임의로 결정하지 말고 검진센터 또는 처방의와 먼저 상의하세요.';
   if (needHold === 'N') return '별도 안내가 없는 경우 복용 후 방문하세요.';
@@ -862,9 +856,7 @@ function getCautionClass(level) {
 
 function mapPatientCautionLabel(level) {
   const value = String(level || '').trim();
-
   if (state.currentMode === 'staff') return value || '일반';
-
   switch (value) {
     case '일반':    return '복용 가능';
     case '중간':    return '주의';
@@ -891,14 +883,12 @@ function getTargetTypeLabel(value) {
 
 function bindMasterTabs() {
   const buttons = document.querySelectorAll('.group-tab-btn');
-
   buttons.forEach(btn => {
     btn.onclick = () => {
       const sliderId = btn.dataset.masterTabTarget;
       const index = Number(btn.dataset.masterTabIndex || 0);
       const slider = document.getElementById(sliderId);
       if (!slider) return;
-
       updateMasterSlider(slider, index);
     };
   });
