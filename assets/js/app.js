@@ -1,6 +1,5 @@
 const UI_LOADING_DELAY = 750;
 
-// ✅ 추가: init 캐시 설정
 const INIT_CACHE_KEY = 'gc_init_v1';
 const INIT_CACHE_TTL = 30 * 60 * 1000; // 30분
 
@@ -10,7 +9,6 @@ async function initializeApp() {
   setStatus('초기 데이터를 불러오는 중입니다...', true);
 
   try {
-    // ✅ 추가: 캐시 유효 시 API 호출 없이 즉시 적용
     const cached = loadInitCache_();
     if (cached) {
       applyInitData_(cached);
@@ -30,7 +28,6 @@ async function initializeApp() {
       return;
     }
 
-    // ✅ 추가: 성공 응답을 캐시에 저장 후 적용
     saveInitCache_(data);
     applyInitData_(data);
 
@@ -41,7 +38,6 @@ async function initializeApp() {
   }
 }
 
-// ✅ 추가: init 데이터를 state에 적용하는 공통 함수
 function applyInitData_(data) {
   state.appConfig = data.config || {};
   state.examList = data.exams || [];
@@ -58,7 +54,6 @@ function applyInitData_(data) {
   setStatus('약 이름만 입력해도 검색할 수 있습니다.');
 }
 
-// ✅ 추가: sessionStorage에서 캐시 읽기 (만료 시 null 반환)
 function loadInitCache_() {
   try {
     const raw = sessionStorage.getItem(INIT_CACHE_KEY);
@@ -76,7 +71,6 @@ function loadInitCache_() {
   }
 }
 
-// ✅ 추가: sessionStorage에 캐시 저장
 function saveInitCache_(data) {
   try {
     sessionStorage.setItem(INIT_CACHE_KEY, JSON.stringify({ data, ts: Date.now() }));
@@ -92,16 +86,17 @@ function applyConfig() {
   const contactPhone = state.appConfig.contact_phone || '';
   const contactText = contactPhone ? `<div class="contact">문의: ${escapeHtml(contactPhone)}</div>` : '';
 
+  // ✅ 수정: window.* 대신 state에 저장
+  state.patientNotice = patientNotice;
+  state.staffNotice = staffNotice;
+  state.contactText = contactText;
+
   document.getElementById('footerNotice').innerHTML = `<div>${escapeHtml(patientNotice)}</div>${contactText}`;
 
   const brandTitle = document.querySelector('.brand-title');
   if (brandTitle) {
     brandTitle.textContent = hospitalName;
   }
-
-  window.patientNotice = patientNotice;
-  window.staffNotice = staffNotice;
-  window.contactText = contactText;
 
   const heroModeLabel = document.getElementById('heroModeLabel');
   if (heroModeLabel) {
@@ -119,7 +114,6 @@ function startPatientMode() {
   startModeWithLoading('patient');
 }
 
-// ✅ 1번 수정 반영: 비밀번호 검증을 GAS 서버로 위임
 async function startStaffMode() {
   if (state.isSearching || state.isInitializing) return;
 
@@ -214,8 +208,9 @@ function goHome() {
 
     applyLockedModeUI();
 
+    // ✅ 수정: window.patientNotice → state.patientNotice
     document.getElementById('footerNotice').innerHTML =
-      `<div>${escapeHtml(window.patientNotice || '')}</div>${window.contactText || ''}`;
+      `<div>${escapeHtml(state.patientNotice || '')}</div>${state.contactText || ''}`;
 
     const heroModeLabel = document.getElementById('heroModeLabel');
     if (heroModeLabel) {
@@ -289,13 +284,14 @@ function setMode(mode) {
   document.getElementById('staffModeBtn').classList.toggle('active', mode === 'staff');
   document.getElementById('adminModeBtn').classList.remove('active');
 
+  // ✅ 수정: window.patientNotice / window.staffNotice → state.*
   if (mode === 'patient') {
     document.getElementById('footerNotice').innerHTML =
-      `<div>${escapeHtml(window.patientNotice || '')}</div>${window.contactText || ''}`;
+      `<div>${escapeHtml(state.patientNotice || '')}</div>${state.contactText || ''}`;
     simplifyPatientUI();
   } else {
     document.getElementById('footerNotice').innerHTML =
-      `<div>${escapeHtml(window.staffNotice || '')}</div>${window.contactText || ''}`;
+      `<div>${escapeHtml(state.staffNotice || '')}</div>${state.contactText || ''}`;
     restoreFullUI();
   }
 
@@ -542,7 +538,6 @@ function bindGlobalEvents() {
     if (field && !field.contains(e.target)) hideAutocomplete(true);
   }, { passive: true });
 
-  // ✅ 수정: resize debounce 처리, visualViewport.scroll 제거
   let resizeTimer;
   const debouncedSyncWidth = () => {
     clearTimeout(resizeTimer);
@@ -557,7 +552,6 @@ function bindGlobalEvents() {
 
   if (window.visualViewport) {
     window.visualViewport.addEventListener('resize', debouncedSyncWidth);
-    // scroll 이벤트 제거: 스크롤마다 layout recalculation 발생하므로 불필요
   }
 
   const secretAdminTrigger = document.getElementById('secretAdminTrigger');
