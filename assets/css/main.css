@@ -3390,3 +3390,7 @@ label,
     height:96px;
   }
 }
+
+/* searchBtnMobile CSS 분기 */
+@media (min-width: 721px) { #searchBtnMobile { display: none !important; } }
+@media (max-width: 720px)  { .search-inline-btn { display: none !important; } }
