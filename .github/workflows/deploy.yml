@@ -6,11 +6,20 @@ on:
       - main
 
 permissions:
-  contents: write
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
       - name: 저장소 체크아웃
@@ -21,11 +30,15 @@ jobs:
           sed 's|__API_BASE__|${{ secrets.API_BASE }}|g' \
             assets/js/config.template.js > assets/js/config.js
 
-      - name: GitHub Pages 배포
-        uses: peaceiris/actions-gh-pages@v4
+      - name: Pages 설정
+        uses: actions/configure-pages@v5
+
+      - name: 파일 업로드
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./
-          publish_branch: gh-pages
-          # ✅ 추가: .gitignore에 등록된 파일도 배포에 포함
-          exclude_assets: ''
+          # ✅ 전체 디렉토리 업로드 (config.js 포함)
+          path: .
+
+      - name: GitHub Pages 배포
+        id: deployment
+        uses: actions/deploy-pages@v4
