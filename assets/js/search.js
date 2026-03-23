@@ -386,7 +386,6 @@ function renderSkeletonResults(count = 2) {
 }
 
 function renderResults(res) {
-  // ✅ 수정: renderSummary 호출 제거 (clearResults에서 이미 summaryArea를 비우므로 중복)
   renderGroupedResults(res.groupedResults || []);
 
   const totalKeywords = (res.keywords || []).length;
@@ -395,8 +394,16 @@ function renderResults(res) {
 
   if (totalDrugRows === 0) {
     setStatus(res.message || '검색 결과가 없습니다.');
+    return;
+  }
+
+  // ✅ 수정: 미확인 키워드 유무에 따라 메시지 분기
+  if (unresolved > 0) {
+    setStatus(
+      `${totalKeywords}개 검색어 중 ${totalDrugRows}건 확인 · 미확인 ${unresolved}건`
+    );
   } else {
-    setStatus(`입력 약 ${totalKeywords}건 중 결과 약물 ${totalDrugRows}건을 찾았습니다. 미확인 ${unresolved}건.`);
+    setStatus(`${totalKeywords}개 검색어 · ${totalDrugRows}건 모두 확인 완료`);
   }
 }
 
