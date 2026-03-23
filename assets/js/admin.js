@@ -7,7 +7,32 @@ function clearInitCache_() {
   }
 }
 
-// ✅ 공통: 활성/비활성 토글 (Drug, Rule 공통 처리)
+// ✅ 공통: 관리자 토큰 포함 apiGet 래퍼
+//         쓰기 액션 호출 시 이 함수를 사용 → 토큰 자동 포함
+async function apiGetWithToken_(action, params = {}) {
+  if (!state.adminToken) {
+    throw new Error('인증이 만료되었습니다. 다시 로그인해주세요.');
+  }
+  return await apiGet(action, { ...params, token: state.adminToken });
+}
+
+// ✅ 공통: 토큰 만료 응답 처리
+//         쓰기 요청 결과가 인증 오류면 로그아웃 처리
+function handleTokenExpired_(res, statusId) {
+  if (!res.success && res.message && res.message.includes('인증이 만료')) {
+    state.isAdminLoggedIn = false;
+    state.adminToken = '';
+    hideAdminLoading();
+    showErrorPopup('관리자 인증이 만료되었습니다. 다시 로그인해주세요.');
+    document.getElementById('adminLoginArea')?.classList.remove('hidden');
+    document.getElementById('adminContentArea')?.classList.add('hidden');
+    document.getElementById('adminPassword').value = '';
+    return true;
+  }
+  return false;
+}
+
+// ✅ 공통: 활성/비활성 토글
 async function toggleItem_(type, id) {
   const cfg = {
     drug: {
@@ -31,15 +56,14 @@ async function toggleItem_(type, id) {
   showAdminLoading('상태 변경 중', '활성/비활성 상태를 변경하고 있습니다.');
 
   try {
-    const res = await apiGet(cfg.action, { [cfg.idKey]: id });
+    const res = await apiGetWithToken_(cfg.action, { [cfg.idKey]: id });
+
+    if (handleTokenExpired_(res, cfg.statusId)) return;
 
     const statusEl = document.getElementById(cfg.statusId);
     if (statusEl) statusEl.textContent = res.message || '';
 
-    if (!res.success) {
-      hideAdminLoading();
-      return;
-    }
+    if (!res.success) { hideAdminLoading(); return; }
 
     clearInitCache_();
     if (cfg.clearCache) {
@@ -154,7 +178,9 @@ function closeAdminPanel() {
   document.getElementById('adminPanel')?.classList.add('hidden');
   document.getElementById('adminModeBtn')?.classList.remove('active');
 
+  // ✅ 추가: 패널 닫을 때 토큰도 초기화
   state.isAdminLoggedIn = false;
+  state.adminToken = '';
 
   const adminPassword = document.getElementById('adminPassword');
   const adminLoginStatus = document.getElementById('adminLoginStatus');
@@ -172,9 +198,7 @@ function handleSecretAdminTrigger() {
   state.adminTapCount += 1;
 
   clearTimeout(state.adminTapTimer);
-  state.adminTapTimer = setTimeout(() => {
-    state.adminTapCount = 0;
-  }, 600);
+  state.adminTapTimer = setTimeout(() => { state.adminTapCount = 0; }, 600);
 
   if (state.adminTapCount >= 3) {
     state.adminTapCount = 0;
@@ -193,9 +217,7 @@ function setAdminTab(tab) {
   document.getElementById('adminRulePane')?.classList.toggle('hidden', tab !== 'rule');
   document.getElementById('adminStatsPane')?.classList.toggle('hidden', tab !== 'stats');
 
-  if (tab === 'stats' && state.isAdminLoggedIn) {
-    loadStats(true);
-  }
+  if (tab === 'stats' && state.isAdminLoggedIn) loadStats(true);
 }
 
 async function loginAdmin() {
@@ -221,7 +243,9 @@ async function loginAdmin() {
       return;
     }
 
+    // ✅ 추가: GAS에서 발급한 토큰을 state에 저장
     state.isAdminLoggedIn = true;
+    state.adminToken = res.token || '';
 
     if (statusEl) statusEl.textContent = '로그인되었습니다.';
     document.getElementById('adminLoginArea')?.classList.add('hidden');
@@ -244,7 +268,6 @@ async function loadRecentAdminData(showLoading = false) {
     if (showLoading) showAdminLoading('최근 데이터 불러오는 중', '최근 등록된 약물과 규칙을 조회하고 있습니다.');
 
     const res = await apiGet('recentAdmin');
-
     if (showLoading) hideAdminLoading();
     if (!res.success) return;
 
@@ -474,7 +497,10 @@ async function saveDrugItem() {
   );
 
   try {
-    const res = await apiGet(action, payload);
+    // ✅ 수정: apiGetWithToken_ 사용 → 토큰 자동 포함
+    const res = await apiGetWithToken_(action, payload);
+
+    if (handleTokenExpired_(res, 'adminDrugStatus')) return;
 
     const statusEl = document.getElementById('adminDrugStatus');
     if (statusEl) statusEl.textContent = (res.message || '') + (res.drug_id ? ` (${res.drug_id})` : '');
@@ -548,7 +574,10 @@ async function saveRuleItem() {
   );
 
   try {
-    const res = await apiGet(action, payload);
+    // ✅ 수정: apiGetWithToken_ 사용 → 토큰 자동 포함
+    const res = await apiGetWithToken_(action, payload);
+
+    if (handleTokenExpired_(res, 'adminRuleStatus')) return;
 
     const statusEl = document.getElementById('adminRuleStatus');
     if (statusEl) statusEl.textContent = (res.message || '') + (res.rule_id ? ` (${res.rule_id})` : '');
@@ -569,7 +598,6 @@ async function saveRuleItem() {
   }
 }
 
-// ✅ 공통화: toggleItem_ 위임
 function toggleDrug(drugId) { return toggleItem_('drug', drugId); }
 function toggleRule(ruleId) { return toggleItem_('rule', ruleId); }
 
@@ -633,7 +661,6 @@ function renderStatsList(id, list) {
     `).join('') || '<div class="small">데이터가 없습니다.</div>';
 }
 
-// ✅ 공통화: clearForm_ 활용
 function clearDrugForm() {
   clearForm_(
     ['adminDrugId', 'adminBrandName', 'adminIngredientName', 'adminAliases', 'adminPatientKeywords', 'adminCommonUse', 'adminStaffNote'],
@@ -682,9 +709,7 @@ function syncAdminTargetValueUI() {
 
 function scheduleAdminDrugTargetSearch() {
   clearTimeout(state.adminDrugTargetTimer);
-  state.adminDrugTargetTimer = setTimeout(() => {
-    searchAdminDrugTargetList();
-  }, 180);
+  state.adminDrugTargetTimer = setTimeout(() => { searchAdminDrugTargetList(); }, 180);
 }
 
 async function searchAdminDrugTargetList() {
