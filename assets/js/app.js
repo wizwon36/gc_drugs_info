@@ -58,13 +58,11 @@ function loadInitCache_() {
   try {
     const raw = sessionStorage.getItem(INIT_CACHE_KEY);
     if (!raw) return null;
-
     const { data, ts } = JSON.parse(raw);
     if (Date.now() - ts > INIT_CACHE_TTL) {
       sessionStorage.removeItem(INIT_CACHE_KEY);
       return null;
     }
-
     return data;
   } catch (e) {
     return null;
@@ -86,7 +84,6 @@ function applyConfig() {
   const contactPhone = state.appConfig.contact_phone || '';
   const contactText = contactPhone ? `<div class="contact">문의: ${escapeHtml(contactPhone)}</div>` : '';
 
-  // ✅ 수정: window.* 대신 state에 저장
   state.patientNotice = patientNotice;
   state.staffNotice = staffNotice;
   state.contactText = contactText;
@@ -94,9 +91,7 @@ function applyConfig() {
   document.getElementById('footerNotice').innerHTML = `<div>${escapeHtml(patientNotice)}</div>${contactText}`;
 
   const brandTitle = document.querySelector('.brand-title');
-  if (brandTitle) {
-    brandTitle.textContent = hospitalName;
-  }
+  if (brandTitle) brandTitle.textContent = hospitalName;
 
   const heroModeLabel = document.getElementById('heroModeLabel');
   if (heroModeLabel) {
@@ -118,7 +113,6 @@ async function startStaffMode() {
   if (state.isSearching || state.isInitializing) return;
 
   const pw = window.prompt('직원용 조회 비밀번호를 입력하세요.');
-
   if (pw === null) return;
 
   if (!String(pw).trim()) {
@@ -208,7 +202,6 @@ function goHome() {
 
     applyLockedModeUI();
 
-    // ✅ 수정: window.patientNotice → state.patientNotice
     document.getElementById('footerNotice').innerHTML =
       `<div>${escapeHtml(state.patientNotice || '')}</div>${state.contactText || ''}`;
 
@@ -232,16 +225,12 @@ function goHome() {
   }, UI_LOADING_DELAY);
 }
 
-function simplifyPatientUI() {
-}
-
-function restoreFullUI() {
-}
+function simplifyPatientUI() {}
+function restoreFullUI() {}
 
 function applyLockedModeUI() {
   const patientBtn = document.getElementById('patientModeBtn');
   const staffBtn = document.getElementById('staffModeBtn');
-
   if (!patientBtn || !staffBtn) return;
 
   if (!state.lockedMode) {
@@ -284,7 +273,6 @@ function setMode(mode) {
   document.getElementById('staffModeBtn').classList.toggle('active', mode === 'staff');
   document.getElementById('adminModeBtn').classList.remove('active');
 
-  // ✅ 수정: window.patientNotice / window.staffNotice → state.*
   if (mode === 'patient') {
     document.getElementById('footerNotice').innerHTML =
       `<div>${escapeHtml(state.patientNotice || '')}</div>${state.contactText || ''}`;
@@ -309,7 +297,8 @@ function bindStaticEvents() {
   document.getElementById('adminModeBtn')?.addEventListener('click', openAdminPanel);
 
   document.getElementById('searchBtn')?.addEventListener('click', handleSearch);
-  document.getElementById('searchBtnMobile')?.addEventListener('click', handleSearch);
+  // ✅ 수정: searchBtnMobile 이벤트 바인딩 제거 → CSS 미디어쿼리로 대체
+  // document.getElementById('searchBtnMobile')?.addEventListener('click', handleSearch);
 
   document.getElementById('adminLoginBtn')?.addEventListener('click', loginAdmin);
 
@@ -335,7 +324,6 @@ function bindDynamicSearchEvents() {
   document.getElementById('autocompleteBox')?.addEventListener('click', (e) => {
     const item = e.target.closest('[data-action="selectSuggestion"]');
     if (!item) return;
-
     const name = item.dataset.brandName || '';
     if (name) selectSuggestion(name);
   });
@@ -343,7 +331,6 @@ function bindDynamicSearchEvents() {
   document.getElementById('autocompleteBox')?.addEventListener('mouseover', (e) => {
     const item = e.target.closest('.autocomplete-item');
     if (!item) return;
-
     const index = Number(item.dataset.index);
     if (!Number.isNaN(index)) setAutocompleteActive(index);
   });
@@ -351,7 +338,6 @@ function bindDynamicSearchEvents() {
   document.getElementById('groupArea')?.addEventListener('click', (e) => {
     const chip = e.target.closest('[data-action="replaceKeywordAndSearch"]');
     if (!chip) return;
-
     const oldName = chip.dataset.oldName || '';
     const newName = chip.dataset.newName || '';
     replaceKeywordAndSearch(oldName, newName);
@@ -366,7 +352,6 @@ function bindDynamicAdminEvents() {
       if (drugId) editDrug(drugId);
       return;
     }
-
     const toggleBtn = e.target.closest('[data-action="toggleDrug"]');
     if (toggleBtn) {
       const drugId = toggleBtn.dataset.drugId || '';
@@ -381,7 +366,6 @@ function bindDynamicAdminEvents() {
       if (ruleId) editRule(ruleId);
       return;
     }
-
     const toggleBtn = e.target.closest('[data-action="toggleRule"]');
     if (toggleBtn) {
       const ruleId = toggleBtn.dataset.ruleId || '';
@@ -392,7 +376,6 @@ function bindDynamicAdminEvents() {
   document.getElementById('adminTargetDrugSearchList')?.addEventListener('click', (e) => {
     const btn = e.target.closest('[data-action="selectAdminTargetDrug"]');
     if (!btn) return;
-
     const drugId = btn.dataset.drugId || '';
     const brandName = btn.dataset.brandName || '';
     const ingredientName = btn.dataset.ingredientName || '';
@@ -432,9 +415,7 @@ function bindKeywordEvents() {
     updateAutocompleteActiveItem();
   });
 
-  keywordInput.addEventListener('compositionstart', () => {
-    state.isComposing = true;
-  });
+  keywordInput.addEventListener('compositionstart', () => { state.isComposing = true; });
 
   keywordInput.addEventListener('compositionend', () => {
     state.isComposing = false;
@@ -444,18 +425,9 @@ function bindKeywordEvents() {
     }, 30);
   });
 
-  keywordInput.addEventListener('input', () => {
-    setTimeout(scheduleAutocomplete, 0);
-  });
-
-  keywordInput.addEventListener('focus', () => {
-    scheduleAutocomplete();
-    ensureKeywordVisibleOnMobile();
-  });
-
-  keywordInput.addEventListener('click', () => {
-    ensureKeywordVisibleOnMobile();
-  });
+  keywordInput.addEventListener('input', () => { setTimeout(scheduleAutocomplete, 0); });
+  keywordInput.addEventListener('focus', () => { scheduleAutocomplete(); ensureKeywordVisibleOnMobile(); });
+  keywordInput.addEventListener('click', () => { ensureKeywordVisibleOnMobile(); });
 
   keywordInput.addEventListener('blur', () => {
     setTimeout(() => {
@@ -465,16 +437,10 @@ function bindKeywordEvents() {
   });
 
   keywordInput.addEventListener('keydown', handleKeywordKeydown);
-
   examSelect.addEventListener('change', () => {});
 
-  autoBox.addEventListener('mousedown', () => {
-    state.suppressBlurHide = true;
-  });
-
-  autoBox.addEventListener('touchstart', () => {
-    state.suppressBlurHide = true;
-  }, { passive: true });
+  autoBox.addEventListener('mousedown', () => { state.suppressBlurHide = true; });
+  autoBox.addEventListener('touchstart', () => { state.suppressBlurHide = true; }, { passive: true });
 }
 
 function bindAdminFormEvents() {
@@ -484,9 +450,7 @@ function bindAdminFormEvents() {
   const adminPasswordInput = document.getElementById('adminPassword');
   const adminDrugSearchInput = document.getElementById('adminDrugSearch');
 
-  if (adminTargetType) {
-    adminTargetType.addEventListener('change', syncAdminTargetValueUI);
-  }
+  if (adminTargetType) adminTargetType.addEventListener('change', syncAdminTargetValueUI);
 
   if (adminTargetValueGroup) {
     adminTargetValueGroup.addEventListener('change', () => {
@@ -496,33 +460,21 @@ function bindAdminFormEvents() {
   }
 
   if (adminTargetDrugSearch) {
-    adminTargetDrugSearch.addEventListener('input', () => {
-      scheduleAdminDrugTargetSearch();
-    });
-
+    adminTargetDrugSearch.addEventListener('input', () => { scheduleAdminDrugTargetSearch(); });
     adminTargetDrugSearch.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        searchAdminDrugTargetList();
-      }
+      if (e.key === 'Enter') { e.preventDefault(); searchAdminDrugTargetList(); }
     });
   }
 
   if (adminDrugSearchInput) {
     adminDrugSearchInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        searchAdminDrugList(true);
-      }
+      if (e.key === 'Enter') { e.preventDefault(); searchAdminDrugList(true); }
     });
   }
 
   if (adminPasswordInput) {
     adminPasswordInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        loginAdmin();
-      }
+      if (e.key === 'Enter') { e.preventDefault(); loginAdmin(); }
     });
   }
 }
@@ -545,10 +497,7 @@ function bindGlobalEvents() {
   };
 
   window.addEventListener('resize', debouncedSyncWidth);
-
-  window.addEventListener('orientationchange', () => {
-    setTimeout(syncAppWidth, 180);
-  });
+  window.addEventListener('orientationchange', () => { setTimeout(syncAppWidth, 180); });
 
   if (window.visualViewport) {
     window.visualViewport.addEventListener('resize', debouncedSyncWidth);
@@ -571,8 +520,6 @@ window.addEventListener('DOMContentLoaded', () => {
   bindGlobalEvents();
 
   setTimeout(syncAppWidth, 50);
-
   initializeApp();
-
   setTimeout(syncAdminTargetValueUI, 0);
 });
