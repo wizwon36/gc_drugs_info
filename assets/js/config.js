@@ -1,4 +1,4 @@
-const API_BASE = 'https://script.google.com/macros/s/AKfycbxZkPZWX8bL0UoLMo2HtiJQAlfxsfWPhnnVf1vVqvFciI4oayZZlrYwJt7qDxyG-kI-jg/exec';
+const API_BASE = 'https://script.google.com/macros/s/AKfycbwTRn6Pmmn6CINBO1-_V0PNeN_qGQu6_nuNrVDcuxKI2ytkAlZBMG4xkxeWlQiwg88B8Q/exec';
 
 const state = {
   currentMode: 'patient',
